@@ -35,11 +35,11 @@ const FileInput = ({ label }: { label: string }) => (
   <div className="space-y-1">
     <label className="dxg-label">{label}</label>
     <Button
-      variant="outline"
+      variant="secondary"
       size="sm"
-      className="h-8 text-xs font-normal text-muted-foreground border-input"
+      className="h-7 px-2.5 text-xs font-normal gap-1"
     >
-      <Upload className="mr-1.5 h-3.5 w-3.5" />
+      <Upload className="h-3 w-3" />
       첨부파일
     </Button>
   </div>
