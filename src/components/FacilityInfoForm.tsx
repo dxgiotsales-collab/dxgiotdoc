@@ -125,7 +125,12 @@ const FacilityInfoForm = () => {
                     <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updateEmission(row.id, "capacity", e.target.value)} />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-16" placeholder="단위" value={row.unit} onChange={(e) => updateEmission(row.id, "unit", e.target.value)} />
+                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updateEmission(row.id, "unit", e.target.value)}>
+                      <option value="">선택</option>
+                      {unitOptions.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className={tdClass + " text-center"}>
                     <Checkbox checked={row.supported} onCheckedChange={(v) => updateEmission(row.id, "supported", !!v)} />
