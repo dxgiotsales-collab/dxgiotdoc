@@ -28,14 +28,13 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
       {/* Search */}
       <div className="p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sidebar-foreground/50" />
           <input
             type="text"
             placeholder="사업장 / 지역 / 연도 검색"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="dxg-input pl-9"
-            style={{ boxShadow: "var(--shadow-input)" }}
+            className="w-full h-9 px-3 pl-9 text-sm rounded-md border-none bg-sidebar-accent text-sidebar-foreground placeholder:text-sidebar-foreground/40 outline-none focus:ring-2 focus:ring-sidebar-ring/30"
           />
         </div>
       </div>
