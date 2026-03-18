@@ -25,6 +25,8 @@ interface PreventionFacility {
   supported: boolean;
 }
 
+const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton"];
+
 const preventionTypes = [
   "여과 및 흡착에 의한 시설",
   "세정에 의한 시설",
@@ -33,6 +35,12 @@ const preventionTypes = [
   "응축에 의한 시설",
   "산화·환원에 의한 시설",
   "소각에 의한 시설",
+  "여과집진시설",
+  "흡착에 의한 시설",
+  "원심력 집진시설",
+  "세정집진시설",
+  "전기집진시설",
+  "흡수에 의한 시설",
   "기타",
 ];
 
@@ -117,7 +125,12 @@ const FacilityInfoForm = () => {
                     <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updateEmission(row.id, "capacity", e.target.value)} />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-16" placeholder="단위" value={row.unit} onChange={(e) => updateEmission(row.id, "unit", e.target.value)} />
+                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updateEmission(row.id, "unit", e.target.value)}>
+                      <option value="">선택</option>
+                      {unitOptions.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className={tdClass + " text-center"}>
                     <Checkbox checked={row.supported} onCheckedChange={(v) => updateEmission(row.id, "supported", !!v)} />
@@ -179,7 +192,12 @@ const FacilityInfoForm = () => {
                     <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updatePrevention(row.id, "capacity", e.target.value)} />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-16" placeholder="단위" value={row.unit} onChange={(e) => updatePrevention(row.id, "unit", e.target.value)} />
+                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updatePrevention(row.id, "unit", e.target.value)}>
+                      <option value="">선택</option>
+                      {unitOptions.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className={tdClass}>
                     <input type="text" className="dxg-input w-28" placeholder="2026-01-01" value={row.installDate} onChange={(e) => updatePrevention(row.id, "installDate", e.target.value)} />
