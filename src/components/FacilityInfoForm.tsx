@@ -213,37 +213,60 @@ const FacilityInfoForm = () => {
           방지시설 추가
         </Button>
       </div>
+
       {/* Section 3 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">3. 지원사업 신청대상 시설정보</h2>
         {(() => {
           const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
           const eligiblePreventions = preventions.filter((p) => p.supported);
-          const rows = [
-            ...eligibleEmissions.map((e) => ({ outletNo: e.outletNo, type: "배출", facilityNo: e.facilityNo, name: e.name })),
-            ...eligiblePreventions.map((p) => ({ outletNo: p.outletNo, type: "방지", facilityNo: p.facilityNo, name: p.type })),
-          ];
+
+          const rows = eligibleEmissions
+            .map((e) => {
+              const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
+              return {
+                outletNo: e.outletNo,
+                emissionName: e.name || "-",
+                emissionCapacity: e.capacity || "-",
+                emissionQty: 1,
+                prevNo: matchedPrev?.facilityNo || "-",
+                prevType: matchedPrev?.type || "-",
+                prevCapacity: matchedPrev?.capacity || "-",
+                prevQty: matchedPrev ? 1 : 0,
+                emissionFacilityNo: e.facilityNo,
+              };
+            })
+            .sort((a, b) => a.outletNo - b.outletNo || a.emissionFacilityNo.localeCompare(b.emissionFacilityNo));
+
           return (
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr>
-                    <th className={thClass}>배출구 번호</th>
-                    <th className={thClass}>시설 구분</th>
-                    <th className={thClass}>시설번호</th>
-                    <th className={thClass}>시설명</th>
+                    <th className={thClass + " text-center"}>배출구</th>
+                    <th className={thClass + " text-center"}>배출시설명</th>
+                    <th className={thClass + " text-center"}>배출시설 용량</th>
+                    <th className={thClass + " text-center"}>배출시설 수량</th>
+                    <th className={thClass + " text-center"}>방지시설 번호</th>
+                    <th className={thClass + " text-center"}>방지시설 종류</th>
+                    <th className={thClass + " text-center"}>방지시설 용량</th>
+                    <th className={thClass + " text-center"}>방지시설 수량</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.length > 0 ? rows.map((r, i) => (
                     <tr key={i}>
                       <td className={tdClass + " text-center"}>{r.outletNo}</td>
-                      <td className={tdClass + " text-center"}>{r.type}</td>
-                      <td className={tdClass + " text-center"}>{r.facilityNo}</td>
-                      <td className={tdClass}>{r.name || "-"}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionName}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionCapacity}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionQty}</td>
+                      <td className={tdClass + " text-center"}>{r.prevNo}</td>
+                      <td className={tdClass + " text-center"}>{r.prevType}</td>
+                      <td className={tdClass + " text-center"}>{r.prevCapacity}</td>
+                      <td className={tdClass + " text-center"}>{r.prevQty || "-"}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={4} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
+                    <tr><td colSpan={8} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -256,9 +279,28 @@ const FacilityInfoForm = () => {
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">4. 사진 첨부</h2>
         {(() => {
-          const nonExemptEmissions = emissions.filter((e) => !e.exempt);
-          const allPreventions = preventions;
-          const maxRows = Math.max(allPreventions.length, nonExemptEmissions.length, 1);
+          const prevLabels = [
+            "방지시설 전경",
+            "GATE WAY 설치 위치",
+            "송풍전류계 제어판넬 외함",
+            "송풍전류계 제어판넬 내부",
+          ];
+          const prevDetailLabels = [
+            "온도계 설치 위치",
+            "차압계 IN 설치 위치",
+            "차압계 OUT 설치 위치",
+            "펌프전류계 제어판넬 외함",
+            "펌프전류계 제어판넬 내부",
+            "고압전류계 제어판넬 외함",
+            "고압전류계 제어판넬 내부",
+            "pH계 설치 위치",
+          ];
+          const emLabels = [
+            "배출시설 전경",
+            "배출 제어판넬 외함",
+            "배출 제어판넬 내부",
+          ];
+          const maxRows = Math.max(prevLabels.length, prevDetailLabels.length, emLabels.length);
           return (
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
@@ -270,38 +312,34 @@ const FacilityInfoForm = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: maxRows }).map((_, i) => {
-                    const prev = allPreventions[i];
-                    const em = nonExemptEmissions[i];
-                    return (
-                      <tr key={i}>
-                        <td className={tdClass}>
-                          {prev ? (
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs truncate">{prev.facilityNo} {prev.type || "-"}</span>
-                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                            </div>
-                          ) : null}
-                        </td>
-                        <td className={tdClass}>
-                          {prev ? (
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs truncate">{prev.facilityNo} 상세</span>
-                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                            </div>
-                          ) : null}
-                        </td>
-                        <td className={tdClass}>
-                          {em ? (
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs truncate">{em.facilityNo} {em.name || "-"}</span>
-                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                            </div>
-                          ) : null}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {Array.from({ length: maxRows }).map((_, i) => (
+                    <tr key={i}>
+                      <td className={tdClass}>
+                        {prevLabels[i] ? (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs truncate">{prevLabels[i]}</span>
+                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className={tdClass}>
+                        {prevDetailLabels[i] ? (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs truncate">{prevDetailLabels[i]}</span>
+                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                          </div>
+                        ) : null}
+                      </td>
+                      <td className={tdClass}>
+                        {emLabels[i] ? (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs truncate">{emLabels[i]}</span>
+                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                          </div>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
