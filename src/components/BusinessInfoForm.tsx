@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
