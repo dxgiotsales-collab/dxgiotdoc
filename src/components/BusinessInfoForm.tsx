@@ -18,10 +18,12 @@ interface Pollutant {
 
 const DateInput = ({
   label,
+  placeholder,
   date,
   onSelect,
 }: {
   label: string;
+  placeholder?: string;
   date?: Date;
   onSelect: (d: Date | undefined) => void;
 }) => (
@@ -37,7 +39,7 @@ const DateInput = ({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-          {date ? format(date, "yyyy-MM-dd") : "날짜 선택"}
+          {date ? format(date, "yyyy-MM-dd") : (placeholder || "날짜 선택")}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -66,6 +68,28 @@ const FileInput = ({ label }: { label: string }) => (
   </div>
 );
 
+const Field = ({
+  label,
+  placeholder,
+  readOnly,
+  type = "text",
+}: {
+  label: string;
+  placeholder?: string;
+  readOnly?: boolean;
+  type?: string;
+}) => (
+  <div className="space-y-1.5">
+    <label className="dxg-label">{label}</label>
+    <input
+      type={type}
+      className={cn("dxg-input", readOnly && "bg-muted")}
+      placeholder={placeholder}
+      readOnly={readOnly}
+    />
+  </div>
+);
+
 const BusinessInfoForm = () => {
   const [pollutants, setPollutants] = useState<Pollutant[]>([
     { id: 1, type: "", amount: "" },
@@ -81,89 +105,45 @@ const BusinessInfoForm = () => {
     ]);
   };
 
-  const updatePollutant = (
-    id: number,
-    field: "type" | "amount",
-    value: string
-  ) => {
+  const updatePollutant = (id: number, field: "type" | "amount", value: string) => {
     setPollutants((prev) =>
       prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
     );
   };
 
   return (
-    <div className="max-w-5xl space-y-10">
-      {/* Section 1 */}
-      <section>
-        <h2 className="dxg-section-title mb-6">1. 사업장 기본정보</h2>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <div className="space-y-1.5">
-            <label className="dxg-label">사업장 명</label>
-            <input type="text" className="dxg-input" placeholder="사업장명을 입력하세요" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">사업자 등록번호</label>
-            <input type="text" className="dxg-input" placeholder="000-00-00000" />
-          </div>
-          <div className="space-y-1.5 col-span-2">
-            <label className="dxg-label">사업장 주소</label>
-            <input type="text" className="dxg-input" placeholder="주소를 입력하세요" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">사업장 소재지</label>
-            <input
-              type="text"
-              className="dxg-input bg-muted"
-              placeholder="주소 입력 시 자동 반영"
-              readOnly
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">업종</label>
-            <input type="text" className="dxg-input" placeholder="업종을 입력하세요" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">종 수</label>
-            <input type="text" className="dxg-input" placeholder="5종" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">주 생산품</label>
-            <input type="text" className="dxg-input" placeholder="주 생산품을 입력하세요" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">대표번호</label>
-            <input type="text" className="dxg-input" placeholder="02-564-3772" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">팩스번호</label>
-            <input type="text" className="dxg-input" placeholder="02-564-0222" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">대표 메일주소</label>
-            <input type="email" className="dxg-input" placeholder="email@example.com" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">대표자명</label>
-            <input type="text" className="dxg-input" placeholder="대표자명을 입력하세요" />
-          </div>
-          <DateInput label="대표자 생년월일" date={birthDate} onSelect={setBirthDate} />
-          <div className="space-y-1.5">
-            <label className="dxg-label">담당자명</label>
-            <input type="text" className="dxg-input" placeholder="담당자명을 입력하세요" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">담당자 연락처</label>
-            <input type="text" className="dxg-input" placeholder="010-0000-0000" />
-          </div>
-        </div>
-      </section>
+    <div className="flex gap-8 max-w-full">
+      {/* Left: Section 1 */}
+      <div className="flex-1 min-w-0 space-y-6">
+        <h2 className="dxg-section-title">1. 사업장 기본정보</h2>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          {/* Left column */}
+          <Field label="사업장 명" placeholder="사업장명을 입력하세요" />
+          <Field label="사업자 등록번호" placeholder="000-00-00000" />
 
-      {/* 오염물질 */}
-      <section>
-        <h2 className="dxg-section-title mb-4">오염물질 정보</h2>
-        <div className="space-y-3">
+          <Field label="사업장 주소" placeholder="주소를 입력하세요" />
+          <Field label="업종" placeholder="업종을 입력하세요" />
+
+          <Field label="사업장 소재지" placeholder="주소 입력 시 자동 반영" readOnly />
+          <Field label="주 생산품" placeholder="주 생산품을 입력하세요" />
+
+          <Field label="종 수" placeholder="5종" />
+          <Field label="팩스번호" placeholder="02-564-0222" />
+
+          <Field label="대표번호(전화)" placeholder="02-564-3772" />
+          <Field label="대표자명" placeholder="대표자명을 입력하세요" />
+
+          <Field label="대표 메일주소" placeholder="email@example.com" type="email" />
+          <Field label="담당자명" placeholder="담당자명을 입력하세요" />
+
+          <DateInput label="대표자 생년월일" placeholder="1999-05-10" date={birthDate} onSelect={setBirthDate} />
+          <Field label="담당자 연락처" placeholder="010-7402-3772" />
+        </div>
+
+        {/* Pollutants */}
+        <div className="space-y-3 pt-2">
           {pollutants.map((p, idx) => (
-            <div key={p.id} className="grid grid-cols-2 gap-x-8 gap-y-2">
+            <div key={p.id} className="grid grid-cols-2 gap-x-6 gap-y-2">
               <div className="space-y-1.5">
                 <label className="dxg-label">오염물질 종류 {idx + 1}</label>
                 <input
@@ -186,49 +166,29 @@ const BusinessInfoForm = () => {
               </div>
             </div>
           ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addPollutant}
-            className="mt-2"
-          >
+          <Button type="button" variant="outline" size="sm" onClick={addPollutant}>
             <Plus className="h-4 w-4 mr-1" />
             오염물질 추가
           </Button>
         </div>
-      </section>
+      </div>
 
-      {/* Section 2 */}
-      <section>
-        <h2 className="dxg-section-title mb-6">2. 사업장 부가정보</h2>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <DateInput
-            label="최근 자가측정일"
-            date={selfMeasureDate}
-            onSelect={setSelfMeasureDate}
-          />
+      {/* Right: Section 2 */}
+      <div className="flex-1 min-w-0 space-y-6">
+        <h2 className="dxg-section-title">2. 사업장 부가정보</h2>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          <DateInput label="최근 자가측정일" date={selfMeasureDate} onSelect={setSelfMeasureDate} />
           <FileInput label="사업장 위치도" />
-          <DateInput
-            label="지원사업 신청일자"
-            date={applyDate}
-            onSelect={setApplyDate}
-          />
-          <div className="space-y-1.5">
-            <label className="dxg-label">관할기관</label>
-            <input type="text" className="dxg-input" placeholder="관할기관을 입력하세요" />
-          </div>
+
+          <DateInput label="지원사업 신청일자" date={applyDate} onSelect={setApplyDate} />
+          <Field label="관할기관" placeholder="(재)경기환경에너지진흥원" />
+
           <FileInput label="설치 배치도" />
-          <div className="space-y-1.5">
-            <label className="dxg-label">착공 예정일</label>
-            <input type="text" className="dxg-input" placeholder="YYYY-MM-DD" />
-          </div>
-          <div className="space-y-1.5">
-            <label className="dxg-label">준공 예정일</label>
-            <input type="text" className="dxg-input" placeholder="YYYY-MM-DD" />
-          </div>
+          <Field label="착공 예정일" placeholder="2026-04" />
+
+          <Field label="준공 예정일" placeholder="2026-12" />
         </div>
-      </section>
+      </div>
     </div>
   );
 };
