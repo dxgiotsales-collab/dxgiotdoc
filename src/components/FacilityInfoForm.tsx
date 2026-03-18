@@ -106,12 +106,6 @@ const FacilityInfoForm = () => {
     "송풍전류계 제어판넬 내부",
   ];
 
-  const emLabels = [
-    "배출시설 전경",
-    "배출 제어판넬 외함",
-    "배출 제어판넬 내부",
-  ];
-
   const renderAttachRow = (label: string, key: string) => (
     <div key={key} className="flex items-center justify-between gap-2">
       <span className="text-xs truncate">{label}</span>
@@ -260,15 +254,19 @@ const FacilityInfoForm = () => {
           const rows = eligibleEmissions
             .map((e) => {
               const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
+              const emCap = e.capacity && e.unit ? `${e.capacity}${e.unit}` : e.capacity || "-";
+              const prevCap = matchedPrev && matchedPrev.capacity && matchedPrev.unit
+                ? `${matchedPrev.capacity}${matchedPrev.unit}`
+                : matchedPrev?.capacity || "-";
               return {
                 outletNo: e.outletNo,
                 emissionFacilityNo: e.facilityNo,
                 emissionName: e.name || "-",
-                emissionCapacity: e.capacity || "-",
+                emissionCapacity: emCap,
                 emissionQty: 1,
                 prevNo: matchedPrev?.facilityNo || "-",
                 prevType: matchedPrev?.type || "-",
-                prevCapacity: matchedPrev?.capacity || "-",
+                prevCapacity: prevCap,
                 prevQty: matchedPrev ? 1 : 0,
               };
             })
@@ -318,6 +316,7 @@ const FacilityInfoForm = () => {
         <h2 className="dxg-section-title">4. 사진 첨부</h2>
         {(() => {
           const eligiblePreventions = preventions.filter((p) => p.supported);
+          const eligibleEmissionsForPhotos = emissions.filter((e) => e.supported && !e.exempt);
 
           if (eligiblePreventions.length === 0) {
             return <p className="text-sm text-muted-foreground">지원대상 방지시설이 없습니다.</p>;
@@ -325,7 +324,20 @@ const FacilityInfoForm = () => {
 
           return eligiblePreventions.map((prev, bi) => {
             const detailLabels = getDetailLabels(prev.type);
-            const maxRows = Math.max(prevCommonLabels.length, detailLabels.length, emLabels.length);
+
+            // Dynamic emission labels based on matched emissions
+            const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
+            const dynamicEmLabels: string[] = [];
+            matchedEmissions.forEach((e) => {
+              dynamicEmLabels.push(`배출시설 전경 (${e.facilityNo})`);
+            });
+            if (matchedEmissions.length > 0) {
+              dynamicEmLabels.push("배출 제어판넬 외함");
+              dynamicEmLabels.push("배출 제어판넬 내부");
+            }
+
+            const maxRows = Math.max(prevCommonLabels.length, detailLabels.length, dynamicEmLabels.length);
+
             return (
               <div key={bi} className="space-y-2">
                 <p className="text-sm font-semibold text-foreground">
@@ -350,7 +362,7 @@ const FacilityInfoForm = () => {
                             {detailLabels[i] ? renderAttachRow(detailLabels[i], `detail-${bi}-${i}`) : null}
                           </td>
                           <td className={tdClass}>
-                            {emLabels[i] ? renderAttachRow(emLabels[i], `em-${bi}-${i}`) : null}
+                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `em-${bi}-${i}`) : null}
                           </td>
                         </tr>
                       ))}
