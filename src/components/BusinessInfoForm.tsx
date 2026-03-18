@@ -34,14 +34,21 @@ const Field = ({
 const FileInput = ({ label }: { label: string }) => (
   <div className="space-y-1">
     <label className="dxg-label">{label}</label>
-    <Button
-      variant="secondary"
-      size="sm"
-      className="h-7 px-2.5 text-xs font-normal gap-1"
-    >
-      <Upload className="h-3 w-3" />
-      첨부파일
-    </Button>
+    <div className="flex items-center gap-1.5">
+      <input
+        type="text"
+        className="dxg-input flex-1"
+        placeholder="파일을 선택하세요"
+        readOnly
+      />
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-8 px-2.5 shrink-0 text-muted-foreground border-input"
+      >
+        <Upload className="h-3.5 w-3.5" />
+      </Button>
+    </div>
   </div>
 );
 
