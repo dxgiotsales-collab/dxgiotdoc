@@ -17,10 +17,10 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
   const [selectedProject, setSelectedProject] = useState("");
 
   return (
-    <aside className="w-[280px] h-screen flex flex-col border-r border-border bg-secondary shrink-0">
+    <aside className="w-[280px] h-screen flex flex-col bg-sidebar shrink-0">
       {/* Header */}
-      <div className="p-5 border-b border-border">
-        <h1 className="text-foreground font-bold tracking-tight text-base">
+      <div className="p-5 border-b border-sidebar-border">
+        <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">
           DXG IoT 문서 자동화
         </h1>
       </div>
@@ -28,14 +28,13 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
       {/* Search */}
       <div className="p-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-sidebar-foreground/50" />
           <input
             type="text"
             placeholder="사업장 / 지역 / 연도 검색"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="dxg-input pl-9"
-            style={{ boxShadow: "var(--shadow-input)" }}
+            className="w-full h-9 px-3 pl-9 text-sm rounded-md border-none bg-sidebar-accent text-sidebar-foreground placeholder:text-sidebar-foreground/40 outline-none focus:ring-2 focus:ring-sidebar-ring/30"
           />
         </div>
       </div>
@@ -62,31 +61,30 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
       </nav>
 
       {/* Project Management */}
-      <div className="p-4 mt-auto border-t border-border space-y-3">
+      <div className="p-4 mt-auto border-t border-sidebar-border space-y-3">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <label className="text-[11px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
             저장 프로젝트
           </label>
           <select
             value={selectedProject}
             onChange={(e) => setSelectedProject(e.target.value)}
-            className="dxg-input"
+            className="w-full h-9 px-3 text-sm rounded-md border-none bg-sidebar-accent text-sidebar-foreground outline-none"
           >
             <option value="">기존 프로젝트 선택</option>
             <option value="p1">프로젝트 A - 2024</option>
             <option value="p2">프로젝트 B - 2024</option>
             <option value="p3">프로젝트 C - 2023</option>
           </select>
-          <button className="w-full h-9 text-sm font-medium text-secondary-foreground bg-card border border-border rounded-md hover:bg-muted transition-all duration-150 active:scale-[0.98]">
+          <button className="w-full h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent border border-sidebar-border rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98]">
             불러오기
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button className="h-9 text-sm font-medium text-secondary-foreground bg-muted rounded-md hover:bg-border transition-all duration-150 active:scale-[0.98]">
+          <button className="h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98]">
             임시저장
           </button>
-          <button className="h-9 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:brightness-95 transition-all duration-150 active:scale-[0.98]"
-            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.12)" }}>
+          <button className="h-9 text-sm font-medium text-primary-foreground bg-sidebar-primary rounded-md hover:brightness-110 transition-all duration-150 active:scale-[0.98]">
             최종저장
           </button>
         </div>
