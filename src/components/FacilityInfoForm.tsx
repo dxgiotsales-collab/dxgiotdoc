@@ -192,7 +192,12 @@ const FacilityInfoForm = () => {
                     <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updatePrevention(row.id, "capacity", e.target.value)} />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-16" placeholder="단위" value={row.unit} onChange={(e) => updatePrevention(row.id, "unit", e.target.value)} />
+                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updatePrevention(row.id, "unit", e.target.value)}>
+                      <option value="">선택</option>
+                      {unitOptions.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className={tdClass}>
                     <input type="text" className="dxg-input w-28" placeholder="2026-01-01" value={row.installDate} onChange={(e) => updatePrevention(row.id, "installDate", e.target.value)} />
