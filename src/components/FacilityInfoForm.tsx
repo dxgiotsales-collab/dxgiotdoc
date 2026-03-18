@@ -28,20 +28,13 @@ interface PreventionFacility {
 const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton"];
 
 const preventionTypes = [
-  "여과 및 흡착에 의한 시설",
-  "세정에 의한 시설",
-  "전기집진에 의한 시설",
-  "촉매반응에 의한 시설",
-  "응축에 의한 시설",
-  "산화·환원에 의한 시설",
-  "소각에 의한 시설",
   "여과집진시설",
   "흡착에 의한 시설",
   "원심력 집진시설",
   "세정집진시설",
   "전기집진시설",
   "흡수에 의한 시설",
-  "기타",
+  "여과 및 흡착에 의한 시설",
 ];
 
 const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
@@ -219,6 +212,101 @@ const FacilityInfoForm = () => {
           <Plus className="h-3.5 w-3.5 mr-1" />
           방지시설 추가
         </Button>
+      </div>
+      {/* Section 3 */}
+      <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
+        <h2 className="dxg-section-title">3. 지원사업 신청대상 시설정보</h2>
+        {(() => {
+          const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
+          const eligiblePreventions = preventions.filter((p) => p.supported);
+          const rows = [
+            ...eligibleEmissions.map((e) => ({ outletNo: e.outletNo, type: "배출", facilityNo: e.facilityNo, name: e.name })),
+            ...eligiblePreventions.map((p) => ({ outletNo: p.outletNo, type: "방지", facilityNo: p.facilityNo, name: p.type })),
+          ];
+          return (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className={thClass}>배출구 번호</th>
+                    <th className={thClass}>시설 구분</th>
+                    <th className={thClass}>시설번호</th>
+                    <th className={thClass}>시설명</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.length > 0 ? rows.map((r, i) => (
+                    <tr key={i}>
+                      <td className={tdClass + " text-center"}>{r.outletNo}</td>
+                      <td className={tdClass + " text-center"}>{r.type}</td>
+                      <td className={tdClass + " text-center"}>{r.facilityNo}</td>
+                      <td className={tdClass}>{r.name || "-"}</td>
+                    </tr>
+                  )) : (
+                    <tr><td colSpan={4} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Section 4 */}
+      <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
+        <h2 className="dxg-section-title">4. 사진 첨부</h2>
+        {(() => {
+          const nonExemptEmissions = emissions.filter((e) => !e.exempt);
+          const allPreventions = preventions;
+          const maxRows = Math.max(allPreventions.length, nonExemptEmissions.length, 1);
+          return (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr>
+                    <th className={thClass + " text-center"}>○ 방지시설 ○</th>
+                    <th className={thClass + " text-center"}>○ 방지시설 상세 ○</th>
+                    <th className={thClass + " text-center"}>○ 배출시설 ○</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: maxRows }).map((_, i) => {
+                    const prev = allPreventions[i];
+                    const em = nonExemptEmissions[i];
+                    return (
+                      <tr key={i}>
+                        <td className={tdClass}>
+                          {prev ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs truncate">{prev.facilityNo} {prev.type || "-"}</span>
+                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                            </div>
+                          ) : null}
+                        </td>
+                        <td className={tdClass}>
+                          {prev ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs truncate">{prev.facilityNo} 상세</span>
+                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                            </div>
+                          ) : null}
+                        </td>
+                        <td className={tdClass}>
+                          {em ? (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs truncate">{em.facilityNo} {em.name || "-"}</span>
+                              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+                            </div>
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
