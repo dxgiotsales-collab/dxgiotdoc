@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -35,11 +35,11 @@ const FileInput = ({ label }: { label: string }) => (
   <div className="space-y-1">
     <label className="dxg-label">{label}</label>
     <Button
-      variant="outline"
+      variant="secondary"
       size="sm"
-      className="h-8 text-xs font-normal text-muted-foreground border-input"
+      className="h-7 px-2.5 text-xs font-normal gap-1"
     >
-      <Upload className="mr-1.5 h-3.5 w-3.5" />
+      <Upload className="h-3 w-3" />
       첨부파일
     </Button>
   </div>
@@ -55,6 +55,10 @@ const BusinessInfoForm = () => {
       ...prev,
       { id: Date.now(), type: "", amount: "" },
     ]);
+  };
+
+  const removePollutant = (id: number) => {
+    setPollutants((prev) => (prev.length > 1 ? prev.filter((p) => p.id !== id) : prev));
   };
 
   const updatePollutant = (id: number, field: "type" | "amount", value: string) => {
@@ -96,8 +100,8 @@ const BusinessInfoForm = () => {
           <div />
           <div className="space-y-2">
             {pollutants.map((p, idx) => (
-              <div key={p.id} className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
+              <div key={p.id} className="flex items-end gap-2">
+                <div className="flex-1 space-y-1">
                   <label className="dxg-label">오염물질 종류 {idx + 1}</label>
                   <input
                     type="text"
@@ -107,7 +111,7 @@ const BusinessInfoForm = () => {
                     onChange={(e) => updatePollutant(p.id, "type", e.target.value)}
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="flex-1 space-y-1">
                   <label className="dxg-label">발생양 {idx + 1}</label>
                   <input
                     type="text"
@@ -117,6 +121,16 @@ const BusinessInfoForm = () => {
                     onChange={(e) => updatePollutant(p.id, "amount", e.target.value)}
                   />
                 </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => removePollutant(p.id)}
+                  disabled={pollutants.length === 1}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </Button>
               </div>
             ))}
             <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={addPollutant}>
