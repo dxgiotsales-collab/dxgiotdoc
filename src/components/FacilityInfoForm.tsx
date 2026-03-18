@@ -40,6 +40,22 @@ const preventionTypes = [
 const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-2 py-1.5 border-b border-border";
 
+const getDetailLabels = (type: string): string[] => {
+  if (["여과집진시설", "흡착에 의한 시설", "여과 및 흡착에 의한 시설"].includes(type)) {
+    return ["온도계 설치 위치", "차압계 IN 설치 위치", "차압계 OUT 설치 위치"];
+  }
+  if (type === "세정집진시설") {
+    return ["펌프전류계 제어판넬 외함", "펌프전류계 제어판넬 내부"];
+  }
+  if (type === "전기집진시설") {
+    return ["고압전류계 제어판넬 외함", "고압전류계 제어판넬 내부"];
+  }
+  if (type === "흡수에 의한 시설") {
+    return ["pH계 설치 위치", "펌프전류계 제어판넬 외함", "펌프전류계 제어판넬 내부"];
+  }
+  return [];
+};
+
 const FacilityInfoForm = () => {
   const [emissions, setEmissions] = useState<EmissionFacility[]>([
     { id: 1, outletNo: 1, facilityNo: "배1", name: "", capacity: "", unit: "", supported: false, exempt: false },
@@ -82,6 +98,26 @@ const FacilityInfoForm = () => {
   const updatePrevention = (id: number, field: keyof PreventionFacility, value: string | boolean | number) => {
     setPreventions((prev) => prev.map((e) => (e.id === id ? { ...e, [field]: value } : e)));
   };
+
+  const prevCommonLabels = [
+    "방지시설 전경",
+    "GATE WAY 설치 위치",
+    "송풍전류계 제어판넬 외함",
+    "송풍전류계 제어판넬 내부",
+  ];
+
+  const emLabels = [
+    "배출시설 전경",
+    "배출 제어판넬 외함",
+    "배출 제어판넬 내부",
+  ];
+
+  const renderAttachRow = (label: string, key: string) => (
+    <div key={key} className="flex items-center justify-between gap-2">
+      <span className="text-xs truncate">{label}</span>
+      <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
+    </div>
+  );
 
   return (
     <div className="space-y-6 max-w-full">
@@ -226,6 +262,7 @@ const FacilityInfoForm = () => {
               const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
               return {
                 outletNo: e.outletNo,
+                emissionFacilityNo: e.facilityNo,
                 emissionName: e.name || "-",
                 emissionCapacity: e.capacity || "-",
                 emissionQty: 1,
@@ -233,7 +270,6 @@ const FacilityInfoForm = () => {
                 prevType: matchedPrev?.type || "-",
                 prevCapacity: matchedPrev?.capacity || "-",
                 prevQty: matchedPrev ? 1 : 0,
-                emissionFacilityNo: e.facilityNo,
               };
             })
             .sort((a, b) => a.outletNo - b.outletNo || a.emissionFacilityNo.localeCompare(b.emissionFacilityNo));
@@ -244,6 +280,7 @@ const FacilityInfoForm = () => {
                 <thead>
                   <tr>
                     <th className={thClass + " text-center"}>배출구</th>
+                    <th className={thClass + " text-center"}>배출시설 번호</th>
                     <th className={thClass + " text-center"}>배출시설명</th>
                     <th className={thClass + " text-center"}>배출시설 용량</th>
                     <th className={thClass + " text-center"}>배출시설 수량</th>
@@ -257,6 +294,7 @@ const FacilityInfoForm = () => {
                   {rows.length > 0 ? rows.map((r, i) => (
                     <tr key={i}>
                       <td className={tdClass + " text-center"}>{r.outletNo}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionFacilityNo}</td>
                       <td className={tdClass + " text-center"}>{r.emissionName}</td>
                       <td className={tdClass + " text-center"}>{r.emissionCapacity}</td>
                       <td className={tdClass + " text-center"}>{r.emissionQty}</td>
@@ -266,7 +304,7 @@ const FacilityInfoForm = () => {
                       <td className={tdClass + " text-center"}>{r.prevQty || "-"}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={8} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
+                    <tr><td colSpan={9} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -279,71 +317,49 @@ const FacilityInfoForm = () => {
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">4. 사진 첨부</h2>
         {(() => {
-          const prevLabels = [
-            "방지시설 전경",
-            "GATE WAY 설치 위치",
-            "송풍전류계 제어판넬 외함",
-            "송풍전류계 제어판넬 내부",
-          ];
-          const prevDetailLabels = [
-            "온도계 설치 위치",
-            "차압계 IN 설치 위치",
-            "차압계 OUT 설치 위치",
-            "펌프전류계 제어판넬 외함",
-            "펌프전류계 제어판넬 내부",
-            "고압전류계 제어판넬 외함",
-            "고압전류계 제어판넬 내부",
-            "pH계 설치 위치",
-          ];
-          const emLabels = [
-            "배출시설 전경",
-            "배출 제어판넬 외함",
-            "배출 제어판넬 내부",
-          ];
-          const maxRows = Math.max(prevLabels.length, prevDetailLabels.length, emLabels.length);
-          return (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr>
-                    <th className={thClass + " text-center"}>○ 방지시설 ○</th>
-                    <th className={thClass + " text-center"}>○ 방지시설 상세 ○</th>
-                    <th className={thClass + " text-center"}>○ 배출시설 ○</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: maxRows }).map((_, i) => (
-                    <tr key={i}>
-                      <td className={tdClass}>
-                        {prevLabels[i] ? (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs truncate">{prevLabels[i]}</span>
-                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className={tdClass}>
-                        {prevDetailLabels[i] ? (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs truncate">{prevDetailLabels[i]}</span>
-                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className={tdClass}>
-                        {emLabels[i] ? (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs truncate">{emLabels[i]}</span>
-                            <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-                          </div>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
+          const eligiblePreventions = preventions.filter((p) => p.supported);
+
+          if (eligiblePreventions.length === 0) {
+            return <p className="text-sm text-muted-foreground">지원대상 방지시설이 없습니다.</p>;
+          }
+
+          return eligiblePreventions.map((prev, bi) => {
+            const detailLabels = getDetailLabels(prev.type);
+            const maxRows = Math.max(prevCommonLabels.length, detailLabels.length, emLabels.length);
+            return (
+              <div key={bi} className="space-y-2">
+                <p className="text-sm font-semibold text-foreground">
+                  배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr>
+                        <th className={thClass + " text-center"}>○ 방지시설 ○</th>
+                        <th className={thClass + " text-center"}>○ 방지시설 상세 ○</th>
+                        <th className={thClass + " text-center"}>○ 배출시설 ○</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({ length: maxRows }).map((_, i) => (
+                        <tr key={i}>
+                          <td className={tdClass}>
+                            {prevCommonLabels[i] ? renderAttachRow(prevCommonLabels[i], `prev-${bi}-${i}`) : null}
+                          </td>
+                          <td className={tdClass}>
+                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `detail-${bi}-${i}`) : null}
+                          </td>
+                          <td className={tdClass}>
+                            {emLabels[i] ? renderAttachRow(emLabels[i], `em-${bi}-${i}`) : null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          });
         })()}
       </div>
     </div>
