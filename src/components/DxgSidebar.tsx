@@ -17,10 +17,10 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
   const [selectedProject, setSelectedProject] = useState("");
 
   return (
-    <aside className="w-[280px] h-screen flex flex-col border-r border-border bg-secondary shrink-0">
+    <aside className="w-[280px] h-screen flex flex-col bg-sidebar shrink-0">
       {/* Header */}
-      <div className="p-5 border-b border-border">
-        <h1 className="text-foreground font-bold tracking-tight text-base">
+      <div className="p-5 border-b border-sidebar-border">
+        <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">
           DXG IoT 문서 자동화
         </h1>
       </div>
