@@ -100,8 +100,8 @@ const BusinessInfoForm = () => {
           <div />
           <div className="space-y-2">
             {pollutants.map((p, idx) => (
-              <div key={p.id} className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
+              <div key={p.id} className="flex items-end gap-2">
+                <div className="flex-1 space-y-1">
                   <label className="dxg-label">오염물질 종류 {idx + 1}</label>
                   <input
                     type="text"
@@ -111,7 +111,7 @@ const BusinessInfoForm = () => {
                     onChange={(e) => updatePollutant(p.id, "type", e.target.value)}
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="flex-1 space-y-1">
                   <label className="dxg-label">발생양 {idx + 1}</label>
                   <input
                     type="text"
@@ -121,6 +121,16 @@ const BusinessInfoForm = () => {
                     onChange={(e) => updatePollutant(p.id, "amount", e.target.value)}
                   />
                 </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => removePollutant(p.id)}
+                  disabled={pollutants.length === 1}
+                >
+                  <Minus className="h-3.5 w-3.5" />
+                </Button>
               </div>
             ))}
             <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={addPollutant}>
