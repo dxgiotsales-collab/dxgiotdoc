@@ -28,20 +28,13 @@ interface PreventionFacility {
 const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton"];
 
 const preventionTypes = [
-  "여과 및 흡착에 의한 시설",
-  "세정에 의한 시설",
-  "전기집진에 의한 시설",
-  "촉매반응에 의한 시설",
-  "응축에 의한 시설",
-  "산화·환원에 의한 시설",
-  "소각에 의한 시설",
   "여과집진시설",
   "흡착에 의한 시설",
   "원심력 집진시설",
   "세정집진시설",
   "전기집진시설",
   "흡수에 의한 시설",
-  "기타",
+  "여과 및 흡착에 의한 시설",
 ];
 
 const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
