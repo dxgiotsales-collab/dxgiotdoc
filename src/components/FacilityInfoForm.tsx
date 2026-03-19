@@ -213,26 +213,47 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
           const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
           const eligiblePreventions = preventions.filter((p) => p.supported);
 
-          const rows = eligibleEmissions
-            .map((e) => {
-              const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
-              const emCap = e.capacity && e.unit ? `${e.capacity}${e.unit}` : e.capacity || "-";
-              const prevCap = matchedPrev && matchedPrev.capacity && matchedPrev.unit
-                ? `${matchedPrev.capacity}${matchedPrev.unit}`
-                : matchedPrev?.capacity || "-";
+          // Build rows: one per eligible emission matched to prevention
+          const emissionRows = eligibleEmissions.map((e) => {
+            const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
+            const emCap = e.capacity && e.unit ? `${e.capacity}${e.unit}` : e.capacity || "-";
+            const prevCap = matchedPrev && matchedPrev.capacity && matchedPrev.unit
+              ? `${matchedPrev.capacity}${matchedPrev.unit}`
+              : matchedPrev?.capacity || "-";
+            return {
+              outletNo: e.outletNo,
+              emissionFacilityNo: e.facilityNo,
+              emissionName: e.name || "-",
+              emissionCapacity: emCap,
+              emissionQty: 1,
+              prevNo: matchedPrev?.facilityNo || "-",
+              prevType: matchedPrev?.type || "-",
+              prevCapacity: prevCap,
+              prevQty: matchedPrev ? 1 : 0,
+            };
+          });
+
+          // Find supported preventions with no matching eligible emission
+          const coveredOutlets = new Set(eligibleEmissions.map((e) => e.outletNo));
+          const orphanPrevRows = eligiblePreventions
+            .filter((p) => !coveredOutlets.has(p.outletNo))
+            .map((p) => {
+              const prevCap = p.capacity && p.unit ? `${p.capacity}${p.unit}` : p.capacity || "-";
               return {
-                outletNo: e.outletNo,
-                emissionFacilityNo: e.facilityNo,
-                emissionName: e.name || "-",
-                emissionCapacity: emCap,
-                emissionQty: 1,
-                prevNo: matchedPrev?.facilityNo || "-",
-                prevType: matchedPrev?.type || "-",
+                outletNo: p.outletNo,
+                emissionFacilityNo: "",
+                emissionName: "",
+                emissionCapacity: "",
+                emissionQty: "",
+                prevNo: p.facilityNo,
+                prevType: p.type || "-",
                 prevCapacity: prevCap,
-                prevQty: matchedPrev ? 1 : 0,
+                prevQty: 1,
               };
-            })
-            .sort((a, b) => a.outletNo - b.outletNo || a.emissionFacilityNo.localeCompare(b.emissionFacilityNo));
+            });
+
+          const rows = [...emissionRows, ...orphanPrevRows]
+            .sort((a, b) => a.outletNo - b.outletNo || String(a.emissionFacilityNo).localeCompare(String(b.emissionFacilityNo)));
 
           return (
             <div className="overflow-x-auto">
@@ -254,17 +275,17 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                   {rows.length > 0 ? rows.map((r, i) => (
                     <tr key={i}>
                       <td className={tdClass + " text-center"}>{r.outletNo}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionFacilityNo}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionName}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionCapacity}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionQty}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionFacilityNo || "-"}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionName || "-"}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionCapacity || "-"}</td>
+                      <td className={tdClass + " text-center"}>{r.emissionQty !== "" ? r.emissionQty : "-"}</td>
                       <td className={tdClass + " text-center"}>{r.prevNo}</td>
                       <td className={tdClass + " text-center"}>{r.prevType}</td>
                       <td className={tdClass + " text-center"}>{r.prevCapacity}</td>
                       <td className={tdClass + " text-center"}>{r.prevQty || "-"}</td>
                     </tr>
                   )) : (
-                    <tr><td colSpan={9} className={tdClass + " text-center text-muted-foreground"}>지원대상이 선택되고 면제가 아닌 시설이 없습니다.</td></tr>
+                    <tr><td colSpan={9} className={tdClass + " text-center text-muted-foreground"}>지원대상 시설이 없습니다.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -304,7 +325,12 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                   배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
                 </p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border-collapse">
+                  <table className="w-full text-sm border-collapse table-fixed">
+                    <colgroup>
+                      <col className="w-1/3" />
+                      <col className="w-1/3" />
+                      <col className="w-1/3" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th className={thClass + " text-center"}>○ 방지시설 ○</th>
