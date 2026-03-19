@@ -325,7 +325,12 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                   배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
                 </p>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border-collapse">
+                  <table className="w-full text-sm border-collapse table-fixed">
+                    <colgroup>
+                      <col className="w-1/3" />
+                      <col className="w-1/3" />
+                      <col className="w-1/3" />
+                    </colgroup>
                     <thead>
                       <tr>
                         <th className={thClass + " text-center"}>○ 방지시설 ○</th>
