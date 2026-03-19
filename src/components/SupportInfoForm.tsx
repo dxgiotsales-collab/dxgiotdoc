@@ -1,53 +1,169 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 
 const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-center bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-2 py-1.5 border-b border-border text-center text-sm";
 
+const commaFormat = (n: number) => n.toLocaleString("ko-KR");
+
+// Sensor master data
+const sensorMaster = [
+  { name: "전류계(세정/전기시설)", unitPrice: 300000 },
+  { name: "차압계(압력계)", unitPrice: 400000 },
+  { name: "온도계", unitPrice: 500000 },
+  { name: "ph계", unitPrice: 1000000 },
+  { name: "전류계(배출시설)", unitPrice: 300000 },
+  { name: "전류계(방지시설)", unitPrice: 300000 },
+  { name: "IoT게이트웨이", unitPrice: 1600000 },
+  { name: "IoT게이트웨이(복수형)", unitPrice: 2080000 },
+  { name: "VPN", unitPrice: 400000 },
+];
+
+// Default basis texts
+const defaultBasis: Record<string, string> = {
+  "전류계(배출시설)": "배출구 1번 (흡수에의한시설)의 경우 배출시설 2기를 포함함",
+  "전류계(방지시설)": "배출구 1번 (1차)여과에의한시설 + (2차)흡착에의한시설로 송풍기 1기 현장설치 확인. 송풍기 가동 확인을 위해 전류계 1기를 설치하고자 함",
+  "차압계(압력계)": "(1차)여과에의한시설+(2차)흡착에의한시설로 (1차)여과에의한시설은 집진시설 본체가 분리되어 있고, 내부 확인 결과 각각 차압 확인이 필요하다고 판단되어 2기를 설치하고자 함",
+  "온도계": "방지시설 전단 인입배관이 두 개로 현장 확인되어 각 배관에 1기씩 총 2기를 설치하고자 함",
+  "ph계": "",
+  "IoT게이트웨이": "외부요인(직사광선, 비 등), 눈높이, 접근성 등을 고려하여 위치를 선정함(도면 참조)",
+  "IoT게이트웨이(복수형)": "외부요인(직사광선, 비 등), 눈높이, 접근성 등을 고려하여 위치를 선정함(도면 참조)",
+  "VPN": "게이트웨이(단수형) 1기 설치로, VPN 1기를 설치하고자 함.",
+  "전류계(세정/전기시설)": "",
+};
+
+// Prevention type → sensor mapping
+const prevTypeSensorMap: Record<string, Record<string, number>> = {
+  "여과집진시설": { "차압계(압력계)": 1, "온도계": 1, "전류계(방지시설)": 1 },
+  "흡착에 의한 시설": { "차압계(압력계)": 1, "온도계": 1, "전류계(방지시설)": 1 },
+  "원심력 집진시설": { "전류계(방지시설)": 1 },
+  "세정집진시설": { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1 },
+  "전기집진시설": { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1 },
+  "흡수에 의한 시설": { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1, "ph계": 1 },
+  "여과 및 흡착에 의한 시설": { "차압계(압력계)": 1, "온도계": 1, "전류계(방지시설)": 1 },
+};
+
 interface SensorRow {
   name: string;
   unitPrice: number;
-  quantities: Record<string, number>; // key = facilityNo (방1, 방2...)
+  quantities: Record<string, number>; // key = facilityNo
   basis: string;
 }
-
-const defaultSensors: Omit<SensorRow, "quantities">[] = [
-  { name: "온도센서", unitPrice: 150000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "차압센서", unitPrice: 200000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "압력센서", unitPrice: 180000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "유량센서", unitPrice: 250000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "전류센서", unitPrice: 120000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "pH센서", unitPrice: 300000, basis: "대기환경보전법 시행규칙 별표8" },
-  { name: "GATEWAY", unitPrice: 500000, basis: "IoT 데이터 수집" },
-];
-
-const commaFormat = (n: number) => n.toLocaleString("ko-KR");
 
 interface Props {
   emissions: EmissionFacility[];
   preventions: PreventionFacility[];
 }
 
-const SupportInfoForm = ({ preventions }: Props) => {
-  const supportedPreventions = useMemo(
-    () => preventions.filter((p) => p.supported),
-    [preventions]
-  );
+// Build Section 3 rows (same logic as FacilityInfoForm Section 3)
+function buildSection3Rows(emissions: EmissionFacility[], preventions: PreventionFacility[]) {
+  const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
+  const eligiblePreventions = preventions.filter((p) => p.supported);
+
+  return eligibleEmissions
+    .map((e) => {
+      const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
+      return {
+        outletNo: e.outletNo,
+        emissionFacilityNo: e.facilityNo,
+        prevNo: matchedPrev?.facilityNo || "",
+        prevType: matchedPrev?.type || "",
+      };
+    })
+    .filter((r) => r.prevNo !== "")
+    .sort((a, b) => a.outletNo - b.outletNo || a.emissionFacilityNo.localeCompare(b.emissionFacilityNo));
+}
+
+const SupportInfoForm = ({ emissions, preventions }: Props) => {
+  // Build section 3 data
+  const section3Rows = useMemo(() => buildSection3Rows(emissions, preventions), [emissions, preventions]);
+
+  // Unique supported preventions from Section 3
+  const supportedPreventions = useMemo(() => {
+    const seen = new Set<string>();
+    const result: { facilityNo: string; type: string }[] = [];
+    for (const row of section3Rows) {
+      if (!seen.has(row.prevNo)) {
+        seen.add(row.prevNo);
+        result.push({ facilityNo: row.prevNo, type: row.prevType });
+      }
+    }
+    return result;
+  }, [section3Rows]);
+
+  // Unique outlet count from Section 3
+  const uniqueOutletCount = useMemo(() => {
+    return new Set(section3Rows.map((r) => r.outletNo)).size;
+  }, [section3Rows]);
+
+  // Count emission facilities per prevention facility (for 전류계(배출시설))
+  const emissionCountByPrev = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const row of section3Rows) {
+      counts[row.prevNo] = (counts[row.prevNo] || 0) + 1;
+    }
+    return counts;
+  }, [section3Rows]);
+
+  // Compute default quantities for each sensor × prevention facility
+  const computeDefaults = useMemo(() => {
+    const defaults: Record<string, Record<string, number>> = {};
+    for (const sensor of sensorMaster) {
+      defaults[sensor.name] = {};
+      for (let pi = 0; pi < supportedPreventions.length; pi++) {
+        const p = supportedPreventions[pi];
+        let qty = 0;
+
+        // Type-based mapping
+        const mapping = prevTypeSensorMap[p.type];
+        if (mapping && mapping[sensor.name] !== undefined) {
+          qty = mapping[sensor.name];
+        }
+
+        // 전류계(배출시설): count of emission facilities linked to this prevention
+        if (sensor.name === "전류계(배출시설)") {
+          qty = emissionCountByPrev[p.facilityNo] || 0;
+        }
+
+        // Gateway / VPN: only in first prevention column
+        if (sensor.name === "IoT게이트웨이") {
+          qty = pi === 0 && uniqueOutletCount === 1 ? 1 : 0;
+        }
+        if (sensor.name === "IoT게이트웨이(복수형)") {
+          qty = pi === 0 && uniqueOutletCount >= 2 ? 1 : 0;
+        }
+        if (sensor.name === "VPN") {
+          qty = pi === 0 ? 1 : 0;
+        }
+
+        defaults[sensor.name][p.facilityNo] = qty;
+      }
+    }
+    return defaults;
+  }, [supportedPreventions, emissionCountByPrev, uniqueOutletCount]);
 
   // Sensor table state
-  const [sensors, setSensors] = useState<SensorRow[]>(() =>
-    defaultSensors.map((s) => ({
-      ...s,
-      quantities: {},
-    }))
-  );
+  const [sensors, setSensors] = useState<SensorRow[]>([]);
+  const [initialized, setInitialized] = useState(false);
+
+  // Re-initialize when supportedPreventions change
+  useEffect(() => {
+    setSensors(
+      sensorMaster.map((s) => ({
+        name: s.name,
+        unitPrice: s.unitPrice,
+        quantities: { ...(computeDefaults[s.name] || {}) },
+        basis: defaultBasis[s.name] || "",
+      }))
+    );
+    setInitialized(true);
+  }, [computeDefaults]);
 
   // Subsidy ratios
   const [subsidyRatio, setSubsidyRatio] = useState(60);
   const [selfRatio, setSelfRatio] = useState(40);
 
-  // Update sensor quantity for a specific prevention facility
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     setSensors((prev) =>
       prev.map((s, i) =>
@@ -58,7 +174,6 @@ const SupportInfoForm = ({ preventions }: Props) => {
     );
   };
 
-  // Update basis text
   const updateBasis = (sensorIdx: number, value: string) => {
     setSensors((prev) =>
       prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s))
@@ -92,20 +207,20 @@ const SupportInfoForm = ({ preventions }: Props) => {
     report: false,
   });
 
+  if (!initialized) return null;
+
   return (
     <div className="space-y-6 max-w-full">
       {/* Section 1: 지원사업 금액 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">1. 지원사업 금액</h2>
         <div className="flex items-end gap-4 flex-wrap">
-          {/* 총 사업비 */}
           <div className="space-y-1">
             <label className="dxg-label">총 사업비</label>
             <div className="dxg-input w-44 flex items-center bg-muted/30 text-foreground font-medium cursor-default">
               {commaFormat(totalCost)}
             </div>
           </div>
-          {/* 지원금 비율 */}
           <div className="space-y-1">
             <label className="dxg-label">지원금 비율 (%)</label>
             <input
@@ -115,14 +230,12 @@ const SupportInfoForm = ({ preventions }: Props) => {
               onChange={(e) => setSubsidyRatio(Number(e.target.value) || 0)}
             />
           </div>
-          {/* 지원금 금액 */}
           <div className="space-y-1">
             <label className="dxg-label">지원금 금액</label>
-            <div className="dxg-input w-44 flex items-center bg-muted/30 text-foreground font-medium cursor-default">
+            <div className="dxg-input w-44 flex items-center text-foreground font-medium cursor-default">
               {commaFormat(subsidyAmount)}
             </div>
           </div>
-          {/* 자부담 비율 */}
           <div className="space-y-1">
             <label className="dxg-label">자부담 비율 (%)</label>
             <input
@@ -132,10 +245,9 @@ const SupportInfoForm = ({ preventions }: Props) => {
               onChange={(e) => setSelfRatio(Number(e.target.value) || 0)}
             />
           </div>
-          {/* 자부담 금액 */}
           <div className="space-y-1">
             <label className="dxg-label">자부담 금액</label>
-            <div className="dxg-input w-44 flex items-center bg-muted/30 text-foreground font-medium cursor-default">
+            <div className="dxg-input w-44 flex items-center text-foreground font-medium cursor-default">
               {commaFormat(selfAmount)}
             </div>
           </div>
@@ -154,10 +266,10 @@ const SupportInfoForm = ({ preventions }: Props) => {
                 <th className={thClass}>총 수량</th>
                 {supportedPreventions.map((p) => (
                   <th key={p.facilityNo} className={thClass}>
-                    {p.facilityNo}
+                    {p.facilityNo} {p.type}
                   </th>
                 ))}
-                <th className={thClass + " min-w-[240px]"}>측정기기 부착근거</th>
+                <th className={thClass + " min-w-[300px]"}>측정기기 부착근거</th>
               </tr>
             </thead>
             <tbody>
@@ -188,7 +300,7 @@ const SupportInfoForm = ({ preventions }: Props) => {
                     <td className={tdClass}>
                       <input
                         type="text"
-                        className="dxg-input w-full min-w-[200px] text-left"
+                        className="dxg-input w-full min-w-[280px] text-left"
                         value={sensor.basis}
                         onChange={(e) => updateBasis(si, e.target.value)}
                       />
@@ -212,7 +324,7 @@ const SupportInfoForm = ({ preventions }: Props) => {
                   </td>
                 ))}
                 <td className={tdClass + " font-semibold text-foreground"}>
-                  금액 합계: {commaFormat(totalCost)}
+                  금액합계: {commaFormat(totalCost)}
                 </td>
               </tr>
             </tbody>
@@ -228,19 +340,18 @@ const SupportInfoForm = ({ preventions }: Props) => {
       {/* Section 3: 문서 생성 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">3. 문서 생성</h2>
-        <div className="flex items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-4">
           {/* 대진테크노파크 */}
-          <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 px-4 text-sm"
+              className="flex-1 h-9 text-sm"
               onClick={() => setDocStatus((s) => ({ ...s, daejin: true }))}
             >
               대진테크노파크
             </Button>
             <span
-              className={`text-xs px-2 py-1 rounded ${
+              className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                 docStatus.daejin
                   ? "bg-primary/10 text-primary font-medium"
                   : "bg-muted text-muted-foreground"
@@ -251,17 +362,16 @@ const SupportInfoForm = ({ preventions }: Props) => {
           </div>
 
           {/* 에너지진흥원 */}
-          <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 px-4 text-sm"
+              className="flex-1 h-9 text-sm"
               onClick={() => setDocStatus((s) => ({ ...s, energy: true }))}
             >
               에너지진흥원
             </Button>
             <span
-              className={`text-xs px-2 py-1 rounded ${
+              className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                 docStatus.energy
                   ? "bg-primary/10 text-primary font-medium"
                   : "bg-muted text-muted-foreground"
@@ -272,17 +382,16 @@ const SupportInfoForm = ({ preventions }: Props) => {
           </div>
 
           {/* 성적서 PDF */}
-          <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 px-4 text-sm"
+              className="flex-1 h-9 text-sm"
               onClick={() => setDocStatus((s) => ({ ...s, report: true }))}
             >
               성적서 PDF
             </Button>
             <span
-              className={`text-xs px-2 py-1 rounded ${
+              className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                 docStatus.report
                   ? "bg-primary/10 text-primary font-medium"
                   : "bg-muted text-muted-foreground"
