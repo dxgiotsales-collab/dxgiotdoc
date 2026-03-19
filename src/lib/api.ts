@@ -1,0 +1,111 @@
+const API_BASE = "http://INTERNAL_SERVER:8000";
+
+interface ApiOptions {
+  method?: string;
+  body?: unknown;
+  token?: string;
+}
+
+export async function apiFetch<T = unknown>(
+  path: string,
+  options: ApiOptions = {}
+): Promise<T> {
+  const { method = "GET", body, token } = options;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "Unknown error");
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+
+  return res.json() as Promise<T>;
+}
+
+// ----- Auth -----
+export interface LoginResponse {
+  success: boolean;
+  user_name: string;
+  role: "admin" | "user";
+  token?: string;
+}
+
+export const apiLogin = (id: string, password: string) =>
+  apiFetch<LoginResponse>("/api/login", {
+    method: "POST",
+    body: { id, password },
+  });
+
+// ----- Projects -----
+export interface ProjectListItem {
+  project_key: string;
+  name: string;
+  status?: string;
+}
+
+export const apiGetProjects = (token?: string) =>
+  apiFetch<ProjectListItem[]>("/api/projects", { token });
+
+export const apiGetProject = (key: string, token?: string) =>
+  apiFetch<Record<string, unknown>>(`/api/projects/${key}`, { token });
+
+export const apiSaveDraft = (data: unknown, token?: string) =>
+  apiFetch<{ success: boolean; message?: string }>("/api/projects/save-draft", {
+    method: "POST",
+    body: data,
+    token,
+  });
+
+export const apiSaveFinal = (data: unknown, token?: string) =>
+  apiFetch<{ success: boolean; message?: string }>("/api/projects/save-final", {
+    method: "POST",
+    body: data,
+    token,
+  });
+
+// ----- Calculation -----
+export interface CalcResponse {
+  supportedFacilitySummary?: unknown;
+  sensorQuantities?: unknown;
+  subtotalPerPrevention?: Record<string, number>;
+  totalCost?: number;
+  subsidyAmount?: number;
+  selfBurdenAmount?: number;
+  sensors?: unknown[];
+}
+
+export const apiCalculate = (data: unknown, token?: string) =>
+  apiFetch<CalcResponse>("/api/calculate/application", {
+    method: "POST",
+    body: data,
+    token,
+  });
+
+// ----- Document generation -----
+export interface DocGenResponse {
+  success: boolean;
+  output_filename?: string;
+  download_url?: string;
+}
+
+export const apiGenerateDoc = (
+  type: "daejin" | "energy" | "certificate",
+  data: unknown,
+  token?: string
+) =>
+  apiFetch<DocGenResponse>(`/api/generate/${type}`, {
+    method: "POST",
+    body: data,
+    token,
+  });
