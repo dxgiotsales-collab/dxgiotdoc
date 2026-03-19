@@ -3,7 +3,7 @@ import DxgSidebar from "@/components/DxgSidebar";
 import BusinessInfoForm from "@/components/BusinessInfoForm";
 import FacilityInfoForm from "@/components/FacilityInfoForm";
 import SupportInfoForm from "@/components/SupportInfoForm";
-import type { EmissionFacility, PreventionFacility } from "@/types/facility";
+import { useProject } from "@/contexts/ProjectContext";
 
 const tabs = [
   { id: "business", label: "사업장 정보" },
@@ -13,13 +13,7 @@ const tabs = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("business");
-
-  const [emissions, setEmissions] = useState<EmissionFacility[]>([
-    { id: 1, outletNo: 1, facilityNo: "배1", name: "", capacity: "", unit: "", supported: false, exempt: false },
-  ]);
-  const [preventions, setPreventions] = useState<PreventionFacility[]>([
-    { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
-  ]);
+  const { project, setEmissions, setPreventions } = useProject();
 
   const handleMenuChange = (menu: string) => {
     setActiveTab(menu);
@@ -58,16 +52,16 @@ const Index = () => {
           {activeTab === "business" && <BusinessInfoForm />}
           {activeTab === "facility" && (
             <FacilityInfoForm
-              emissions={emissions}
+              emissions={project.emissions}
               setEmissions={setEmissions}
-              preventions={preventions}
+              preventions={project.preventions}
               setPreventions={setPreventions}
             />
           )}
           {activeTab === "support" && (
             <SupportInfoForm
-              emissions={emissions}
-              preventions={preventions}
+              emissions={project.emissions}
+              preventions={project.preventions}
             />
           )}
         </div>

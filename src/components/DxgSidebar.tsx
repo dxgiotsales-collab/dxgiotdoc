@@ -1,5 +1,7 @@
-import { Search, Building2, Settings2, FileText } from "lucide-react";
-import { useState } from "react";
+import { Search, Building2, Settings2, FileText, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProject } from "@/contexts/ProjectContext";
 
 interface DxgSidebarProps {
   activeMenu: string;
@@ -13,8 +15,29 @@ const menuItems = [
 ];
 
 const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
+  const { userName, role, token, logout } = useAuth();
+  const { projectList, loadProjectList, loadProject, saveDraft, saveFinal, saving } = useProject();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
+
+  // Load project list on mount
+  useEffect(() => {
+    loadProjectList(token);
+  }, [loadProjectList, token]);
+
+  const filteredProjects = projectList.filter(
+    (p) =>
+      !searchQuery ||
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.project_key.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleLoad = () => {
+    if (selectedProject) {
+      loadProject(selectedProject, token);
+    }
+  };
 
   return (
     <aside className="w-[280px] h-screen flex flex-col bg-sidebar shrink-0">
@@ -23,6 +46,18 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
         <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">
           DXG IoT 문서 자동화
         </h1>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-xs text-sidebar-foreground/60">
+            {userName} ({role})
+          </span>
+          <button
+            onClick={logout}
+            className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+            title="로그아웃"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Search */}
@@ -72,20 +107,34 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
             className="w-full h-9 px-3 text-sm rounded-md border-none bg-sidebar-accent text-sidebar-foreground outline-none"
           >
             <option value="">기존 프로젝트 선택</option>
-            <option value="p1">프로젝트 A - 2024</option>
-            <option value="p2">프로젝트 B - 2024</option>
-            <option value="p3">프로젝트 C - 2023</option>
+            {filteredProjects.map((p) => (
+              <option key={p.project_key} value={p.project_key}>
+                {p.name}
+              </option>
+            ))}
           </select>
-          <button className="w-full h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent border border-sidebar-border rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98]">
+          <button
+            className="w-full h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent border border-sidebar-border rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+            onClick={handleLoad}
+            disabled={!selectedProject}
+          >
             불러오기
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button className="h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98]">
-            임시저장
+          <button
+            className="h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+            onClick={() => saveDraft(token)}
+            disabled={saving}
+          >
+            {saving ? "저장중..." : "임시저장"}
           </button>
-          <button className="h-9 text-sm font-medium text-primary-foreground bg-sidebar-primary rounded-md hover:brightness-110 transition-all duration-150 active:scale-[0.98]">
-            최종저장
+          <button
+            className="h-9 text-sm font-medium text-primary-foreground bg-sidebar-primary rounded-md hover:brightness-110 transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+            onClick={() => saveFinal(token)}
+            disabled={saving}
+          >
+            {saving ? "저장중..." : "최종저장"}
           </button>
         </div>
       </div>
