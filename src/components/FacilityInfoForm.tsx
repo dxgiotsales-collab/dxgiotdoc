@@ -1,41 +1,8 @@
-import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface EmissionFacility {
-  id: number;
-  outletNo: number;
-  facilityNo: string;
-  name: string;
-  capacity: string;
-  unit: string;
-  supported: boolean;
-  exempt: boolean;
-}
-
-interface PreventionFacility {
-  id: number;
-  outletNo: number;
-  facilityNo: string;
-  type: string;
-  capacity: string;
-  unit: string;
-  installDate: string;
-  supported: boolean;
-}
-
-const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton"];
-
-const preventionTypes = [
-  "여과집진시설",
-  "흡착에 의한 시설",
-  "원심력 집진시설",
-  "세정집진시설",
-  "전기집진시설",
-  "흡수에 의한 시설",
-  "여과 및 흡착에 의한 시설",
-];
+import type { EmissionFacility, PreventionFacility } from "@/types/facility";
+import { unitOptions, preventionTypes } from "@/types/facility";
 
 const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-2 py-1.5 border-b border-border";
@@ -56,19 +23,15 @@ const getDetailLabels = (type: string): string[] => {
   return [];
 };
 
-const FacilityInfoForm = () => {
-  const [emissions, setEmissions] = useState<EmissionFacility[]>([
-    { id: 1, outletNo: 1, facilityNo: "배1", name: "", capacity: "", unit: "", supported: false, exempt: false },
-  ]);
-  const [preventions, setPreventions] = useState<PreventionFacility[]>([
-    { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
-  ]);
+interface FacilityInfoFormProps {
+  emissions: EmissionFacility[];
+  setEmissions: React.Dispatch<React.SetStateAction<EmissionFacility[]>>;
+  preventions: PreventionFacility[];
+  setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>>;
+}
 
-  let emissionCounter = emissions.length;
-  let preventionCounter = preventions.length;
-
+const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
   const addEmission = () => {
-    emissionCounter++;
     setEmissions((prev) => [
       ...prev,
       { id: Date.now(), outletNo: prev.length + 1, facilityNo: `배${prev.length + 1}`, name: "", capacity: "", unit: "", supported: false, exempt: false },
@@ -84,7 +47,6 @@ const FacilityInfoForm = () => {
   };
 
   const addPrevention = () => {
-    preventionCounter++;
     setPreventions((prev) => [
       ...prev,
       { id: Date.now(), outletNo: prev.length + 1, facilityNo: `방${prev.length + 1}`, type: "", capacity: "", unit: "", installDate: "", supported: false },
@@ -324,8 +286,6 @@ const FacilityInfoForm = () => {
 
           return eligiblePreventions.map((prev, bi) => {
             const detailLabels = getDetailLabels(prev.type);
-
-            // Dynamic emission labels based on matched emissions
             const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
             const dynamicEmLabels: string[] = [];
             matchedEmissions.forEach((e) => {

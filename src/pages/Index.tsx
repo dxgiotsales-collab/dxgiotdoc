@@ -3,6 +3,7 @@ import DxgSidebar from "@/components/DxgSidebar";
 import BusinessInfoForm from "@/components/BusinessInfoForm";
 import FacilityInfoForm from "@/components/FacilityInfoForm";
 import SupportInfoForm from "@/components/SupportInfoForm";
+import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 
 const tabs = [
   { id: "business", label: "사업장 정보" },
@@ -13,6 +14,13 @@ const tabs = [
 const Index = () => {
   const [activeTab, setActiveTab] = useState("business");
 
+  const [emissions, setEmissions] = useState<EmissionFacility[]>([
+    { id: 1, outletNo: 1, facilityNo: "배1", name: "", capacity: "", unit: "", supported: false, exempt: false },
+  ]);
+  const [preventions, setPreventions] = useState<PreventionFacility[]>([
+    { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
+  ]);
+
   const handleMenuChange = (menu: string) => {
     setActiveTab(menu);
   };
@@ -22,7 +30,6 @@ const Index = () => {
       <DxgSidebar activeMenu={activeTab} onMenuChange={handleMenuChange} />
 
       <main className="flex-1 h-screen overflow-y-auto bg-card">
-        {/* Tabs */}
         <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b border-border px-8">
           <nav className="flex space-x-8 h-14">
             {tabs.map((tab) => {
@@ -47,11 +54,22 @@ const Index = () => {
           </nav>
         </header>
 
-        {/* Form Area */}
         <div className="p-8">
           {activeTab === "business" && <BusinessInfoForm />}
-          {activeTab === "facility" && <FacilityInfoForm />}
-          {activeTab === "support" && <SupportInfoForm />}
+          {activeTab === "facility" && (
+            <FacilityInfoForm
+              emissions={emissions}
+              setEmissions={setEmissions}
+              preventions={preventions}
+              setPreventions={setPreventions}
+            />
+          )}
+          {activeTab === "support" && (
+            <SupportInfoForm
+              emissions={emissions}
+              preventions={preventions}
+            />
+          )}
         </div>
       </main>
     </div>
