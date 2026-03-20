@@ -202,22 +202,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const res = await runCalculation(token);
 
         if (res.sensor_rows && Array.isArray(res.sensor_rows)) {
-          const mappedSensors = res.sensor_rows.map((row: any) => {
-            const quantities: Record<string, number> = {};
-        
-            supportedPreventions.forEach((p, idx) => {
-              quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
-            });
-        
-            return {
-              name: row.ITEM_NAME,
-              unitPrice: row.ITEM_UNIT_PRICE,
-              quantities,
-              basis: row.basis_text ?? "",
-            };
-          });
-        
-          setSensors(mappedSensors);
+          setSensors(res.sensor_rows as SensorRow[]);
         }
 
         
