@@ -12,6 +12,7 @@ const tdClass = "px-2 py-1.5 border-b border-border text-center text-sm";
 const commaFormat = (n: number) => n.toLocaleString("ko-KR");
 
 const handleCalculate = async () => {
+  console.log("계산 버튼 클릭됨");
   try {
     const res = await apiCalculate({
       data: {
@@ -20,7 +21,6 @@ const handleCalculate = async () => {
         pollutants,
       },
     });
-
     console.log("계산 결과:", res);
   } catch (e) {
     console.error(e);
