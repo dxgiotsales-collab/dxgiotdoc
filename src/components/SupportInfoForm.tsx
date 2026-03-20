@@ -200,17 +200,18 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const res = await runCalculation(token);
       if (res) {
         // Use backend values if returned
-        if (res.sensors && Array.isArray(res.sensors)) {
-          setSensors(res.sensors as SensorRow[]);
+        if (res.sensor_rows && Array.isArray(res.sensor_rows)) {
+          setSensors(res.sensor_rows as SensorRow[]);
         }
-        if (res.totalCost !== undefined) {
-          // Backend is authoritative — values already reflected via sensors
+        if (res.total_cost !== undefined) {
+          updateSupport({
+            subsidyRatio: res.subsidy_ratio ?? project.support.subsidyRatio,
+            selfRatio: res.self_ratio ?? project.support.selfRatio,
+          });
         }
-      }
-      setCalculating(false);
-    }, 800);
-  };
 
+
+  
   // Trigger calculation when facility data changes
   useEffect(() => {
     if (initialized && supportedPreventions.length > 0) {
