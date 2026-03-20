@@ -246,7 +246,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     async (token: string) => {
       setSaving(true);
       try {
-        await apiSaveDraft(getPayload(), token);
+        await apiSaveDraft(getSavePayload("draft"), token);
         toast({ title: "임시저장 완료" });
       } catch (e: unknown) {
         toast({ title: "임시저장 실패", description: String(e), variant: "destructive" });
