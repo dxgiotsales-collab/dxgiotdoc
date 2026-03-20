@@ -27,7 +27,7 @@ const handleCalculate = async () => {
   }
 };
 
-<button onClick={handleCalculate}>계산하기</button>;
+<Button onClick={handleCalculate}>계산하기</Button>;
 
 // Sensor master data
 const sensorMaster = [
