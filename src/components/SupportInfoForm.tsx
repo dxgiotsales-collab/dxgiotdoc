@@ -3,31 +3,12 @@ import { Button } from "@/components/ui/button";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
-import { apiCalculate } from "@/lib/api";
 
 const thClass =
   "px-3 py-2 text-xs font-medium text-muted-foreground text-center bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-2 py-1.5 border-b border-border text-center text-sm";
 
 const commaFormat = (n: number) => n.toLocaleString("ko-KR");
-
-const handleCalculate = async () => {
-  console.log("계산 버튼 클릭됨");
-  try {
-    const res = await apiCalculate({
-      data: {
-        emission_facilities,
-        prevention_facilities,
-        pollutants,
-      },
-    });
-    console.log("계산 결과:", res);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-<Button onClick={handleCalculate}>계산하기</Button>;
 
 // Sensor master data
 const sensorMaster = [
@@ -85,7 +66,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const supportedPreventions = useMemo(() => {
     return preventions
       .filter((p) => p.supported)
-      .map((p) => ({ facilityNo: p.facilityNo, type: p.type, outletNo: p.outletNo }));
+      .map((p) => ({
+        facilityNo: p.facilityNo,
+        type: p.type,
+        outletNo: p.outletNo,
+      }));
   }, [preventions]);
 
   const uniqueOutletCount = useMemo(() => {
@@ -125,9 +110,14 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const [sensors, setSensors] = useState<SensorRow[]>([]);
   const [initialized, setInitialized] = useState(false);
   const [calculating, setCalculating] = useState(false);
+  const [subsidyRatio, setSubsidyRatio] = useState(project.support.subsidyRatio || 60);
+  const [selfRatio, setSelfRatio] = useState(project.support.selfRatio || 40);
+  const [docStatus, setDocStatus] = useState(
+    project.support.docStatus || { daejin: false, energy: false, report: false },
+  );
+  const [docUrls, setDocUrls] = useState(project.support.docUrls || { daejin: "", energy: "", report: "" });
 
   useEffect(() => {
-    // If project context has loaded sensors from backend, use those
     if (project.support.sensors && project.support.sensors.length > 0) {
       setSensors(project.support.sensors);
     } else {
@@ -143,15 +133,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setInitialized(true);
   }, [computeDefaults, project.support.sensors]);
 
-  const [subsidyRatio, setSubsidyRatio] = useState(project.support.subsidyRatio || 60);
-  const [selfRatio, setSelfRatio] = useState(project.support.selfRatio || 40);
-
-  // Sync support state back to context
   useEffect(() => {
     if (initialized) {
       updateSupport({ sensors, subsidyRatio, selfRatio });
     }
-  }, [sensors, subsidyRatio, selfRatio, initialized]);
+  }, [sensors, subsidyRatio, selfRatio, initialized, updateSupport]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     setSensors((prev) =>
@@ -185,12 +171,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const subsidyAmount = Math.floor(totalCost * (subsidyRatio / 100));
   const selfAmount = Math.floor(totalCost * (selfRatio / 100));
 
-  const [docStatus, setDocStatus] = useState(
-    project.support.docStatus || { daejin: false, energy: false, report: false },
-  );
-  const [docUrls, setDocUrls] = useState(project.support.docUrls || { daejin: "", energy: "", report: "" });
-
-  // Backend calculation
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const triggerCalc = () => {
@@ -201,41 +181,26 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
       const res = await runCalculation(token);
 
-        if (res.sensor_rows && Array.isArray(res.sensor_rows)) {
-          setSensors(res.sensor_rows as SensorRow[]);
-        }
+      if (res && res.sensor_rows && Array.isArray(res.sensor_rows)) {
+        const mappedSensors = res.sensor_rows.map((row: any) => {
+          const quantities: Record<string, number> = {};
 
-        
-        if (res.prevention_subtotals && Array.isArray(res.prevention_subtotals)) {
-          const mappedPrevSubtotals = res.prevention_subtotals.map((row: any) => ({
-            facilityNo: row.prevention_label ?? row.prevention_no ?? "",
-            type: row.prevention_method ?? "",
-            subtotal: 0,
-          }));
-          setPrevSubtotals(mappedPrevSubtotals);
-        }
+          supportedPreventions.forEach((p, idx) => {
+            quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
+          });
 
-      
-        if (res.total_cost !== undefined) {
-          setTotalCost(res.total_cost);
-        }
+          return {
+            name: row.ITEM_NAME,
+            unitPrice: row.ITEM_UNIT_PRICE,
+            quantities,
+            basis: row.basis_text ?? "",
+          };
+        });
 
-        if (res.subsidy_ratio !== undefined) {
-          setSubsidyRatio(res.subsidy_ratio);
-        }
+        setSensors(mappedSensors);
+      }
 
-        if (res.self_ratio !== undefined) {
-          setSelfRatio(res.self_ratio);
-        }
-
-        if (res.national_subsidy !== undefined) {
-          setSubsidyAmount(res.national_subsidy);
-        }
-
-        if (res.self_burden !== undefined) {
-          setSelfAmount(res.self_burden);
-        }
-
+      if (res) {
         updateSupport({
           subsidyRatio: res.subsidy_ratio ?? project.support.subsidyRatio,
           selfRatio: res.self_ratio ?? project.support.selfRatio,
@@ -246,7 +211,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     }, 800);
   };
 
-  // Trigger calculation when facility data changes
   useEffect(() => {
     if (initialized && supportedPreventions.length > 0) {
       triggerCalc();
@@ -271,7 +235,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     <div className="space-y-6 max-w-full">
       {calculating && <div className="text-xs text-muted-foreground animate-pulse">백엔드 계산 중...</div>}
 
-      {/* Section 1: 지원사업 금액 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">1. 지원사업 금액</h2>
         <div className="overflow-x-auto">
@@ -330,7 +293,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
         </div>
       </div>
 
-      {/* Section 2: 센서 종류 및 수량 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">2. 센서 종류 및 수량</h2>
         <div className="overflow-x-auto">
@@ -400,7 +362,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
         )}
       </div>
 
-      {/* Section 3: 문서 생성 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">3. 문서 생성</h2>
         <div className="flex items-center gap-4">
@@ -414,7 +375,9 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                 {label}
               </Button>
               <span
-                className={`text-xs px-2 py-1 rounded whitespace-nowrap ${docStatus[key] ? "bg-primary/10 text-primary font-medium" : "bg-muted text-muted-foreground"}`}
+                className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
+                  docStatus[key] ? "bg-primary/10 text-primary font-medium" : "bg-muted text-muted-foreground"
+                }`}
               >
                 {docStatus[key] ? "생성완료" : "생성대기"}
               </span>
