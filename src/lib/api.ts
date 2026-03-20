@@ -1,4 +1,4 @@
-const API_BASE = "http://INTERNAL_SERVER:8000";
+const API_BASE = "http://192.168.2.13:8000";
 
 interface ApiOptions {
   method?: string;
@@ -6,10 +6,7 @@ interface ApiOptions {
   token?: string;
 }
 
-export async function apiFetch<T = unknown>(
-  path: string,
-  options: ApiOptions = {}
-): Promise<T> {
+export async function apiFetch<T = unknown>(path: string, options: ApiOptions = {}): Promise<T> {
   const { method = "GET", body, token } = options;
 
   const headers: Record<string, string> = {
@@ -41,10 +38,10 @@ export interface LoginResponse {
   token?: string;
 }
 
-export const apiLogin = (id: string, password: string) =>
+export const apiLogin = (username: string, password: string) =>
   apiFetch<LoginResponse>("/api/login", {
     method: "POST",
-    body: { id, password },
+    body: { username, password },
   });
 
 // ----- Projects -----
@@ -54,8 +51,7 @@ export interface ProjectListItem {
   status?: string;
 }
 
-export const apiGetProjects = (token?: string) =>
-  apiFetch<ProjectListItem[]>("/api/projects", { token });
+export const apiGetProjects = (token?: string) => apiFetch<ProjectListItem[]>("/api/projects", { token });
 
 export const apiGetProject = (key: string, token?: string) =>
   apiFetch<Record<string, unknown>>(`/api/projects/${key}`, { token });
@@ -99,11 +95,7 @@ export interface DocGenResponse {
   download_url?: string;
 }
 
-export const apiGenerateDoc = (
-  type: "daejin" | "energy" | "certificate",
-  data: unknown,
-  token?: string
-) =>
+export const apiGenerateDoc = (type: "daejin" | "energy" | "certificate", data: unknown, token?: string) =>
   apiFetch<DocGenResponse>(`/api/generate/${type}`, {
     method: "POST",
     body: data,
