@@ -269,7 +269,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const runCalculation = useCallback(
     async (token: string): Promise<CalcResponse | null> => {
       try {
-        return await apiCalculate(getPayload(), token);
+        return await apiCalculate(getCalculatePayload(), token);
       } catch (e: unknown) {
         toast({ title: "계산 요청 실패", description: String(e), variant: "destructive" });
         return null;
