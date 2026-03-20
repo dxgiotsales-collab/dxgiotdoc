@@ -227,15 +227,17 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProject = useCallback(async (key: string, token: string) => {
     try {
-      const data = await apiGetProject(key, token);
-      // Map backend response into project state
+      const res = await apiGetProject(key, token);
+      const data = res.project?.data || {};
+
       setProject({
-        projectKey: key,
+        projectKey: res.project?.project_key || key,
         business: (data.business as BusinessInfo) || { ...defaultBusiness },
         emissions: (data.emissions as EmissionFacility[]) || defaultProject.emissions,
         preventions: (data.preventions as PreventionFacility[]) || defaultProject.preventions,
         support: (data.support as SupportInfo) || { ...defaultSupport },
       });
+
       toast({ title: "프로젝트 불러오기 완료" });
     } catch (e: unknown) {
       toast({ title: "프로젝트 불러오기 실패", description: String(e), variant: "destructive" });
