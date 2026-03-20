@@ -171,8 +171,8 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProjectList = useCallback(async (token: string) => {
     try {
-      const list = await apiGetProjects(token);
-      setProjectList(list);
+      const res = await apiGetProjects(token);
+      setProjectList(res.items || []);
     } catch (e: unknown) {
       toast({ title: "프로젝트 목록 불러오기 실패", description: String(e), variant: "destructive" });
     }
