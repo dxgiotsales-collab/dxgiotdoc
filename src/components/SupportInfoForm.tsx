@@ -180,6 +180,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       setCalculating(true);
 
       const res = await runCalculation(token);
+      console.log("🔥 계산 응답", res);
 
       if (res && res.sensor_rows && Array.isArray(res.sensor_rows)) {
         const mappedSensors = res.sensor_rows.map((row: any) => {
