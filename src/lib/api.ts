@@ -84,7 +84,7 @@ export interface CalcResponse {
 export const apiCalculate = (data: unknown, token?: string) =>
   apiFetch<CalcResponse>("/api/calculate/application", {
     method: "POST",
-    body: data,
+    body: { data },
     token,
   });
 
