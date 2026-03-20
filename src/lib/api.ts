@@ -72,13 +72,17 @@ export const apiSaveFinal = (data: unknown, token?: string) =>
 
 // ----- Calculation -----
 export interface CalcResponse {
-  supportedFacilitySummary?: unknown;
-  sensorQuantities?: unknown;
-  subtotalPerPrevention?: Record<string, number>;
-  totalCost?: number;
-  subsidyAmount?: number;
-  selfBurdenAmount?: number;
-  sensors?: unknown[];
+  success: boolean;
+  total_cost?: number;
+  subsidy_ratio?: number;
+  self_ratio?: number;
+  national_subsidy?: number;
+  self_burden?: number;
+  sensor_rows?: unknown[];
+  prevention_subtotals?: unknown[];
+  install_items?: unknown[];
+  site_facility_status?: unknown[];
+  project_device_text?: string;
 }
 
 export const apiCalculate = (data: unknown, token?: string) =>
