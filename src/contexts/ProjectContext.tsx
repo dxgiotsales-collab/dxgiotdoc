@@ -261,7 +261,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     async (token: string) => {
       setSaving(true);
       try {
-        await apiSaveFinal(getPayload(), token);
+        await apiSaveFinal(getSavePayload("final"), token);
         toast({ title: "최종저장 완료" });
       } catch (e: unknown) {
         toast({ title: "최종저장 실패", description: String(e), variant: "destructive" });
