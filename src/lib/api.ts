@@ -51,10 +51,10 @@ export interface ProjectListItem {
   status?: string;
 }
 
-export const apiGetProjects = (token?: string) => apiFetch<ProjectListItem[]>("/api/projects", { token });
+export const apiGetProjects = (token?: string) => apiFetch<{ items: ProjectListItem[] }>("/api/projects", { token });
 
 export const apiGetProject = (key: string, token?: string) =>
-  apiFetch<Record<string, unknown>>(`/api/projects/${key}`, { token });
+  apiFetch<{ success: boolean; project: Record<string, unknown> }>(`/api/projects/${key}`, { token });
 
 export const apiSaveDraft = (data: unknown, token?: string) =>
   apiFetch<{ success: boolean; message?: string }>("/api/projects/save-draft", {
