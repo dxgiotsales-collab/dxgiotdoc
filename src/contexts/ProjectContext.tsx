@@ -163,6 +163,12 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
   const getPayload = () => project;
 
+  const getSavePayload = (saveStatus: "draft" | "final") => ({
+    project_key: project.projectKey || `${project.business.name || "프로젝트"}_${project.business.location || "미정"}`,
+    save_status: saveStatus,
+    data: project,
+  });
+
   const loadProjectList = useCallback(async (token: string) => {
     try {
       const list = await apiGetProjects(token);
