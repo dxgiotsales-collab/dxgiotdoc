@@ -207,7 +207,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       })),
       prevention_facilities: project.preventions.map((p) => ({
         facility_no: p.facilityNo,
-        facility_name: p.type,
+        facility_name: p.type === "여과 및 흡착에 의한 시설" ? "여과집진시설 및 흡착에 의한 시설(일체형)" : p.type,
         outlet_no: p.outletNo,
         capacity: p.capacity,
         unit: p.unit,
