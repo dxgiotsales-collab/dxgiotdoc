@@ -1,4 +1,4 @@
-const API_BASE = "http://192.168.2.13:8000";
+const API_BASE = "https://essentially-unweldable-faustino.ngrok-free.dev";
 
 interface ApiOptions {
   method?: string;
