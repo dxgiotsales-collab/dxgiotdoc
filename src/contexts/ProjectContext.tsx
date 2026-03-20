@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 import {
   apiGetProjects,
@@ -47,12 +41,28 @@ export interface BusinessInfo {
 }
 
 const defaultBusiness: BusinessInfo = {
-  name: "", phone: "", bizNo: "", fax: "", address: "", email: "",
-  location: "", ceo: "", industry: "", ceoBirth: "", grade: "",
-  managerName: "", mainProduct: "", managerPhone: "",
+  name: "",
+  phone: "",
+  bizNo: "",
+  fax: "",
+  address: "",
+  email: "",
+  location: "",
+  ceo: "",
+  industry: "",
+  ceoBirth: "",
+  grade: "",
+  managerName: "",
+  mainProduct: "",
+  managerPhone: "",
   pollutants: [{ id: 1, type: "", amount: "" }],
-  lastMeasureDate: "", startDate: "", applyDate: "", endDate: "",
-  authority: "", locationFile: "", layoutFile: "",
+  lastMeasureDate: "",
+  startDate: "",
+  applyDate: "",
+  endDate: "",
+  authority: "",
+  locationFile: "",
+  layoutFile: "",
 };
 
 // ---- Support info shape ----
@@ -133,25 +143,19 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     setProject((p) => ({ ...p, business: { ...p.business, ...partial } }));
   }, []);
 
-  const setEmissions: React.Dispatch<React.SetStateAction<EmissionFacility[]>> = useCallback(
-    (action) => {
-      setProject((p) => ({
-        ...p,
-        emissions: typeof action === "function" ? action(p.emissions) : action,
-      }));
-    },
-    []
-  );
+  const setEmissions: React.Dispatch<React.SetStateAction<EmissionFacility[]>> = useCallback((action) => {
+    setProject((p) => ({
+      ...p,
+      emissions: typeof action === "function" ? action(p.emissions) : action,
+    }));
+  }, []);
 
-  const setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>> = useCallback(
-    (action) => {
-      setProject((p) => ({
-        ...p,
-        preventions: typeof action === "function" ? action(p.preventions) : action,
-      }));
-    },
-    []
-  );
+  const setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>> = useCallback((action) => {
+    setProject((p) => ({
+      ...p,
+      preventions: typeof action === "function" ? action(p.preventions) : action,
+    }));
+  }, []);
 
   const updateSupport = useCallback((partial: Partial<SupportInfo>) => {
     setProject((p) => ({ ...p, support: { ...p.support, ...partial } }));
@@ -167,6 +171,53 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       toast({ title: "프로젝트 목록 불러오기 실패", description: String(e), variant: "destructive" });
     }
   }, []);
+
+  const getCalculatePayload = () => {
+    const sensor_qty_overrides: Record<string, number> = {};
+    const sensor_basis: Record<string, string> = {};
+
+    for (const sensor of project.support.sensors || []) {
+      if (sensor.basis) {
+        sensor_basis[sensor.name] = sensor.basis;
+      }
+
+      for (const [facilityNo, qty] of Object.entries(sensor.quantities || {})) {
+        const preventionIndex = project.preventions.findIndex((p) => p.facilityNo === facilityNo && p.supported);
+        if (preventionIndex >= 0) {
+          sensor_qty_overrides[`${sensor.name}_${preventionIndex}`] = Number(qty) || 0;
+        }
+      }
+    }
+
+    return {
+      emission_facilities: project.emissions.map((e) => ({
+        facility_no: e.facilityNo,
+        facility_name: e.name,
+        outlet_no: e.outletNo,
+        capacity: e.capacity,
+        unit: e.unit,
+        is_supported: !!e.supported,
+        is_exempt: !!e.exempt,
+      })),
+      prevention_facilities: project.preventions.map((p) => ({
+        facility_no: p.facilityNo,
+        facility_name: p.type,
+        outlet_no: p.outletNo,
+        capacity: p.capacity,
+        unit: p.unit,
+        install_date: p.installDate,
+        is_supported: !!p.supported,
+      })),
+      pollutants: (project.business.pollutants || []).map((x) => ({
+        type: x.type,
+        amount: x.amount,
+      })),
+      sensor_qty_overrides,
+      sensor_basis,
+      subsidy_ratio: project.support.subsidyRatio,
+      self_ratio: project.support.selfRatio,
+    };
+  };
 
   const loadProject = useCallback(async (key: string, token: string) => {
     try {
@@ -185,60 +236,72 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const saveDraft = useCallback(async (token: string) => {
-    setSaving(true);
-    try {
-      await apiSaveDraft(getPayload(), token);
-      toast({ title: "임시저장 완료" });
-    } catch (e: unknown) {
-      toast({ title: "임시저장 실패", description: String(e), variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
-  }, [project]);
-
-  const saveFinal = useCallback(async (token: string) => {
-    setSaving(true);
-    try {
-      await apiSaveFinal(getPayload(), token);
-      toast({ title: "최종저장 완료" });
-    } catch (e: unknown) {
-      toast({ title: "최종저장 실패", description: String(e), variant: "destructive" });
-    } finally {
-      setSaving(false);
-    }
-  }, [project]);
-
-  const runCalculation = useCallback(async (token: string): Promise<CalcResponse | null> => {
-    try {
-      return await apiCalculate(getPayload(), token);
-    } catch (e: unknown) {
-      toast({ title: "계산 요청 실패", description: String(e), variant: "destructive" });
-      return null;
-    }
-  }, [project]);
-
-  const generateDoc = useCallback(async (type: "daejin" | "energy" | "certificate", token: string): Promise<DocGenResponse | null> => {
-    try {
-      const res = await apiGenerateDoc(type, getPayload(), token);
-      if (res.success) {
-        const key = type === "certificate" ? "report" : type;
-        setProject((p) => ({
-          ...p,
-          support: {
-            ...p.support,
-            docStatus: { ...p.support.docStatus, [key]: true },
-            docUrls: { ...p.support.docUrls, [key]: res.download_url || "" },
-          },
-        }));
-        toast({ title: `${type} 문서 생성 완료` });
+  const saveDraft = useCallback(
+    async (token: string) => {
+      setSaving(true);
+      try {
+        await apiSaveDraft(getPayload(), token);
+        toast({ title: "임시저장 완료" });
+      } catch (e: unknown) {
+        toast({ title: "임시저장 실패", description: String(e), variant: "destructive" });
+      } finally {
+        setSaving(false);
       }
-      return res;
-    } catch (e: unknown) {
-      toast({ title: "문서 생성 실패", description: String(e), variant: "destructive" });
-      return null;
-    }
-  }, [project]);
+    },
+    [project],
+  );
+
+  const saveFinal = useCallback(
+    async (token: string) => {
+      setSaving(true);
+      try {
+        await apiSaveFinal(getPayload(), token);
+        toast({ title: "최종저장 완료" });
+      } catch (e: unknown) {
+        toast({ title: "최종저장 실패", description: String(e), variant: "destructive" });
+      } finally {
+        setSaving(false);
+      }
+    },
+    [project],
+  );
+
+  const runCalculation = useCallback(
+    async (token: string): Promise<CalcResponse | null> => {
+      try {
+        return await apiCalculate(getPayload(), token);
+      } catch (e: unknown) {
+        toast({ title: "계산 요청 실패", description: String(e), variant: "destructive" });
+        return null;
+      }
+    },
+    [project],
+  );
+
+  const generateDoc = useCallback(
+    async (type: "daejin" | "energy" | "certificate", token: string): Promise<DocGenResponse | null> => {
+      try {
+        const res = await apiGenerateDoc(type, getPayload(), token);
+        if (res.success) {
+          const key = type === "certificate" ? "report" : type;
+          setProject((p) => ({
+            ...p,
+            support: {
+              ...p.support,
+              docStatus: { ...p.support.docStatus, [key]: true },
+              docUrls: { ...p.support.docUrls, [key]: res.download_url || "" },
+            },
+          }));
+          toast({ title: `${type} 문서 생성 완료` });
+        }
+        return res;
+      } catch (e: unknown) {
+        toast({ title: "문서 생성 실패", description: String(e), variant: "destructive" });
+        return null;
+      }
+    },
+    [project],
+  );
 
   return (
     <ProjectContext.Provider
