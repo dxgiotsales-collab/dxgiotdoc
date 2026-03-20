@@ -14,7 +14,11 @@ const commaFormat = (n: number) => n.toLocaleString("ko-KR");
 const handleCalculate = async () => {
   try {
     const res = await apiCalculate({
-      data: formData, // 👉 현재 입력값
+      data: {
+        emission_facilities,
+        prevention_facilities,
+        pollutants,
+      },
     });
 
     console.log("계산 결과:", res);
