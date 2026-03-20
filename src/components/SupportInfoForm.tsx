@@ -222,9 +222,15 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
         
         if (res.prevention_subtotals && Array.isArray(res.prevention_subtotals)) {
-          setPrevSubtotals(res.prevention_subtotals as PrevSubtotal[]);
+          const mappedPrevSubtotals = res.prevention_subtotals.map((row: any) => ({
+            facilityNo: row.prevention_label ?? row.prevention_no ?? "",
+            type: row.prevention_method ?? "",
+            subtotal: 0,
+          }));
+          setPrevSubtotals(mappedPrevSubtotals);
         }
 
+      
         if (res.total_cost !== undefined) {
           setTotalCost(res.total_cost);
         }
