@@ -195,23 +195,51 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   const triggerCalc = () => {
     if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
+
     calcTimerRef.current = setTimeout(async () => {
       setCalculating(true);
+
       const res = await runCalculation(token);
+
       if (res) {
-        // Use backend values if returned
         if (res.sensor_rows && Array.isArray(res.sensor_rows)) {
           setSensors(res.sensor_rows as SensorRow[]);
         }
-        if (res.total_cost !== undefined) {
-          updateSupport({
-            subsidyRatio: res.subsidy_ratio ?? project.support.subsidyRatio,
-            selfRatio: res.self_ratio ?? project.support.selfRatio,
-          });
+
+        if (res.prevention_subtotals && Array.isArray(res.prevention_subtotals)) {
+          setPrevSubtotals(res.prevention_subtotals as PrevSubtotal[]);
         }
 
+        if (res.total_cost !== undefined) {
+          setTotalCost(res.total_cost);
+        }
 
-  
+        if (res.subsidy_ratio !== undefined) {
+          setSubsidyRatio(res.subsidy_ratio);
+        }
+
+        if (res.self_ratio !== undefined) {
+          setSelfRatio(res.self_ratio);
+        }
+
+        if (res.national_subsidy !== undefined) {
+          setSubsidyAmount(res.national_subsidy);
+        }
+
+        if (res.self_burden !== undefined) {
+          setSelfAmount(res.self_burden);
+        }
+
+        updateSupport({
+          subsidyRatio: res.subsidy_ratio ?? project.support.subsidyRatio,
+          selfRatio: res.self_ratio ?? project.support.selfRatio,
+        });
+      }
+
+      setCalculating(false);
+    }, 800);
+  };
+
   // Trigger calculation when facility data changes
   useEffect(() => {
     if (initialized && supportedPreventions.length > 0) {
