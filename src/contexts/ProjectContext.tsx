@@ -114,6 +114,7 @@ interface ProjectContextValue {
   setEmissions: React.Dispatch<React.SetStateAction<EmissionFacility[]>>;
   setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>>;
   updateSupport: (partial: Partial<SupportInfo>) => void;
+  resetProject: () => void;
 
   // API actions
   projectList: ProjectListItem[];
