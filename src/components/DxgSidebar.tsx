@@ -23,14 +23,16 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
 
   // Load project list on mount
   useEffect(() => {
-    loadProjectList(token);
-  }, [loadProjectList, token]);
+    if (token) {
+      loadProjectList(token);
+    }
+  }, [token, loadProjectList]);
 
   const filteredProjects = projectList.filter(
     (p) =>
       !searchQuery ||
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.project_key.toLowerCase().includes(searchQuery.toLowerCase())
+      p.project_key.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleLoad = () => {
@@ -43,9 +45,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     <aside className="w-[280px] h-screen flex flex-col bg-sidebar shrink-0">
       {/* Header */}
       <div className="p-5 border-b border-sidebar-border">
-        <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">
-          DXG IoT 문서 자동화
-        </h1>
+        <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">DXG IoT 문서 자동화</h1>
         <div className="flex items-center justify-between mt-2">
           <span className="text-xs text-sidebar-foreground/60">
             {userName} ({role})
@@ -83,9 +83,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
               key={item.id}
               onClick={() => onMenuChange(item.id)}
               className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
-                isActive
-                  ? "text-sidebar-accent-foreground bg-sidebar-accent"
-                  : "text-sidebar-foreground hover:bg-muted"
+                isActive ? "text-sidebar-accent-foreground bg-sidebar-accent" : "text-sidebar-foreground hover:bg-muted"
               }`}
             >
               <item.icon className="mr-2.5 h-4 w-4" />
