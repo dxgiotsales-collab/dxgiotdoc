@@ -1,7 +1,15 @@
-import { Search, Building2, Settings2, FileText, LogOut } from "lucide-react";
+import { Search, Building2, Settings2, FileText, LogOut, FilePlus2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface DxgSidebarProps {
   activeMenu: string;
@@ -16,7 +24,7 @@ const menuItems = [
 
 const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
   const { userName, role, token, logout } = useAuth();
-  const { projectList, loadProjectList, loadProject, saveDraft, saveFinal, saving } = useProject();
+  const { projectList, loadProjectList, loadProject, saveDraft, saveFinal, saving, resetProject } = useProject();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
@@ -26,7 +34,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     loadProjectList(token || "");
   }, [token, loadProjectList]);
 
-  const filteredProjects = projectList.filter(
+  const filteredProjects = (projectList || []).filter(
     (p) => !searchQuery || (p.project_key || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -34,6 +42,11 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     if (selectedProject) {
       loadProject(selectedProject, token || "");
     }
+  };
+
+  const handleNew = () => {
+    resetProject();
+    setSelectedProject("");
   };
 
   return (
@@ -90,41 +103,61 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
 
       {/* Project Management */}
       <div className="p-4 mt-auto border-t border-sidebar-border space-y-3">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label className="text-[11px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
             저장 프로젝트
           </label>
-          <select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)}>
-            <option value="">기존 프로젝트 선택</option>
-            {filteredProjects.map((p) => (
-              <option key={p.project_key} value={p.project_key}>
-                {p.project_key}
-              </option>
-            ))}
-          </select>
-          <button
-            className="w-full h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent border border-sidebar-border rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
-            onClick={handleLoad}
-            disabled={!selectedProject}
-          >
-            불러오기
-          </button>
+          <Select value={selectedProject} onValueChange={setSelectedProject}>
+            <SelectTrigger className="w-full h-9 bg-sidebar-accent border-sidebar-border text-sidebar-foreground text-sm">
+              <SelectValue placeholder="기존 프로젝트 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {filteredProjects.map((p) => (
+                <SelectItem key={p.project_key} value={p.project_key}>
+                  {p.project_key}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+              onClick={handleLoad}
+              disabled={!selectedProject}
+            >
+              불러오기
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+              onClick={handleNew}
+            >
+              <FilePlus2 className="mr-1.5 h-3.5 w-3.5" />
+              신규
+            </Button>
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button
-            className="h-9 text-sm font-medium text-sidebar-foreground bg-sidebar-accent rounded-md hover:bg-sidebar-primary transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+          <Button
+            variant="secondary"
+            size="sm"
+            className="w-full"
             onClick={() => saveDraft(token)}
             disabled={saving}
           >
             {saving ? "저장중..." : "임시저장"}
-          </button>
-          <button
-            className="h-9 text-sm font-medium text-primary-foreground bg-sidebar-primary rounded-md hover:brightness-110 transition-all duration-150 active:scale-[0.98] disabled:opacity-50"
+          </Button>
+          <Button
+            size="sm"
+            className="w-full"
             onClick={() => saveFinal(token)}
             disabled={saving}
           >
             {saving ? "저장중..." : "최종저장"}
-          </button>
+          </Button>
         </div>
       </div>
     </aside>
