@@ -11,7 +11,9 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   };
+
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
