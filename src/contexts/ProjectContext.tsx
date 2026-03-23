@@ -162,6 +162,20 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     setProject((p) => ({ ...p, support: { ...p.support, ...partial } }));
   }, []);
 
+  const resetProject = useCallback(() => {
+    setProject({
+      projectKey: "",
+      business: { ...defaultBusiness },
+      emissions: [
+        { id: 1, outletNo: 1, facilityNo: "배1", name: "", capacity: "", unit: "", supported: false, exempt: false },
+      ],
+      preventions: [
+        { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
+      ],
+      support: { ...defaultSupport },
+    });
+  }, []);
+
   const getPayload = () => project;
 
   const getSavePayload = (saveStatus: "draft" | "final") => ({
