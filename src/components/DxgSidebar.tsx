@@ -23,9 +23,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
 
   // Load project list on mount
   useEffect(() => {
-    if (token) {
-      loadProjectList(token);
-    }
+    loadProjectList(token || "");
   }, [token, loadProjectList]);
 
   const filteredProjects = (projectList || []).filter(
@@ -34,7 +32,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
 
   const handleLoad = () => {
     if (selectedProject) {
-      loadProject(selectedProject, token);
+      loadProject(selectedProject, token || "");
     }
   };
 
