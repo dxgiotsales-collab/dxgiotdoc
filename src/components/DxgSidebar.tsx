@@ -96,11 +96,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
           <label className="text-[11px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
             저장 프로젝트
           </label>
-          <select
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-            className="w-full h-9 px-3 text-sm rounded-md border-none bg-sidebar-accent text-sidebar-foreground outline-none"
-          >
+          <select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)}>
             <option value="">기존 프로젝트 선택</option>
             {filteredProjects.map((p) => (
               <option key={p.project_key} value={p.project_key}>

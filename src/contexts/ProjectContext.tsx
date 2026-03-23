@@ -257,6 +257,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       setSaving(true);
       try {
         await apiSaveDraft(getSavePayload("draft"), token);
+        await loadProjectList(token);
         toast({ title: "임시저장 완료" });
       } catch (e: unknown) {
         toast({ title: "임시저장 실패", description: String(e), variant: "destructive" });
@@ -264,7 +265,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         setSaving(false);
       }
     },
-    [project],
+    [project, loadProjectList],
   );
 
   const saveFinal = useCallback(
@@ -272,6 +273,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       setSaving(true);
       try {
         await apiSaveFinal(getSavePayload("final"), token);
+        await loadProjectList(token);
         toast({ title: "최종저장 완료" });
       } catch (e: unknown) {
         toast({ title: "최종저장 실패", description: String(e), variant: "destructive" });
@@ -279,7 +281,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         setSaving(false);
       }
     },
-    [project],
+    [project, loadProjectList],
   );
 
   const runCalculation = useCallback(
