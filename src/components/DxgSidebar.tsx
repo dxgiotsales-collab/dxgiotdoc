@@ -28,6 +28,8 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     }
   }, [token, loadProjectList]);
 
+  console.log("projectList:", projectList);
+
   const filteredProjects = projectList.filter(
     (p) =>
       !searchQuery ||
