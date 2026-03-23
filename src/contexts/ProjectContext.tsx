@@ -345,6 +345,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         setEmissions,
         setPreventions,
         updateSupport,
+        resetProject,
         projectList,
         loadProjectList,
         loadProject,
