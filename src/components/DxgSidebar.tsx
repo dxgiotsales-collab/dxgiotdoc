@@ -26,7 +26,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     loadProjectList(token || "");
   }, [token, loadProjectList]);
 
-  const filteredProjects = (projectList || []).filter(
+  const filteredProjects = projectList.filter(
     (p) => !searchQuery || (p.project_key || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
