@@ -38,10 +38,10 @@ export interface LoginResponse {
   token?: string;
 }
 
-export const apiLogin = (username: string, password: string) =>
+export const apiLogin = (id: string, password: string) =>
   apiFetch<LoginResponse>("/api/login", {
     method: "POST",
-    body: { username, password },
+    body: { id, password },
   });
 
 // ----- Projects -----
