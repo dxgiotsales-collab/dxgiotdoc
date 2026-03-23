@@ -28,13 +28,10 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     }
   }, [token, loadProjectList]);
 
-  console.log("projectList:", projectList);
+  console.error("projectList:", projectList);
 
   const filteredProjects = projectList.filter(
-    (p) =>
-      !searchQuery ||
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.project_key.toLowerCase().includes(searchQuery.toLowerCase()),
+    (p) => !searchQuery || (p.project_key || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleLoad = () => {
