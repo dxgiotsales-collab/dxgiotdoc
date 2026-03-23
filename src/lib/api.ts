@@ -47,8 +47,9 @@ export const apiLogin = (username: string, password: string) =>
 // ----- Projects -----
 export interface ProjectListItem {
   project_key: string;
-  name: string;
-  status?: string;
+  save_status?: string;
+  saved_at?: string;
+  file_path?: string;
 }
 
 export const apiGetProjects = (token?: string) => apiFetch<{ items: ProjectListItem[] }>("/api/projects", { token });
