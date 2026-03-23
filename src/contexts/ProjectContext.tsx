@@ -230,11 +230,17 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const loadProject = useCallback(async (key: string, token: string) => {
     try {
       const res = await apiGetProject(key, token);
-      const data = res.project?.data || {};
+      const proj = res.project as Record<string, unknown> | undefined;
+      const data = (proj?.data as Record<string, unknown>) || {};
+
+      // Restore business but exclude file fields
+      const rawBusiness = (data.business as BusinessInfo) || { ...defaultBusiness };
+      const { locationFile: _lf, layoutFile: _ly, ...restBusiness } = rawBusiness;
+      const safeBusiness: BusinessInfo = { ...defaultBusiness, ...restBusiness, locationFile: "", layoutFile: "" };
 
       setProject({
-        projectKey: res.project?.project_key || key,
-        business: (data.business as BusinessInfo) || { ...defaultBusiness },
+        projectKey: (proj?.project_key as string) || key,
+        business: safeBusiness,
         emissions: (data.emissions as EmissionFacility[]) || defaultProject.emissions,
         preventions: (data.preventions as PreventionFacility[]) || defaultProject.preventions,
         support: (data.support as SupportInfo) || { ...defaultSupport },

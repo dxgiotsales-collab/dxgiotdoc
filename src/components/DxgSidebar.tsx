@@ -28,9 +28,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
     }
   }, [token, loadProjectList]);
 
-  console.error("projectList:", projectList);
-
-  const filteredProjects = projectList.filter(
+  const filteredProjects = (projectList || []).filter(
     (p) => !searchQuery || (p.project_key || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
@@ -106,7 +104,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
             <option value="">기존 프로젝트 선택</option>
             {filteredProjects.map((p) => (
               <option key={p.project_key} value={p.project_key}>
-                {p.name}
+                {p.project_key}
               </option>
             ))}
           </select>
