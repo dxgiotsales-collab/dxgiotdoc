@@ -121,18 +121,17 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
           </Select>
           <div className="grid grid-cols-2 gap-2">
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
-              className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+              className="w-full"
               onClick={handleLoad}
               disabled={!selectedProject}
             >
               불러오기
             </Button>
             <Button
-              variant="outline"
               size="sm"
-              className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+              className="w-full"
               onClick={handleNew}
             >
               <FilePlus2 className="mr-1.5 h-3.5 w-3.5" />
