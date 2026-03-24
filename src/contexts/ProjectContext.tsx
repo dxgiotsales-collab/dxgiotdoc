@@ -96,6 +96,10 @@ export interface ProjectState {
   support: SupportInfo;
 }
 
+export interface PhotoInputs {
+  [key: string]: File | null;
+}
+
 const defaultProject: ProjectState = {
   projectKey: "",
   business: { ...defaultBusiness },
