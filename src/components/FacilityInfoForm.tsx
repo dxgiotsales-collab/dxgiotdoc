@@ -473,6 +473,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
           }
 
           return eligiblePreventions.map((prev, bi) => {
+            const baseKey = `outlet-${prev.outletNo}_prev-${prev.facilityNo || bi}`;
             const detailLabels = getDetailLabels(prev.type);
             const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
 
@@ -510,13 +511,13 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                       {Array.from({ length: maxRows }).map((_, i) => (
                         <tr key={i}>
                           <td className={tdClass}>
-                            {prevCommonLabels[i] ? renderAttachRow(prevCommonLabels[i], `prev-${bi}-${i}`) : null}
+                            {prevCommonLabels[i] ? renderAttachRow(prevCommonLabels[i], `${baseKey}_common_${i}`)
                           </td>
                           <td className={tdClass}>
-                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `detail-${bi}-${i}`) : null}
+                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `${baseKey}_detail_${i}`)
                           </td>
                           <td className={tdClass}>
-                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `em-${bi}-${i}`) : null}
+                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `${baseKey}_em_${i}`)
                           </td>
                         </tr>
                       ))}
