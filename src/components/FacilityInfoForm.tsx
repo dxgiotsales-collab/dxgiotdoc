@@ -110,9 +110,8 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
       [key]: null,
     }));
 
-    if (fileInputRefs.current[key]) {
-      fileInputRefs.current[key]!.value = "";
-    }
+    const input = fileInputRefs.current[key];
+    if (input) input.value = "";
   };
 
   const renderAttachRow = (label: string, key: string) => {
@@ -164,7 +163,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
 
   return (
     <div className="space-y-6 max-w-full">
-      {/* Section 1 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">1. 배출시설</h2>
         <div className="overflow-x-auto">
@@ -259,7 +257,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
         </Button>
       </div>
 
-      {/* Section 2 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">2. 방지시설</h2>
         <div className="overflow-x-auto">
@@ -365,7 +362,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
         </Button>
       </div>
 
-      {/* Section 3 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">3. 지원사업 신청대상 시설정보</h2>
         {(() => {
@@ -461,7 +457,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
         })()}
       </div>
 
-      {/* Section 4 */}
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">4. 사진 첨부</h2>
         {(() => {
@@ -473,7 +468,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
           }
 
           return eligiblePreventions.map((prev, bi) => {
-            const baseKey = `outlet-${prev.outletNo}_prev-${prev.facilityNo || bi}`;
             const detailLabels = getDetailLabels(prev.type);
             const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
 
@@ -487,9 +481,10 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
             }
 
             const maxRows = Math.max(prevCommonLabels.length, detailLabels.length, dynamicEmLabels.length);
+            const baseKey = `outlet-${String(prev.outletNo)}_prev-${String(prev.facilityNo || bi)}`;
 
             return (
-              <div key={bi} className="space-y-2">
+              <div key={baseKey} className="space-y-2">
                 <p className="text-sm font-semibold text-foreground">
                   배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
                 </p>
@@ -509,15 +504,17 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                     </thead>
                     <tbody>
                       {Array.from({ length: maxRows }).map((_, i) => (
-                        <tr key={i}>
+                        <tr key={`${baseKey}_row_${i}`}>
                           <td className={tdClass}>
-                            {prevCommonLabels[i] ? renderAttachRow(prevCommonLabels[i], `${baseKey}_common_${i}`)
+                            {prevCommonLabels[i]
+                              ? renderAttachRow(prevCommonLabels[i], `${baseKey}_common_${i}`)
+                              : null}
                           </td>
                           <td className={tdClass}>
-                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `${baseKey}_detail_${i}`)
+                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `${baseKey}_detail_${i}`) : null}
                           </td>
                           <td className={tdClass}>
-                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `${baseKey}_em_${i}`)
+                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `${baseKey}_em_${i}`) : null}
                           </td>
                         </tr>
                       ))}
