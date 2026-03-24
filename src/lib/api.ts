@@ -110,7 +110,7 @@ export const apiGenerateDoc = (type: "daejin" | "energy" | "certificate", data: 
   });
 
 export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown, token?: string) =>
-  apiFetch<DocGenResponse>("/api/generate/merged", {
+  apiFetch<DocGenResponse>("/api/generate/generate", {
     method: "POST",
     body: {
       org_type: orgType,
