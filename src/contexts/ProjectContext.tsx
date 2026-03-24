@@ -31,7 +31,6 @@ export interface BusinessInfo {
   mainProduct: string;
   managerPhone: string;
   pollutants: { id: number; type: string; amount: string }[];
-  // additional info
   lastMeasureDate: string;
   startDate: string;
   applyDate: string;
@@ -88,6 +87,11 @@ const defaultSupport: SupportInfo = {
   docUrls: { daejin: "", energy: "", report: "" },
 };
 
+// ---- Photo info ----
+export interface PhotoInputs {
+  [key: string]: File | null;
+}
+
 export interface ProjectState {
   projectKey: string;
   business: BusinessInfo;
@@ -95,10 +99,6 @@ export interface ProjectState {
   preventions: PreventionFacility[];
   support: SupportInfo;
   photoInputs: PhotoInputs;
-}
-
-export interface PhotoInputs {
-  [key: string]: File | null;
 }
 
 const defaultProject: ProjectState = {
@@ -124,7 +124,6 @@ interface ProjectContextValue {
   setPhotoInputs: React.Dispatch<React.SetStateAction<PhotoInputs>>;
   resetProject: () => void;
 
-  // API actions
   projectList: ProjectListItem[];
   loadProjectList: (token: string) => Promise<void>;
   loadProject: (key: string, token: string) => Promise<void>;
@@ -159,15 +158,22 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     }));
   }, []);
 
-  const setPhotoInputs: React.Dispatch<React.SetStateAction<PhotoInputs>> = useCallback((action) => {
+  const setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>> = useCallback((action) => {
     setProject((p) => ({
       ...p,
-      photoInputs: typeof action === "function" ? action(p.photoInputs || {}) : action,
+      preventions: typeof action === "function" ? action(p.preventions) : action,
     }));
   }, []);
 
   const updateSupport = useCallback((partial: Partial<SupportInfo>) => {
     setProject((p) => ({ ...p, support: { ...p.support, ...partial } }));
+  }, []);
+
+  const setPhotoInputs: React.Dispatch<React.SetStateAction<PhotoInputs>> = useCallback((action) => {
+    setProject((p) => ({
+      ...p,
+      photoInputs: typeof action === "function" ? action(p.photoInputs || {}) : action,
+    }));
   }, []);
 
   const resetProject = useCallback(() => {
@@ -181,6 +187,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
       ],
       support: { ...defaultSupport },
+      photoInputs: {},
     });
   }, []);
 
@@ -194,9 +201,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProjectList = useCallback(async (token: string) => {
     try {
-      console.error("🔥 loadProjectList 호출됨");
       const res = await apiGetProjects(token);
-      console.error("🔥 apiGetProjects 응답", res);
       setProjectList(res.items || []);
     } catch (e: unknown) {
       toast({ title: "프로젝트 목록 불러오기 실패", description: String(e), variant: "destructive" });
@@ -256,10 +261,14 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       const proj = res.project as Record<string, unknown> | undefined;
       const data = (proj?.data as Record<string, unknown>) || {};
 
-      // Restore business but exclude file fields
       const rawBusiness = (data.business as BusinessInfo) || { ...defaultBusiness };
       const { locationFile: _lf, layoutFile: _ly, ...restBusiness } = rawBusiness;
-      const safeBusiness: BusinessInfo = { ...defaultBusiness, ...restBusiness, locationFile: "", layoutFile: "" };
+      const safeBusiness: BusinessInfo = {
+        ...defaultBusiness,
+        ...restBusiness,
+        locationFile: "",
+        layoutFile: "",
+      };
 
       setProject({
         projectKey: (proj?.project_key as string) || key,
@@ -365,6 +374,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         setEmissions,
         setPreventions,
         updateSupport,
+        setPhotoInputs,
         resetProject,
         projectList,
         loadProjectList,
