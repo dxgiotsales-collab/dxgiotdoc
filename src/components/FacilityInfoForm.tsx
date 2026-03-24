@@ -1,10 +1,12 @@
+import React, { useRef, useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 import { unitOptions, preventionTypes } from "@/types/facility";
 
-const thClass = "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
+const thClass =
+  "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-2 py-1.5 border-b border-border";
 
 const getDetailLabels = (type: string): string[] => {
@@ -31,10 +33,22 @@ interface FacilityInfoFormProps {
 }
 
 const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
+  const [photoFiles, setPhotoFiles] = useState<Record<string, File | null>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
   const addEmission = () => {
     setEmissions((prev) => [
       ...prev,
-      { id: Date.now(), outletNo: prev.length + 1, facilityNo: `배${prev.length + 1}`, name: "", capacity: "", unit: "", supported: false, exempt: false },
+      {
+        id: Date.now(),
+        outletNo: prev.length + 1,
+        facilityNo: `배${prev.length + 1}`,
+        name: "",
+        capacity: "",
+        unit: "",
+        supported: false,
+        exempt: false,
+      },
     ]);
   };
 
@@ -49,7 +63,16 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
   const addPrevention = () => {
     setPreventions((prev) => [
       ...prev,
-      { id: Date.now(), outletNo: prev.length + 1, facilityNo: `방${prev.length + 1}`, type: "", capacity: "", unit: "", installDate: "", supported: false },
+      {
+        id: Date.now(),
+        outletNo: prev.length + 1,
+        facilityNo: `방${prev.length + 1}`,
+        type: "",
+        capacity: "",
+        unit: "",
+        installDate: "",
+        supported: false,
+      },
     ]);
   };
 
@@ -68,12 +91,74 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
     "송풍전류계 제어판넬 내부",
   ];
 
-  const renderAttachRow = (label: string, key: string) => (
-    <div key={key} className="flex items-center justify-between gap-2">
-      <span className="text-xs truncate">{label}</span>
-      <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs shrink-0">첨부파일</Button>
-    </div>
-  );
+  const openFileDialog = (key: string) => {
+    fileInputRefs.current[key]?.click();
+  };
+
+  const handleFileChange = (key: string, file: File | null) => {
+    setPhotoFiles((prev) => ({
+      ...prev,
+      [key]: file,
+    }));
+  };
+
+  const removeFile = (key: string) => {
+    setPhotoFiles((prev) => ({
+      ...prev,
+      [key]: null,
+    }));
+
+    if (fileInputRefs.current[key]) {
+      fileInputRefs.current[key]!.value = "";
+    }
+  };
+
+  const renderAttachRow = (label: string, key: string) => {
+    const file = photoFiles[key];
+
+    return (
+      <div key={key} className="flex items-center justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="text-xs truncate">{label}</div>
+          {file ? <div className="text-[11px] text-muted-foreground truncate mt-1">{file.name}</div> : null}
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <input
+            ref={(el) => {
+              fileInputRefs.current[key] = el;
+            }}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleFileChange(key, e.target.files?.[0] ?? null)}
+          />
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-7 px-2 text-xs"
+            onClick={() => openFileDialog(key)}
+          >
+            첨부파일
+          </Button>
+
+          {file ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs text-destructive"
+              onClick={() => removeFile(key)}
+            >
+              삭제
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6 max-w-full">
@@ -98,33 +183,66 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
               {emissions.map((row) => (
                 <tr key={row.id}>
                   <td className={tdClass}>
-                    <input type="number" className="dxg-input w-16 text-center" value={row.outletNo} onChange={(e) => updateEmission(row.id, "outletNo", Number(e.target.value))} />
+                    <input
+                      type="number"
+                      className="dxg-input w-16 text-center"
+                      value={row.outletNo}
+                      onChange={(e) => updateEmission(row.id, "outletNo", Number(e.target.value))}
+                    />
                   </td>
                   <td className={tdClass}>
                     <input type="text" className="dxg-input w-16 text-center" value={row.facilityNo} readOnly />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-full min-w-[120px]" placeholder="시설명" value={row.name} onChange={(e) => updateEmission(row.id, "name", e.target.value)} />
+                    <input
+                      type="text"
+                      className="dxg-input w-full min-w-[120px]"
+                      placeholder="시설명"
+                      value={row.name}
+                      onChange={(e) => updateEmission(row.id, "name", e.target.value)}
+                    />
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updateEmission(row.id, "capacity", e.target.value)} />
+                    <input
+                      type="text"
+                      className="dxg-input w-20"
+                      placeholder="용량"
+                      value={row.capacity}
+                      onChange={(e) => updateEmission(row.id, "capacity", e.target.value)}
+                    />
                   </td>
                   <td className={tdClass}>
-                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updateEmission(row.id, "unit", e.target.value)}>
+                    <select
+                      className="dxg-input w-20"
+                      value={row.unit}
+                      onChange={(e) => updateEmission(row.id, "unit", e.target.value)}
+                    >
                       <option value="">선택</option>
                       {unitOptions.map((u) => (
-                        <option key={u} value={u}>{u}</option>
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
                       ))}
                     </select>
                   </td>
                   <td className={tdClass + " text-center"}>
-                    <Checkbox checked={row.supported} onCheckedChange={(v) => updateEmission(row.id, "supported", !!v)} />
+                    <Checkbox
+                      checked={row.supported}
+                      onCheckedChange={(v) => updateEmission(row.id, "supported", !!v)}
+                    />
                   </td>
                   <td className={tdClass + " text-center"}>
                     <Checkbox checked={row.exempt} onCheckedChange={(v) => updateEmission(row.id, "exempt", !!v)} />
                   </td>
                   <td className={tdClass}>
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => removeEmission(row.id)} disabled={emissions.length === 1}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => removeEmission(row.id)}
+                      disabled={emissions.length === 1}
+                    >
                       <Minus className="h-3.5 w-3.5" />
                     </Button>
                   </td>
@@ -160,38 +278,77 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
               {preventions.map((row) => (
                 <tr key={row.id}>
                   <td className={tdClass}>
-                    <input type="number" className="dxg-input w-16 text-center" value={row.outletNo} onChange={(e) => updatePrevention(row.id, "outletNo", Number(e.target.value))} />
+                    <input
+                      type="number"
+                      className="dxg-input w-16 text-center"
+                      value={row.outletNo}
+                      onChange={(e) => updatePrevention(row.id, "outletNo", Number(e.target.value))}
+                    />
                   </td>
                   <td className={tdClass}>
                     <input type="text" className="dxg-input w-16 text-center" value={row.facilityNo} readOnly />
                   </td>
                   <td className={tdClass}>
-                    <select className="dxg-input min-w-[180px]" value={row.type} onChange={(e) => updatePrevention(row.id, "type", e.target.value)}>
+                    <select
+                      className="dxg-input min-w-[180px]"
+                      value={row.type}
+                      onChange={(e) => updatePrevention(row.id, "type", e.target.value)}
+                    >
                       <option value="">선택하세요</option>
                       {preventionTypes.map((t) => (
-                        <option key={t} value={t}>{t}</option>
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
                       ))}
                     </select>
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-20" placeholder="용량" value={row.capacity} onChange={(e) => updatePrevention(row.id, "capacity", e.target.value)} />
+                    <input
+                      type="text"
+                      className="dxg-input w-20"
+                      placeholder="용량"
+                      value={row.capacity}
+                      onChange={(e) => updatePrevention(row.id, "capacity", e.target.value)}
+                    />
                   </td>
                   <td className={tdClass}>
-                    <select className="dxg-input w-20" value={row.unit} onChange={(e) => updatePrevention(row.id, "unit", e.target.value)}>
+                    <select
+                      className="dxg-input w-20"
+                      value={row.unit}
+                      onChange={(e) => updatePrevention(row.id, "unit", e.target.value)}
+                    >
                       <option value="">선택</option>
                       {unitOptions.map((u) => (
-                        <option key={u} value={u}>{u}</option>
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
                       ))}
                     </select>
                   </td>
                   <td className={tdClass}>
-                    <input type="text" className="dxg-input w-28" placeholder="2026-01-01" value={row.installDate} onChange={(e) => updatePrevention(row.id, "installDate", e.target.value)} />
+                    <input
+                      type="text"
+                      className="dxg-input w-28"
+                      placeholder="2026-01-01"
+                      value={row.installDate}
+                      onChange={(e) => updatePrevention(row.id, "installDate", e.target.value)}
+                    />
                   </td>
                   <td className={tdClass + " text-center"}>
-                    <Checkbox checked={row.supported} onCheckedChange={(v) => updatePrevention(row.id, "supported", !!v)} />
+                    <Checkbox
+                      checked={row.supported}
+                      onCheckedChange={(v) => updatePrevention(row.id, "supported", !!v)}
+                    />
                   </td>
                   <td className={tdClass}>
-                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => removePrevention(row.id)} disabled={preventions.length === 1}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => removePrevention(row.id)}
+                      disabled={preventions.length === 1}
+                    >
                       <Minus className="h-3.5 w-3.5" />
                     </Button>
                   </td>
@@ -213,13 +370,13 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
           const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
           const eligiblePreventions = preventions.filter((p) => p.supported);
 
-          // Build rows: one per eligible emission matched to prevention
           const emissionRows = eligibleEmissions.map((e) => {
             const matchedPrev = eligiblePreventions.find((p) => p.outletNo === e.outletNo);
             const emCap = e.capacity && e.unit ? `${e.capacity}${e.unit}` : e.capacity || "-";
-            const prevCap = matchedPrev && matchedPrev.capacity && matchedPrev.unit
-              ? `${matchedPrev.capacity}${matchedPrev.unit}`
-              : matchedPrev?.capacity || "-";
+            const prevCap =
+              matchedPrev && matchedPrev.capacity && matchedPrev.unit
+                ? `${matchedPrev.capacity}${matchedPrev.unit}`
+                : matchedPrev?.capacity || "-";
             return {
               outletNo: e.outletNo,
               emissionFacilityNo: e.facilityNo,
@@ -233,7 +390,6 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
             };
           });
 
-          // Find supported preventions with no matching eligible emission
           const coveredOutlets = new Set(eligibleEmissions.map((e) => e.outletNo));
           const orphanPrevRows = eligiblePreventions
             .filter((p) => !coveredOutlets.has(p.outletNo))
@@ -252,8 +408,10 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
               };
             });
 
-          const rows = [...emissionRows, ...orphanPrevRows]
-            .sort((a, b) => a.outletNo - b.outletNo || String(a.emissionFacilityNo).localeCompare(String(b.emissionFacilityNo)));
+          const rows = [...emissionRows, ...orphanPrevRows].sort(
+            (a, b) =>
+              a.outletNo - b.outletNo || String(a.emissionFacilityNo).localeCompare(String(b.emissionFacilityNo)),
+          );
 
           return (
             <div className="overflow-x-auto">
@@ -272,20 +430,26 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.length > 0 ? rows.map((r, i) => (
-                    <tr key={i}>
-                      <td className={tdClass + " text-center"}>{r.outletNo}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionFacilityNo || "-"}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionName || "-"}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionCapacity || "-"}</td>
-                      <td className={tdClass + " text-center"}>{r.emissionQty !== "" ? r.emissionQty : "-"}</td>
-                      <td className={tdClass + " text-center"}>{r.prevNo}</td>
-                      <td className={tdClass + " text-center"}>{r.prevType}</td>
-                      <td className={tdClass + " text-center"}>{r.prevCapacity}</td>
-                      <td className={tdClass + " text-center"}>{r.prevQty || "-"}</td>
+                  {rows.length > 0 ? (
+                    rows.map((r, i) => (
+                      <tr key={i}>
+                        <td className={tdClass + " text-center"}>{r.outletNo}</td>
+                        <td className={tdClass + " text-center"}>{r.emissionFacilityNo || "-"}</td>
+                        <td className={tdClass + " text-center"}>{r.emissionName || "-"}</td>
+                        <td className={tdClass + " text-center"}>{r.emissionCapacity || "-"}</td>
+                        <td className={tdClass + " text-center"}>{r.emissionQty !== "" ? r.emissionQty : "-"}</td>
+                        <td className={tdClass + " text-center"}>{r.prevNo}</td>
+                        <td className={tdClass + " text-center"}>{r.prevType}</td>
+                        <td className={tdClass + " text-center"}>{r.prevCapacity}</td>
+                        <td className={tdClass + " text-center"}>{r.prevQty || "-"}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={9} className={tdClass + " text-center text-muted-foreground"}>
+                        지원대상 시설이 없습니다.
+                      </td>
                     </tr>
-                  )) : (
-                    <tr><td colSpan={9} className={tdClass + " text-center text-muted-foreground"}>지원대상 시설이 없습니다.</td></tr>
                   )}
                 </tbody>
               </table>
