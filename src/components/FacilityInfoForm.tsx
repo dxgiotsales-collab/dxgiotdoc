@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 import { unitOptions, preventionTypes } from "@/types/facility";
+import { useProject } from "@/contexts/ProjectContext";
 
 const thClass =
   "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
@@ -33,7 +34,8 @@ interface FacilityInfoFormProps {
 }
 
 const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
-  const [photoFiles, setPhotoFiles] = useState<Record<string, File | null>>({});
+  const { project, setPhotoInputs } = useProject();
+  const photoFiles = project.photoInputs || {};
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const addEmission = () => {
@@ -96,14 +98,14 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
   };
 
   const handleFileChange = (key: string, file: File | null) => {
-    setPhotoFiles((prev) => ({
+    setPhotoInputs((prev) => ({
       ...prev,
       [key]: file,
     }));
   };
 
   const removeFile = (key: string) => {
-    setPhotoFiles((prev) => ({
+    setPhotoInputs((prev) => ({
       ...prev,
       [key]: null,
     }));
@@ -377,6 +379,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
               matchedPrev && matchedPrev.capacity && matchedPrev.unit
                 ? `${matchedPrev.capacity}${matchedPrev.unit}`
                 : matchedPrev?.capacity || "-";
+
             return {
               outletNo: e.outletNo,
               emissionFacilityNo: e.facilityNo,
@@ -472,6 +475,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
           return eligiblePreventions.map((prev, bi) => {
             const detailLabels = getDetailLabels(prev.type);
             const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
+
             const dynamicEmLabels: string[] = [];
             matchedEmissions.forEach((e) => {
               dynamicEmLabels.push(`배출시설 전경 (${e.facilityNo})`);
