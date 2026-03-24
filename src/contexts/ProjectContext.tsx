@@ -337,7 +337,11 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
         return res;
       } catch (e: unknown) {
-        toast({ title: "문서 생성 실패", description: String(e), variant: "destructive" });
+        toast({
+          title: "문서 생성 실패",
+          description: String(e),
+          variant: "destructive",
+        });
         return null;
       }
     },
