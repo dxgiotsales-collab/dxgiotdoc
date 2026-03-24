@@ -36,6 +36,7 @@ interface FacilityInfoFormProps {
 const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
   const { project, setPhotoInputs } = useProject();
   const photoFiles = project.photoInputs || {};
+  console.log("photoInputs-now", project.photoInputs);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const addEmission = () => {
@@ -98,10 +99,16 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
   };
 
   const handleFileChange = (key: string, file: File | null) => {
-    setPhotoInputs((prev) => ({
-      ...prev,
-      [key]: file,
-    }));
+    console.log("save-photo", key, file?.name);
+
+    setPhotoInputs((prev) => {
+      const next = {
+        ...prev,
+        [key]: file,
+      };
+      console.log("photoInputs-next", next);
+      return next;
+    });
   };
 
   const removeFile = (key: string) => {
