@@ -7,6 +7,7 @@ import {
   apiSaveFinal,
   apiCalculate,
   apiGenerateDoc,
+  apiGenerateMergedDoc,
   type ProjectListItem,
   type CalcResponse,
   type DocGenResponse,
