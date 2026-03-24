@@ -100,16 +100,15 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
 
   const handleFileChange = (key: string, file: File | null) => {
     console.log("save-photo", key, file?.name);
-
+    
     setPhotoInputs((prev) => {
       const next = {
         ...prev,
         [key]: file,
       };
-      console.log("photoInputs-next", next);
+      console.log("photoInputs-next-keys", Object.keys(next));
       return next;
     });
-  };
 
   const removeFile = (key: string) => {
     setPhotoInputs((prev) => ({
