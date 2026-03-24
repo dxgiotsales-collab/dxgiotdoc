@@ -315,22 +315,19 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const generateDoc = useCallback(
     async (type: "daejin" | "energy" | "certificate", token: string): Promise<DocGenResponse | null> => {
       try {
-        const res = await apiGenerateDoc(type, getPayload(), token);
-        if (res.success) {
-          const key = type === "certificate" ? "report" : type;
-          setProject((p) => ({
-            ...p,
-            support: {
-              ...p.support,
-              docStatus: { ...p.support.docStatus, [key]: true },
-              docUrls: { ...p.support.docUrls, [key]: res.download_url || "" },
-            },
-          }));
-          toast({ title: `${type} 문서 생성 완료` });
+        const payload = getPayload();
+
+        if (type === "daejin" || type === "energy") {
+          return await apiGenerateMergedDoc(type, payload, token);
         }
-        return res;
+
+        return await apiGenerateDoc(type, payload, token);
       } catch (e: unknown) {
-        toast({ title: "문서 생성 실패", description: String(e), variant: "destructive" });
+        toast({
+          title: "문서 생성 실패",
+          description: String(e),
+          variant: "destructive",
+        });
         return null;
       }
     },
