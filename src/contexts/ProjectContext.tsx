@@ -1,19 +1,18 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
 import {
-  apiGetProjects,
-  apiGetProject,
-  apiSaveDraft,
-  apiSaveFinal,
   apiCalculate,
   apiGenerateDoc,
   apiGenerateMergedDoc,
-  type ProjectListItem,
+  apiGetProject,
+  apiGetProjects,
+  apiSaveDraft,
+  apiSaveFinal,
   type CalcResponse,
   type DocGenResponse,
+  type ProjectListItem,
 } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
-import { apiGenerateDoc, apiGenerateMergedDoc } from "@/lib/api";
 
 // ---- Business info shape ----
 export interface BusinessInfo {
