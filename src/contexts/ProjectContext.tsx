@@ -13,6 +13,7 @@ import {
   type DocGenResponse,
 } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
+import { apiGenerateDoc, apiGenerateMergedDoc } from "@/lib/api";
 
 // ---- Business info shape ----
 export interface BusinessInfo {
