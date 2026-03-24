@@ -94,6 +94,7 @@ export interface ProjectState {
   emissions: EmissionFacility[];
   preventions: PreventionFacility[];
   support: SupportInfo;
+  photoInputs: PhotoInputs;
 }
 
 export interface PhotoInputs {
@@ -110,6 +111,7 @@ const defaultProject: ProjectState = {
     { id: 1, outletNo: 1, facilityNo: "방1", type: "", capacity: "", unit: "", installDate: "", supported: false },
   ],
   support: { ...defaultSupport },
+  photoInputs: {},
 };
 
 interface ProjectContextValue {
@@ -119,6 +121,7 @@ interface ProjectContextValue {
   setEmissions: React.Dispatch<React.SetStateAction<EmissionFacility[]>>;
   setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>>;
   updateSupport: (partial: Partial<SupportInfo>) => void;
+  setPhotoInputs: React.Dispatch<React.SetStateAction<PhotoInputs>>;
   resetProject: () => void;
 
   // API actions
@@ -156,10 +159,10 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     }));
   }, []);
 
-  const setPreventions: React.Dispatch<React.SetStateAction<PreventionFacility[]>> = useCallback((action) => {
+  const setPhotoInputs: React.Dispatch<React.SetStateAction<PhotoInputs>> = useCallback((action) => {
     setProject((p) => ({
       ...p,
-      preventions: typeof action === "function" ? action(p.preventions) : action,
+      photoInputs: typeof action === "function" ? action(p.photoInputs || {}) : action,
     }));
   }, []);
 
@@ -264,6 +267,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         emissions: (data.emissions as EmissionFacility[]) || defaultProject.emissions,
         preventions: (data.preventions as PreventionFacility[]) || defaultProject.preventions,
         support: (data.support as SupportInfo) || { ...defaultSupport },
+        photoInputs: (data.photoInputs as PhotoInputs) || {},
       });
 
       toast({ title: "프로젝트 불러오기 완료" });
