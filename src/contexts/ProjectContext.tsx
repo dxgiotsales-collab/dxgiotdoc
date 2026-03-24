@@ -317,17 +317,27 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       try {
         const payload = getPayload();
 
-        if (type === "daejin" || type === "energy") {
-          return await apiGenerateMergedDoc(type, payload, token);
+        const res =
+          type === "daejin" || type === "energy"
+            ? await apiGenerateMergedDoc(type, payload, token)
+            : await apiGenerateDoc(type, payload, token);
+
+        if (res.success) {
+          const key = type === "certificate" ? "report" : type;
+          setProject((p) => ({
+            ...p,
+            support: {
+              ...p.support,
+              docStatus: { ...p.support.docStatus, [key]: true },
+              docUrls: { ...p.support.docUrls, [key]: res.download_url || "" },
+            },
+          }));
+          toast({ title: `${type} 문서 생성 완료` });
         }
 
-        return await apiGenerateDoc(type, payload, token);
+        return res;
       } catch (e: unknown) {
-        toast({
-          title: "문서 생성 실패",
-          description: String(e),
-          variant: "destructive",
-        });
+        toast({ title: "문서 생성 실패", description: String(e), variant: "destructive" });
         return null;
       }
     },
