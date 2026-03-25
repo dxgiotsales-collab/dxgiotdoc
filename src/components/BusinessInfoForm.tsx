@@ -273,8 +273,14 @@ const BusinessInfoForm = () => {
           <div />
           <FileInput
             label="설치 배치도"
-            fileName={biz.layoutFile}
-            onFileSelect={(file) => updateBusiness({ layoutFile: file.name })}
+            fileName={biz.layoutFile?.startsWith("data:") ? "배치도 이미지 업로드됨" : biz.layoutFile}
+            onFileSelect={(file) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                updateBusiness({ layoutFile: reader.result as string });
+              };
+              reader.readAsDataURL(file);
+            }}
           />
         </div>
       </div>
