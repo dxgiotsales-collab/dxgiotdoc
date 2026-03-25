@@ -118,7 +118,18 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
-  const photoInputs = proj?.photoInputs ?? {};
+  const rawPhotoInputs = (proj?.photoInputs ?? {}) as Record<string, unknown>;
+  const photoInputs: Record<string, unknown> = {};
+  for (const key of Object.keys(rawPhotoInputs)) {
+    const val = rawPhotoInputs[key];
+    if (val instanceof File) {
+      photoInputs[key] = `app_data/uploads/${val.name}`;
+    } else if (typeof val === "string") {
+      photoInputs[key] = val;
+    } else {
+      photoInputs[key] = "";
+    }
+  }
 
   const rawPollutants = (biz.pollutants ?? []) as Array<{ type?: string; amount?: string }>;
   const mappedPollutants = rawPollutants.map((p) => ({
