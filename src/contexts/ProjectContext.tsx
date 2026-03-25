@@ -36,8 +36,8 @@ export interface BusinessInfo {
   applyDate: string;
   endDate: string;
   authority: string;
-  locationFile: string;
-  layoutFile: string;
+  locationFile: string | File;
+  layoutFile: string | File;
 }
 
 const defaultBusiness: BusinessInfo = {
