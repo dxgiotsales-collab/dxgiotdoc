@@ -109,12 +109,18 @@ export const apiGenerateDoc = (type: "daejin" | "energy" | "certificate", data: 
     token,
   });
 
-export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown, token?: string) =>
-  apiFetch<DocGenResponse>("/api/merged/generate", {
+export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown, token?: string) => {
+  const proj = data as Record<string, unknown> | undefined;
+  const biz = (proj?.business ?? {}) as Record<string, unknown>;
+  return apiFetch<DocGenResponse>("/api/merged/generate", {
     method: "POST",
     body: {
       org_type: orgType,
       project_data: data,
+      images: {
+        INSTALL_LAYOUT_FILE: biz.layoutFile || "",
+      },
     },
     token,
   });
+};
