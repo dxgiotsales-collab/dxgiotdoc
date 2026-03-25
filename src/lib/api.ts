@@ -149,7 +149,41 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
 
-  // Upload File objects and collect real server paths
+  // Upload layout/location files if they are File objects
+  let layoutFilePath = "";
+  let locationFilePath = "";
+
+  const fileUploadPromises: Promise<void>[] = [];
+
+  if (biz.layoutFile instanceof File) {
+    fileUploadPromises.push(
+      apiUploadFile(biz.layoutFile, token).then((res) => {
+        layoutFilePath = res.file_path;
+      })
+    );
+  } else if (typeof biz.layoutFile === "string" && biz.layoutFile !== "") {
+    layoutFilePath = biz.layoutFile as string;
+  }
+
+  if (biz.locationFile instanceof File) {
+    fileUploadPromises.push(
+      apiUploadFile(biz.locationFile, token).then((res) => {
+        locationFilePath = res.file_path;
+      })
+    );
+  } else if (typeof biz.locationFile === "string" && biz.locationFile !== "") {
+    locationFilePath = biz.locationFile as string;
+  }
+
+  if (fileUploadPromises.length > 0) {
+    console.log(`DOC_10022/10050 uploading ${fileUploadPromises.length} layout/location file(s)...`);
+    await Promise.all(fileUploadPromises);
+  }
+
+  console.log("DOC_10022 INSTALL_LAYOUT_FILE =", layoutFilePath);
+  console.log("DOC_10050 BUSINESS_LOCATION_MAP_FILE =", locationFilePath);
+
+  // Upload photo File objects and collect real server paths
   const rawPhotoInputs = (proj?.photoInputs ?? {}) as Record<string, unknown>;
   const photoInputs: Record<string, string> = {};
 
@@ -189,8 +223,8 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
       photo_inputs: photoInputs,
       images: {
         ...existingImages,
-        INSTALL_LAYOUT_FILE: biz.layoutFile || "",
-        BUSINESS_LOCATION_MAP_FILE: biz.locationFile || "",
+        INSTALL_LAYOUT_FILE: layoutFilePath,
+        BUSINESS_LOCATION_MAP_FILE: locationFilePath,
       },
     },
   };
