@@ -95,6 +95,36 @@ export const apiCalculate = (data: unknown, token?: string) =>
     token,
   });
 
+// ----- File upload -----
+export interface UploadResponse {
+  file_path: string;
+}
+
+export const apiUploadFile = async (file: File, token?: string): Promise<UploadResponse> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const headers: Record<string, string> = {
+    "ngrok-skip-browser-warning": "true",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE}/api/upload`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "Unknown error");
+    throw new Error(`Upload ${res.status}: ${text}`);
+  }
+
+  return res.json() as Promise<UploadResponse>;
+};
+
 // ----- Document generation -----
 export interface DocGenResponse {
   success: boolean;
@@ -109,7 +139,7 @@ export const apiGenerateDoc = (type: "daejin" | "energy" | "certificate", data: 
     token,
   });
 
-export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown, token?: string) => {
+export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: unknown, token?: string) => {
   const proj = data as Record<string, unknown> | undefined;
   const biz = (proj?.business ?? {}) as Record<string, unknown>;
 
@@ -118,17 +148,28 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
+
+  // Upload File objects and collect real server paths
   const rawPhotoInputs = (proj?.photoInputs ?? {}) as Record<string, unknown>;
-  const photoInputs: Record<string, unknown> = {};
+  const photoInputs: Record<string, string> = {};
+
+  const uploadPromises: Promise<void>[] = [];
   for (const key of Object.keys(rawPhotoInputs)) {
     const val = rawPhotoInputs[key];
     if (val instanceof File) {
-      photoInputs[key] = `app_data/uploads/${val.name}`;
-    } else if (typeof val === "string") {
+      uploadPromises.push(
+        apiUploadFile(val, token).then((res) => {
+          photoInputs[key] = res.file_path;
+        })
+      );
+    } else if (typeof val === "string" && val !== "") {
       photoInputs[key] = val;
-    } else {
-      photoInputs[key] = "";
     }
+  }
+
+  if (uploadPromises.length > 0) {
+    console.log(`DOC_10024 uploading ${uploadPromises.length} file(s)...`);
+    await Promise.all(uploadPromises);
   }
 
   const rawPollutants = (biz.pollutants ?? []) as Array<{ type?: string; amount?: string }>;
@@ -138,7 +179,6 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   }));
 
   console.log("DOC_10010_B pollutants payload =", mappedPollutants);
-
   console.log("DOC_10024 photo_inputs =", photoInputs);
 
   const requestBody = {
