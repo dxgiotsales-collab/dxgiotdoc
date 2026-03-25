@@ -128,11 +128,14 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
 
   console.log("DOC_10010_B pollutants payload =", mappedPollutants);
 
+  console.log("DOC_10024 photo_inputs =", photoInputs);
+
   const requestBody = {
     org_type: orgType,
     project_data: {
       ...(proj ?? {}),
       pollutants: mappedPollutants,
+      photo_inputs: photoInputs,
       images: {
         ...existingImages,
         INSTALL_LAYOUT_FILE: biz.layoutFile || "",
