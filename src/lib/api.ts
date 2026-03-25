@@ -127,20 +127,24 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
 
   console.log("DOC_10010_B pollutants payload =", mappedPollutants);
 
-  return apiFetch<DocGenResponse>("/api/merged/generate", {
-    method: "POST",
-    body: {
-      org_type: orgType,
-      project_data: {
-        ...(proj ?? {}),
-        pollutants: mappedPollutants,
-        images: {
-          ...existingImages,
-          INSTALL_LAYOUT_FILE: biz.layoutFile || "",
-          BUSINESS_LOCATION_MAP_FILE: biz.locationFile || "",
-        },
+  const requestBody = {
+    org_type: orgType,
+    project_data: {
+      ...(proj ?? {}),
+      pollutants: mappedPollutants,
+      images: {
+        ...existingImages,
+        INSTALL_LAYOUT_FILE: biz.layoutFile || "",
+        BUSINESS_LOCATION_MAP_FILE: biz.locationFile || "",
       },
     },
+  };
+
+  console.log("FULL REQUEST BODY =", requestBody);
+
+  return apiFetch<DocGenResponse>("/api/merged/generate", {
+    method: "POST",
+    body: requestBody,
     token,
   });
 };
