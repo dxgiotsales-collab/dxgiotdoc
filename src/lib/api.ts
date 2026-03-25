@@ -119,12 +119,21 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
 
+  const rawPollutants = (biz.pollutants ?? []) as Array<{ type?: string; amount?: string }>;
+  const mappedPollutants = rawPollutants.map((p) => ({
+    ITEM_POLLUTANT_TYPE: p.type || "",
+    ITEM_POLLUTANT_AMOUNT: p.amount || "",
+  }));
+
+  console.log("DOC_10010_B pollutants payload =", mappedPollutants);
+
   return apiFetch<DocGenResponse>("/api/merged/generate", {
     method: "POST",
     body: {
       org_type: orgType,
       project_data: {
         ...(proj ?? {}),
+        pollutants: mappedPollutants,
         images: {
           ...existingImages,
           INSTALL_LAYOUT_FILE: biz.layoutFile || "",
