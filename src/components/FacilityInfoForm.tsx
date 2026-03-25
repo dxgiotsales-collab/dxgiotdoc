@@ -109,6 +109,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
       console.log("photoInputs-next-keys", Object.keys(next));
       return next;
     });
+  };
 
   const removeFile = (key: string) => {
     setPhotoInputs((prev) => ({
