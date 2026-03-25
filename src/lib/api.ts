@@ -118,6 +118,7 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
+  const photoInputs = proj?.photoInputs ?? {};
 
   const rawPollutants = (biz.pollutants ?? []) as Array<{ type?: string; amount?: string }>;
   const mappedPollutants = rawPollutants.map((p) => ({
