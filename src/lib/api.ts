@@ -113,6 +113,10 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   const proj = data as Record<string, unknown> | undefined;
   const biz = (proj?.business ?? {}) as Record<string, unknown>;
 
+  console.log("DOC_10022 proj =", proj);
+  console.log("DOC_10022 biz =", biz);
+  console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
+
   return apiFetch<DocGenResponse>("/api/merged/generate", {
     method: "POST",
     body: {
