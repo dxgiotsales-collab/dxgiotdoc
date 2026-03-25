@@ -117,15 +117,18 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   console.log("DOC_10022 biz =", biz);
   console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
 
+  const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
+
   return apiFetch<DocGenResponse>("/api/merged/generate", {
     method: "POST",
     body: {
       org_type: orgType,
       project_data: {
-        ...data,
+        ...(proj ?? {}),
         images: {
-          ...(proj?.images ?? {}),
+          ...existingImages,
           INSTALL_LAYOUT_FILE: biz.layoutFile || "",
+          BUSINESS_LOCATION_MAP_FILE: biz.locationFile || "",
         },
       },
     },
