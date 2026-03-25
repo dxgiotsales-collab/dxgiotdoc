@@ -118,6 +118,7 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
   console.log("DOC_10022 biz.layoutFile =", biz.layoutFile);
 
   const existingImages = (proj?.images ?? {}) as Record<string, unknown>;
+  const photoInputs = proj?.photoInputs ?? {};
 
   const rawPollutants = (biz.pollutants ?? []) as Array<{ type?: string; amount?: string }>;
   const mappedPollutants = rawPollutants.map((p) => ({
@@ -127,11 +128,14 @@ export const apiGenerateMergedDoc = (orgType: "daejin" | "energy", data: unknown
 
   console.log("DOC_10010_B pollutants payload =", mappedPollutants);
 
+  console.log("DOC_10024 photo_inputs =", photoInputs);
+
   const requestBody = {
     org_type: orgType,
     project_data: {
       ...(proj ?? {}),
       pollutants: mappedPollutants,
+      photo_inputs: photoInputs,
       images: {
         ...existingImages,
         INSTALL_LAYOUT_FILE: biz.layoutFile || "",
