@@ -266,15 +266,15 @@ const BusinessInfoForm = () => {
           />
           <FileInput
             label="사업장 위치도"
-            fileName={biz.locationFile}
-            onFileSelect={(file) => updateBusiness({ locationFile: file.name })}
+            fileName={biz.locationFile instanceof File ? biz.locationFile.name : biz.locationFile}
+            onFileSelect={(file) => updateBusiness({ locationFile: file })}
           />
 
           <div />
           <FileInput
             label="설치 배치도"
-            fileName={biz.layoutFile}
-            onFileSelect={(file) => updateBusiness({ layoutFile: file.name })}
+            fileName={biz.layoutFile instanceof File ? biz.layoutFile.name : biz.layoutFile}
+            onFileSelect={(file) => updateBusiness({ layoutFile: file })}
           />
         </div>
       </div>
