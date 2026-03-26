@@ -518,48 +518,56 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                 );
               })}
 
-              {/* 배출시설 사진 - 각 배출시설별 3개 입력 */}
-              {emissions.map((em, idx) => {
-                const emIndex = idx + 1;
-                const photoLabels = [
-                  { label: "배출시설 전경", key: `EMISSION_${emIndex}_OVERVIEW` },
-                  { label: "제어판넬 외부", key: `EMISSION_${emIndex}_CTRL_OUT` },
-                  { label: "제어판넬 내부", key: `EMISSION_${emIndex}_CTRL_IN` },
-                ];
+              {/* 배출시설 사진 - supported인 배출시설만, 같은 표 흐름 내 행 반복 */}
+              {(() => {
+                const supportedEmissions = emissions.filter((e) => e.supported);
+                if (supportedEmissions.length === 0) return null;
 
                 return (
-                  <div key={`emission-photo-${emIndex}`} className="space-y-2">
-                    <p className="text-sm font-semibold text-foreground">
-                      배출시설 {em.facilityNo} {em.name ? `(${em.name})` : ""}
-                    </p>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm border-collapse table-fixed">
-                        <colgroup>
-                          <col className="w-1/3" />
-                          <col className="w-1/3" />
-                          <col className="w-1/3" />
-                        </colgroup>
-                        <thead>
-                          <tr>
-                            {photoLabels.map((pl) => (
-                              <th key={pl.key} className={thClass + " text-center"}>{pl.label}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            {photoLabels.map((pl) => (
-                              <td key={pl.key} className={tdClass}>
-                                {renderAttachRow(pl.label, pl.key)}
-                              </td>
-                            ))}
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse table-fixed">
+                      <colgroup>
+                        <col className="w-1/3" />
+                        <col className="w-1/3" />
+                        <col className="w-1/3" />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th className={thClass + " text-center"} colSpan={3}>○ 배출시설 ○</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {supportedEmissions.map((em, idx) => {
+                          const emIndex = idx + 1;
+                          const photoItems = [
+                            { label: "배출시설 전경", key: `EMISSION_${emIndex}_OVERVIEW` },
+                            { label: "제어판넬 외부", key: `EMISSION_${emIndex}_CTRL_OUT` },
+                            { label: "제어판넬 내부", key: `EMISSION_${emIndex}_CTRL_IN` },
+                          ];
+                          return (
+                            <React.Fragment key={`emission-photo-${emIndex}`}>
+                              <tr>
+                                <td colSpan={3} className={tdClass + " bg-muted/30"}>
+                                  <span className="text-xs font-semibold text-foreground">
+                                    배출시설 {em.facilityNo} {em.name ? `(${em.name})` : ""}
+                                  </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                {photoItems.map((pl) => (
+                                  <td key={pl.key} className={tdClass}>
+                                    {renderAttachRow(pl.label, pl.key)}
+                                  </td>
+                                ))}
+                              </tr>
+                            </React.Fragment>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 );
-              })}
+              })()}
             </>
           );
         })()}
