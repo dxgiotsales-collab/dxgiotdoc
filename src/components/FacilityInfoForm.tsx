@@ -468,69 +468,100 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
         <h2 className="dxg-section-title">4. 사진 첨부</h2>
         {(() => {
           const eligiblePreventions = preventions.filter((p) => p.supported);
-          const eligibleEmissionsForPhotos = emissions.filter((e) => e.supported && !e.exempt);
 
           if (eligiblePreventions.length === 0) {
             return <p className="text-sm text-muted-foreground">지원대상 방지시설이 없습니다.</p>;
           }
 
-          return eligiblePreventions.map((prev, bi) => {
-            const detailLabels = getDetailLabels(prev.type);
-            const matchedEmissions = eligibleEmissionsForPhotos.filter((e) => e.outletNo === prev.outletNo);
+          return (
+            <>
+              {/* 방지시설 사진 */}
+              {eligiblePreventions.map((prev, bi) => {
+                const detailLabels = getDetailLabels(prev.type);
+                const maxRows = Math.max(prevCommonLabels.length, detailLabels.length);
+                const baseKey = `outlet-${String(prev.outletNo)}_prev-${String(prev.facilityNo || bi)}`;
 
-            const dynamicEmLabels: string[] = [];
-            matchedEmissions.forEach((e) => {
-              dynamicEmLabels.push(`배출시설 전경 (${e.facilityNo})`);
-            });
-            if (matchedEmissions.length > 0) {
-              dynamicEmLabels.push("배출 제어판넬 외함");
-              dynamicEmLabels.push("배출 제어판넬 내부");
-            }
+                return (
+                  <div key={baseKey} className="space-y-2">
+                    <p className="text-sm font-semibold text-foreground">
+                      배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
+                    </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm border-collapse table-fixed">
+                        <colgroup>
+                          <col className="w-1/2" />
+                          <col className="w-1/2" />
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th className={thClass + " text-center"}>○ 방지시설 ○</th>
+                            <th className={thClass + " text-center"}>○ 방지시설 상세 ○</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Array.from({ length: maxRows }).map((_, i) => (
+                            <tr key={`${baseKey}_row_${i}`}>
+                              <td className={tdClass}>
+                                {prevCommonLabels[i]
+                                  ? renderAttachRow(prevCommonLabels[i], `${baseKey}_common_${i}`)
+                                  : null}
+                              </td>
+                              <td className={tdClass}>
+                                {detailLabels[i] ? renderAttachRow(detailLabels[i], `${baseKey}_detail_${i}`) : null}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
 
-            const maxRows = Math.max(prevCommonLabels.length, detailLabels.length, dynamicEmLabels.length);
-            const baseKey = `outlet-${String(prev.outletNo)}_prev-${String(prev.facilityNo || bi)}`;
+              {/* 배출시설 사진 - 각 배출시설별 3개 입력 */}
+              {emissions.map((em, idx) => {
+                const emIndex = idx + 1;
+                const photoLabels = [
+                  { label: "배출시설 전경", key: `EMISSION_${emIndex}_OVERVIEW` },
+                  { label: "제어판넬 외부", key: `EMISSION_${emIndex}_CTRL_OUT` },
+                  { label: "제어판넬 내부", key: `EMISSION_${emIndex}_CTRL_IN` },
+                ];
 
-            return (
-              <div key={baseKey} className="space-y-2">
-                <p className="text-sm font-semibold text-foreground">
-                  배출구 {prev.outletNo} / {prev.facilityNo} / {prev.type || "-"}
-                </p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm border-collapse table-fixed">
-                    <colgroup>
-                      <col className="w-1/3" />
-                      <col className="w-1/3" />
-                      <col className="w-1/3" />
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th className={thClass + " text-center"}>○ 방지시설 ○</th>
-                        <th className={thClass + " text-center"}>○ 방지시설 상세 ○</th>
-                        <th className={thClass + " text-center"}>○ 배출시설 ○</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Array.from({ length: maxRows }).map((_, i) => (
-                        <tr key={`${baseKey}_row_${i}`}>
-                          <td className={tdClass}>
-                            {prevCommonLabels[i]
-                              ? renderAttachRow(prevCommonLabels[i], `${baseKey}_common_${i}`)
-                              : null}
-                          </td>
-                          <td className={tdClass}>
-                            {detailLabels[i] ? renderAttachRow(detailLabels[i], `${baseKey}_detail_${i}`) : null}
-                          </td>
-                          <td className={tdClass}>
-                            {dynamicEmLabels[i] ? renderAttachRow(dynamicEmLabels[i], `${baseKey}_em_${i}`) : null}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          });
+                return (
+                  <div key={`emission-photo-${emIndex}`} className="space-y-2">
+                    <p className="text-sm font-semibold text-foreground">
+                      배출시설 {em.facilityNo} {em.name ? `(${em.name})` : ""}
+                    </p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm border-collapse table-fixed">
+                        <colgroup>
+                          <col className="w-1/3" />
+                          <col className="w-1/3" />
+                          <col className="w-1/3" />
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            {photoLabels.map((pl) => (
+                              <th key={pl.key} className={thClass + " text-center"}>{pl.label}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {photoLabels.map((pl) => (
+                              <td key={pl.key} className={tdClass}>
+                                {renderAttachRow(pl.label, pl.key)}
+                              </td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          );
         })()}
       </div>
     </div>
