@@ -50,7 +50,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
         <h1 className="text-sidebar-foreground font-bold tracking-tight text-base">DXG IoT 문서 자동화</h1>
         <div className="flex items-center justify-between mt-2">
           <span className="text-xs text-sidebar-foreground/60">
-            {userName} ({role})
+            {user?.name} ({user?.role})
           </span>
           <button
             onClick={logout}
