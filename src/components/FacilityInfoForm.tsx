@@ -520,7 +520,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
 
               {/* 배출시설 사진 - supported인 배출시설만, 같은 표 흐름 내 행 반복 */}
               {(() => {
-                const supportedEmissions = emissions.filter((e) => e.supported);
+                const supportedEmissions = emissions.filter((e) => e.supported && !e.exempt);
                 if (supportedEmissions.length === 0) return null;
 
                 return (
