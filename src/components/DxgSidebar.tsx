@@ -2,13 +2,7 @@ import { Search, Building2, Settings2, FileText, LogOut, FilePlus2 } from "lucid
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
 interface DxgSidebarProps {
@@ -23,7 +17,7 @@ const menuItems = [
 ];
 
 const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
-  const { userName, role, token, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const { projectList, loadProjectList, loadProject, saveDraft, saveFinal, saving, resetProject } = useProject();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -120,41 +114,20 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
             </SelectContent>
           </Select>
           <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="w-full"
-              onClick={handleLoad}
-              disabled={!selectedProject}
-            >
+            <Button variant="secondary" size="sm" className="w-full" onClick={handleLoad} disabled={!selectedProject}>
               불러오기
             </Button>
-            <Button
-              size="sm"
-              className="w-full"
-              onClick={handleNew}
-            >
+            <Button size="sm" className="w-full" onClick={handleNew}>
               <FilePlus2 className="mr-1.5 h-3.5 w-3.5" />
               신규
             </Button>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            className="w-full"
-            onClick={() => saveDraft(token)}
-            disabled={saving}
-          >
+          <Button variant="secondary" size="sm" className="w-full" onClick={() => saveDraft(token)} disabled={saving}>
             {saving ? "저장중..." : "임시저장"}
           </Button>
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={() => saveFinal(token)}
-            disabled={saving}
-          >
+          <Button size="sm" className="w-full" onClick={() => saveFinal(token)} disabled={saving}>
             {saving ? "저장중..." : "최종저장"}
           </Button>
         </div>
