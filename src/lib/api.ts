@@ -140,18 +140,23 @@ export const apiGenerateDoc = (
   type: "daejin" | "energy" | "certificate",
   data: any,
   token?: string,
-  user?: { name: string; phone: string },
+  user?: { id: string; name: string; phone: string; role: "admin" | "user" } | null,
 ) =>
   apiFetch<DocGenResponse>(`/api/generate/${type}`, {
     method: "POST",
     body: {
       ...data,
-      user, // 🔥 핵심 추가
+      user,
     },
     token,
   });
 
-export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: unknown, token?: string) => {
+export const apiGenerateMergedDoc = async (
+  orgType: "daejin" | "energy",
+  data: unknown,
+  token?: string,
+  user?: { id: string; name: string; phone: string; role: "admin" | "user" } | null,
+) => {
   const proj = data as Record<string, unknown> | undefined;
   const biz = (proj?.business ?? {}) as Record<string, unknown>;
 
@@ -229,6 +234,7 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
 
   const requestBody = {
     org_type: orgType,
+    user,
     project_data: {
       ...(proj ?? {}),
       pollutants: mappedPollutants,

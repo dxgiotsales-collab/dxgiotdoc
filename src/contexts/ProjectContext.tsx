@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import type { EmissionFacility, PreventionFacility } from "@/types/facility";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import {
   apiCalculate,
   apiGenerateDoc,
@@ -12,7 +14,8 @@ import {
   type DocGenResponse,
   type ProjectListItem,
 } from "@/lib/api";
-import { toast } from "@/hooks/use-toast";
+
+const { user } = useAuth();
 
 // ---- Business info shape ----
 export interface BusinessInfo {
@@ -336,8 +339,8 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
         const res =
           type === "daejin" || type === "energy"
-            ? await apiGenerateMergedDoc(type, payload, token)
-            : await apiGenerateDoc(type, payload, token);
+            ? await apiGenerateMergedDoc(type, payload, token, user)
+            : await apiGenerateDoc(type, payload, token, user);
 
         if (res.success) {
           const key = type === "certificate" ? "report" : type;
