@@ -136,10 +136,18 @@ export interface DocGenResponse {
   download_url?: string;
 }
 
-export const apiGenerateDoc = (type: "daejin" | "energy" | "certificate", data: unknown, token?: string) =>
+export const apiGenerateDoc = (
+  type: "daejin" | "energy" | "certificate",
+  data: any,
+  token?: string,
+  user?: { name: string; phone: string },
+) =>
   apiFetch<DocGenResponse>(`/api/generate/${type}`, {
     method: "POST",
-    body: data,
+    body: {
+      ...data,
+      user, // 🔥 핵심 추가
+    },
     token,
   });
 
