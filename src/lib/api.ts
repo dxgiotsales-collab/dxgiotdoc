@@ -35,8 +35,12 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
 // ----- Auth -----
 export interface LoginResponse {
   success: boolean;
-  user_name: string;
-  role: "admin" | "user";
+  user: {
+    id: string;
+    name: string;
+    phone: string;
+    role: "admin" | "user";
+  };
   token?: string;
 }
 
@@ -159,7 +163,7 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
     fileUploadPromises.push(
       apiUploadFile(biz.layoutFile, token).then((res) => {
         layoutFilePath = res.file_path;
-      })
+      }),
     );
   } else if (typeof biz.layoutFile === "string" && biz.layoutFile !== "") {
     layoutFilePath = biz.layoutFile as string;
@@ -169,7 +173,7 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
     fileUploadPromises.push(
       apiUploadFile(biz.locationFile, token).then((res) => {
         locationFilePath = res.file_path;
-      })
+      }),
     );
   } else if (typeof biz.locationFile === "string" && biz.locationFile !== "") {
     locationFilePath = biz.locationFile as string;
@@ -194,7 +198,7 @@ export const apiGenerateMergedDoc = async (orgType: "daejin" | "energy", data: u
       uploadPromises.push(
         apiUploadFile(val, token).then((res) => {
           photoInputs[key] = res.file_path;
-        })
+        }),
       );
     } else if (typeof val === "string" && val !== "") {
       photoInputs[key] = val;
