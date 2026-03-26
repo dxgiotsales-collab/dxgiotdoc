@@ -15,8 +15,6 @@ import {
   type ProjectListItem,
 } from "@/lib/api";
 
-const { user } = useAuth();
-
 // ---- Business info shape ----
 export interface BusinessInfo {
   name: string;
@@ -146,6 +144,8 @@ export const useProject = () => {
 };
 
 export const ProjectProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+
   const [project, setProject] = useState<ProjectState>({ ...defaultProject });
   const [projectList, setProjectList] = useState<ProjectListItem[]>([]);
   const [saving, setSaving] = useState(false);
@@ -365,7 +365,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
     },
-    [project],
+    [project, user],
   );
 
   return (
