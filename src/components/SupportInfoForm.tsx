@@ -59,6 +59,15 @@ const commaFormat = (value: number | string | undefined | null) => {
   return num.toLocaleString("ko-KR");
 };
 
+const { project } = useProject();
+
+useEffect(() => {
+  if (!project) return;
+
+  // 👉 여기 기존 센서 계산 함수 호출
+  recalcSensor(project);
+}, [project]);
+
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
