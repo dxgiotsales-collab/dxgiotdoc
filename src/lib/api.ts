@@ -237,6 +237,7 @@ export const apiGenerateMergedDoc = async (
     user,
     project_data: {
       ...(proj ?? {}),
+      photoInputs: undefined,
       pollutants: mappedPollutants,
       photo_inputs: photoInputs,
       images: {
