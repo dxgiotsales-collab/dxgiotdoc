@@ -1,64 +1,3 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import type { EmissionFacility, PreventionFacility } from "@/types/facility";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProject } from "@/contexts/ProjectContext";
-
-const thClass =
-  "px-3 py-2 text-xs font-medium text-muted-foreground text-center bg-muted/50 border-b border-border whitespace-nowrap";
-const tdClass = "px-2 py-1.5 border-b border-border text-center text-sm";
-
-const commaFormat = (n: number) => n.toLocaleString("ko-KR");
-
-// Sensor master data
-const sensorMaster = [
-  { name: "전류계(세정/전기시설)", unitPrice: 300000 },
-  { name: "차압계(압력계)", unitPrice: 400000 },
-  { name: "온도계", unitPrice: 500000 },
-  { name: "ph계", unitPrice: 1000000 },
-  { name: "전류계(배출시설)", unitPrice: 300000 },
-  { name: "전류계(방지시설)", unitPrice: 300000 },
-  { name: "IoT게이트웨이", unitPrice: 1600000 },
-  { name: "IoT게이트웨이(복수형)", unitPrice: 2080000 },
-  { name: "VPN", unitPrice: 400000 },
-];
-
-const defaultBasisPlaceholder: Record<string, string> = {
-  "전류계(배출시설)": "(예시) 배출구 1번 (흡수에의한시설)의 경우 배출시설 2기를 포함함",
-  "전류계(방지시설)":
-    "(예시) 배출구 1번 (1차)여과에의한시설 + (2차)흡착에의한시설로 송풍기 1기 현장설치 확인. 송풍기 가동 확인을 위해 전류계 1기를 설치하고자 함",
-  "차압계(압력계)":
-    "(예시) (1차)여과에의한시설+(2차)흡착에의한시설로 (1차)여과에의한시설은 집진시설 본체가 분리되어 있고, 내부 확인 결과 각각 차압 확인이 필요하다고 판단되어 2기를 설치하고자 함",
-  온도계: "(예시) 방지시설 전단 인입배관이 두 개로 현장 확인되어 각 배관에 1기씩 총 2기를 설치하고자 함",
-  ph계: "",
-  IoT게이트웨이: "(예시) 외부요인(직사광선, 비 등), 눈높이, 접근성 등을 고려하여 위치를 선정함(도면 참조)",
-  "IoT게이트웨이(복수형)": "(예시) 외부요인(직사광선, 비 등), 눈높이, 접근성 등을 고려하여 위치를 선정함(도면 참조)",
-  VPN: "(예시) 게이트웨이(단수형) 1기 설치로, VPN 1기를 설치하고자 함.",
-  "전류계(세정/전기시설)": "",
-};
-
-const prevTypeSensorMap: Record<string, Record<string, number>> = {
-  여과집진시설: { "차압계(압력계)": 1, 온도계: 1, "전류계(방지시설)": 1 },
-  "흡착에 의한 시설": { "차압계(압력계)": 1, 온도계: 1, "전류계(방지시설)": 1 },
-  "원심력 집진시설": { "전류계(방지시설)": 1 },
-  세정집진시설: { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1 },
-  전기집진시설: { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1 },
-  "흡수에 의한 시설": { "전류계(세정/전기시설)": 1, "전류계(방지시설)": 1, ph계: 1 },
-  "여과 및 흡착에 의한 시설": { "차압계(압력계)": 1, 온도계: 1, "전류계(방지시설)": 1 },
-};
-
-interface SensorRow {
-  name: string;
-  unitPrice: number;
-  quantities: Record<string, number>;
-  basis: string;
-}
-
-interface Props {
-  emissions: EmissionFacility[];
-  preventions: PreventionFacility[];
-}
-
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
@@ -117,7 +56,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   );
   const [docUrls, setDocUrls] = useState(project.support.docUrls || { daejin: "", energy: "", report: "" });
 
+  const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 1) 초기 1회만 project.support.sensors 사용
   useEffect(() => {
+    if (initialized) return;
+
     if (project.support.sensors && project.support.sensors.length > 0) {
       setSensors(project.support.sensors);
     } else {
@@ -130,8 +74,33 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
         })),
       );
     }
+
     setInitialized(true);
-  }, [computeDefaults, project.support.sensors]);
+  }, [initialized, project.support.sensors, computeDefaults]);
+
+  // 2) 탭2 변경 시 센서 구조 즉시 재정렬
+  useEffect(() => {
+    if (!initialized) return;
+
+    setSensors((prev) =>
+      sensorMaster.map((masterSensor) => {
+        const existing = prev.find((s) => s.name === masterSensor.name);
+
+        const nextQuantities: Record<string, number> = {};
+        for (const p of supportedPreventions) {
+          nextQuantities[p.facilityNo] =
+            existing?.quantities?.[p.facilityNo] ?? computeDefaults[masterSensor.name]?.[p.facilityNo] ?? 0;
+        }
+
+        return {
+          name: masterSensor.name,
+          unitPrice: masterSensor.unitPrice,
+          quantities: nextQuantities,
+          basis: existing?.basis ?? "",
+        };
+      }),
+    );
+  }, [initialized, JSON.stringify(computeDefaults), JSON.stringify(supportedPreventions)]);
 
   useEffect(() => {
     if (initialized) {
@@ -171,8 +140,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const subsidyAmount = Math.floor(totalCost * (subsidyRatio / 100));
   const selfAmount = Math.floor(totalCost * (selfRatio / 100));
 
-  const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const triggerCalc = () => {
     if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
 
@@ -180,8 +147,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       setCalculating(true);
 
       const res = await runCalculation(token);
-      console.log("🔥 계산 응답", res);
-      console.log("🔥 sensor row 0", res?.sensor_rows?.[0]);
 
       if (res && res.sensor_rows && Array.isArray(res.sensor_rows)) {
         const mappedSensors = res.sensor_rows.map((row: any) => {
@@ -191,11 +156,13 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
           });
 
+          const prevSensor = sensors.find((s) => s.name === row.ITEM_NAME);
+
           return {
             name: row.ITEM_NAME,
             unitPrice: row.ITEM_UNIT_PRICE,
             quantities,
-            basis: row.basis_text ?? "",
+            basis: prevSensor?.basis ?? row.basis_text ?? "",
           };
         });
 
@@ -400,5 +367,3 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     </div>
   );
 };
-
-export default SupportInfoForm;
