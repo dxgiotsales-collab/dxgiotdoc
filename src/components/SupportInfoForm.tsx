@@ -1,5 +1,33 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { Button } from "@/components/ui/button";
+import { commaFormat } from "@/lib/utils";
+import { sensorMaster, prevTypeSensorMap, defaultBasisPlaceholder } from "@/constants/support";
+import type { SensorRow } from "@/types/support";
+
+type Props = {
+  emissions: Array<{
+    id: number;
+    outletNo: number;
+    facilityNo: string;
+    name: string;
+    capacity: string;
+    unit: string;
+    supported: boolean;
+    exempt: boolean;
+  }>;
+  preventions: Array<{
+    id: number;
+    outletNo: number;
+    facilityNo: string;
+    type: string;
+    capacity: string;
+    unit: string;
+    installDate: string;
+    supported: boolean;
+  }>;
+};
 
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
