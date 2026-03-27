@@ -100,7 +100,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
 
   const handleFileChange = (key: string, file: File | null) => {
     console.log("save-photo", key, file?.name);
-    
+
     setPhotoInputs((prev) => {
       const next = {
         ...prev,
@@ -122,13 +122,20 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
   };
 
   const renderAttachRow = (label: string, key: string) => {
-    const file = photoFiles[key];
+    const value = photoFiles[key];
+
+    const isFileObject = value instanceof File;
+    const isNonEmptyString = typeof value === "string" && value.trim() !== "";
+
+    const hasFile = isFileObject || isNonEmptyString;
+
+    const fileName = isFileObject ? value.name : isNonEmptyString ? value.split(/[\\/]/).pop() || value : "";
 
     return (
       <div key={key} className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="text-xs truncate">{label}</div>
-          {file ? <div className="text-[11px] text-muted-foreground truncate mt-1">{file.name}</div> : null}
+          {hasFile ? <div className="text-[11px] text-muted-foreground truncate mt-1">{fileName}</div> : null}
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
@@ -152,7 +159,7 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
             첨부파일
           </Button>
 
-          {file ? (
+          {hasFile ? (
             <Button
               type="button"
               variant="ghost"
@@ -533,7 +540,9 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
                       </colgroup>
                       <thead>
                         <tr>
-                          <th className={thClass + " text-center"} colSpan={3}>○ 배출시설 ○</th>
+                          <th className={thClass + " text-center"} colSpan={3}>
+                            ○ 배출시설 ○
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
