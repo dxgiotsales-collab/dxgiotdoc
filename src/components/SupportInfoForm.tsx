@@ -103,6 +103,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
 
   const triggerCalc = useCallback(() => {
+    console.log("🔥 triggerCalc 실행됨");
     if (!token) return;
 
     if (calcTimerRef.current) {
