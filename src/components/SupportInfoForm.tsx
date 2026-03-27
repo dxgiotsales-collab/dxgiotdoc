@@ -187,7 +187,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     return () => {
       if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
     };
-  }, [JSON.stringify(emissions), JSON.stringify(preventions), initialized]);
+  }, [emissions, preventions, initialized]);
 
   const handleGenerate = async (type: "daejin" | "energy" | "certificate") => {
     const res = await generateDoc(type, token);
