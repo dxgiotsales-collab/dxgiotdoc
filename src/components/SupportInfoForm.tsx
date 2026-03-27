@@ -367,3 +367,5 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     </div>
   );
 };
+
+export default SupportInfoForm;
