@@ -115,6 +115,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       try {
         const res = (await runCalculation(token)) as CalcResponse | null;
 
+        console.log("🔥 sensor_rows:", res?.sensor_rows);
+
         if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
           const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
             const quantities: Record<string, number> = {};
