@@ -1,3 +1,5 @@
+import { useAuth } from "@/contexts/AuthContext";
+
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
