@@ -1,32 +1,62 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
-import { Button } from "@/components/ui/button";
-import { commaFormat } from "@/lib/utils";
-import { sensorMaster, prevTypeSensorMap, defaultBasisPlaceholder } from "@/constants/support";
-import type { SensorRow } from "@/types/support";
+
+type EmissionRow = {
+  id: number;
+  outletNo: number;
+  facilityNo: string;
+  name: string;
+  capacity: string;
+  unit: string;
+  supported: boolean;
+  exempt: boolean;
+};
+
+type PreventionRow = {
+  id: number;
+  outletNo: number;
+  facilityNo: string;
+  type: string;
+  capacity: string;
+  unit: string;
+  installDate: string;
+  supported: boolean;
+};
 
 type Props = {
-  emissions: Array<{
-    id: number;
-    outletNo: number;
-    facilityNo: string;
-    name: string;
-    capacity: string;
-    unit: string;
-    supported: boolean;
-    exempt: boolean;
+  emissions: EmissionRow[];
+  preventions: PreventionRow[];
+};
+
+type SensorRow = {
+  name: string;
+  unitPrice: number;
+  quantities: Record<string, number>;
+  basis: string;
+};
+
+type CalcResponse = {
+  success?: boolean;
+  subsidy_ratio?: number;
+  self_ratio?: number;
+  sensor_rows?: Array<{
+    ITEM_NAME: string;
+    ITEM_UNIT_PRICE: number;
+    prevention_qtys?: number[];
+    basis_text?: string;
   }>;
-  preventions: Array<{
-    id: number;
-    outletNo: number;
-    facilityNo: string;
-    type: string;
-    capacity: string;
-    unit: string;
-    installDate: string;
-    supported: boolean;
-  }>;
+};
+
+const thClass =
+  "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
+const tdClass = "px-2 py-1.5 border-b border-border";
+
+const commaFormat = (value: number | string | undefined | null) => {
+  const num = Number(value || 0);
+  if (Number.isNaN(num)) return "0";
+  return num.toLocaleString("ko-KR");
 };
 
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
@@ -43,41 +73,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       }));
   }, [preventions]);
 
-  const uniqueOutletCount = useMemo(() => {
-    const outlets = new Set<number>();
-    for (const p of supportedPreventions) outlets.add(p.outletNo);
-    return outlets.size;
-  }, [supportedPreventions]);
-
-  const emissionCountByPrev = useMemo(() => {
-    const eligibleEmissions = emissions.filter((e) => e.supported && !e.exempt);
-    const counts: Record<string, number> = {};
-    for (const p of supportedPreventions) {
-      counts[p.facilityNo] = eligibleEmissions.filter((e) => e.outletNo === p.outletNo).length;
-    }
-    return counts;
-  }, [emissions, supportedPreventions]);
-
-  const computeDefaults = useMemo(() => {
-    const defaults: Record<string, Record<string, number>> = {};
-    for (const sensor of sensorMaster) {
-      defaults[sensor.name] = {};
-      for (let pi = 0; pi < supportedPreventions.length; pi++) {
-        const p = supportedPreventions[pi];
-        let qty = 0;
-        const mapping = prevTypeSensorMap[p.type];
-        if (mapping && mapping[sensor.name] !== undefined) qty = mapping[sensor.name];
-        if (sensor.name === "전류계(배출시설)") qty = emissionCountByPrev[p.facilityNo] || 0;
-        if (sensor.name === "IoT게이트웨이") qty = pi === 0 && uniqueOutletCount === 1 ? 1 : 0;
-        if (sensor.name === "IoT게이트웨이(복수형)") qty = pi === 0 && uniqueOutletCount >= 2 ? 1 : 0;
-        if (sensor.name === "VPN") qty = pi === 0 ? 1 : 0;
-        defaults[sensor.name][p.facilityNo] = qty;
-      }
-    }
-    return defaults;
-  }, [supportedPreventions, emissionCountByPrev, uniqueOutletCount]);
-
-  const [sensors, setSensors] = useState<SensorRow[]>([]);
+  const [sensors, setSensors] = useState<SensorRow[]>(project.support.sensors || []);
   const [initialized, setInitialized] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [subsidyRatio, setSubsidyRatio] = useState(project.support.subsidyRatio || 60);
@@ -89,55 +85,21 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 1) 초기 1회만 project.support.sensors 사용
   useEffect(() => {
-    if (initialized) return;
-
-    if (project.support.sensors && project.support.sensors.length > 0) {
-      setSensors(project.support.sensors);
-    } else {
-      setSensors(
-        sensorMaster.map((s) => ({
-          name: s.name,
-          unitPrice: s.unitPrice,
-          quantities: { ...(computeDefaults[s.name] || {}) },
-          basis: "",
-        })),
-      );
-    }
-
     setInitialized(true);
-  }, [initialized, project.support.sensors, computeDefaults]);
+  }, []);
 
-  // 2) 탭2 변경 시 센서 구조 즉시 재정렬
   useEffect(() => {
     if (!initialized) return;
 
-    setSensors((prev) =>
-      sensorMaster.map((masterSensor) => {
-        const existing = prev.find((s) => s.name === masterSensor.name);
-
-        const nextQuantities: Record<string, number> = {};
-        for (const p of supportedPreventions) {
-          nextQuantities[p.facilityNo] =
-            existing?.quantities?.[p.facilityNo] ?? computeDefaults[masterSensor.name]?.[p.facilityNo] ?? 0;
-        }
-
-        return {
-          name: masterSensor.name,
-          unitPrice: masterSensor.unitPrice,
-          quantities: nextQuantities,
-          basis: existing?.basis ?? "",
-        };
-      }),
-    );
-  }, [initialized, JSON.stringify(computeDefaults), JSON.stringify(supportedPreventions)]);
-
-  useEffect(() => {
-    if (initialized) {
-      updateSupport({ sensors, subsidyRatio, selfRatio });
-    }
-  }, [sensors, subsidyRatio, selfRatio, initialized, updateSupport]);
+    updateSupport({
+      sensors,
+      subsidyRatio,
+      selfRatio,
+      docStatus,
+      docUrls,
+    });
+  }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     setSensors((prev) =>
@@ -148,6 +110,54 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const updateBasis = (sensorIdx: number, value: string) => {
     setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
   };
+
+  const triggerCalc = () => {
+    if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
+
+    calcTimerRef.current = setTimeout(async () => {
+      setCalculating(true);
+
+      const res = (await runCalculation(token)) as CalcResponse | null;
+
+      if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
+        const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
+          const quantities: Record<string, number> = {};
+
+          supportedPreventions.forEach((p, idx) => {
+            quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
+          });
+
+          const prevSensor = sensors.find((s) => s.name === row.ITEM_NAME);
+
+          return {
+            name: row.ITEM_NAME,
+            unitPrice: row.ITEM_UNIT_PRICE || 0,
+            quantities,
+            basis: prevSensor?.basis ?? row.basis_text ?? "",
+          };
+        });
+
+        setSensors(mappedSensors);
+      }
+
+      if (res) {
+        setSubsidyRatio(res.subsidy_ratio ?? subsidyRatio);
+        setSelfRatio(res.self_ratio ?? selfRatio);
+      }
+
+      setCalculating(false);
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (initialized && supportedPreventions.length > 0) {
+      triggerCalc();
+    }
+
+    return () => {
+      if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
+    };
+  }, [initialized, JSON.stringify(emissions), JSON.stringify(preventions)]);
 
   const sensorTotals = useMemo(() => {
     return sensors.map((s) => {
@@ -170,55 +180,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   const subsidyAmount = Math.floor(totalCost * (subsidyRatio / 100));
   const selfAmount = Math.floor(totalCost * (selfRatio / 100));
-
-  const triggerCalc = () => {
-    if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
-
-    calcTimerRef.current = setTimeout(async () => {
-      setCalculating(true);
-
-      const res = await runCalculation(token);
-
-      if (res && res.sensor_rows && Array.isArray(res.sensor_rows)) {
-        const mappedSensors = res.sensor_rows.map((row: any) => {
-          const quantities: Record<string, number> = {};
-
-          supportedPreventions.forEach((p, idx) => {
-            quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
-          });
-
-          const prevSensor = sensors.find((s) => s.name === row.ITEM_NAME);
-
-          return {
-            name: row.ITEM_NAME,
-            unitPrice: row.ITEM_UNIT_PRICE,
-            quantities,
-            basis: prevSensor?.basis ?? row.basis_text ?? "",
-          };
-        });
-
-        setSensors(mappedSensors);
-      }
-
-      if (res) {
-        updateSupport({
-          subsidyRatio: res.subsidy_ratio ?? project.support.subsidyRatio,
-          selfRatio: res.self_ratio ?? project.support.selfRatio,
-        });
-      }
-
-      setCalculating(false);
-    }, 800);
-  };
-
-  useEffect(() => {
-    if (initialized && supportedPreventions.length > 0) {
-      triggerCalc();
-    }
-    return () => {
-      if (calcTimerRef.current) clearTimeout(calcTimerRef.current);
-    };
-  }, [emissions, preventions, initialized]);
 
   const handleGenerate = async (type: "daejin" | "energy" | "certificate") => {
     const res = await generateDoc(type, token);
@@ -272,9 +233,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                 </td>
                 <td className={tdClass + " font-semibold text-foreground"}>{commaFormat(selfAmount)}</td>
               </tr>
+
               {prevSubtotals.map((ps) => {
                 const subSubsidy = Math.floor(ps.subtotal * (subsidyRatio / 100));
                 const subSelf = Math.floor(ps.subtotal * (selfRatio / 100));
+
                 return (
                   <tr key={ps.facilityNo}>
                     <td className={tdClass + " text-foreground whitespace-nowrap"}>
@@ -313,11 +276,13 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             <tbody>
               {sensors.map((sensor, si) => {
                 const totals = sensorTotals[si];
+
                 return (
                   <tr key={si}>
                     <td className={tdClass + " font-medium text-foreground whitespace-nowrap"}>{sensor.name}</td>
                     <td className={tdClass}>{commaFormat(sensor.unitPrice)}</td>
                     <td className={tdClass + " font-medium text-foreground"}>{totals.totalQty}</td>
+
                     {supportedPreventions.map((p) => (
                       <td key={p.facilityNo} className={tdClass}>
                         <input
@@ -329,11 +294,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                         />
                       </td>
                     ))}
+
                     <td className={tdClass}>
                       <input
                         type="text"
                         className="dxg-input w-full min-w-[280px] text-left"
-                        placeholder={defaultBasisPlaceholder[sensor.name] || ""}
                         value={sensor.basis}
                         onChange={(e) => updateBasis(si, e.target.value)}
                       />
@@ -341,6 +306,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                   </tr>
                 );
               })}
+
               <tr className="bg-muted/30">
                 <td className={tdClass + " font-semibold text-foreground"}>합계</td>
                 <td className={tdClass}>-</td>
@@ -357,6 +323,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             </tbody>
           </table>
         </div>
+
         {supportedPreventions.length === 0 && (
           <p className="text-sm text-muted-foreground">시설 정보 탭에서 방지시설의 지원대상을 체크해주세요.</p>
         )}
