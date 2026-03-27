@@ -64,9 +64,12 @@ const { project } = useProject();
 useEffect(() => {
   if (!project) return;
 
-  // 👉 여기 기존 센서 계산 함수 호출
+  console.log("🔥 project 전체", project);
+  console.log("🔥 preventionFacilities", project.preventionFacilities);
+  console.log("🔥 emissionFacilities", project.emissionFacilities);
+
   recalcSensor(project);
-}, [project.preventionFacilities, project.emissionFacilities]);
+}, [project, project?.preventionFacilities, project?.emissionFacilities]);
 
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
