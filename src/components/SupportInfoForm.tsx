@@ -103,8 +103,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
 
   const triggerCalc = useCallback(() => {
-    console.log("supportedPreventions", supportedPreventions);
-    console.log("res.sensor_rows", res?.sensor_rows);
     if (!token) return;
 
     if (calcTimerRef.current) {
@@ -117,7 +115,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       try {
         const res = (await runCalculation(token)) as CalcResponse | null;
 
-        console.log("🔥 sensor_rows:", res?.sensor_rows);
+        console.log("🔥 supportedPreventions", supportedPreventions);
+        console.log("🔥 sensor_rows", res?.sensor_rows);
 
         if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
           const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
