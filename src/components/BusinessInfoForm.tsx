@@ -167,6 +167,7 @@ const BusinessInfoForm = () => {
       {/* Section 2 */}
       <div className="flex-1 min-w-0 rounded-lg border border-border bg-card shadow-sm p-6 space-y-4">
         <h2 className="dxg-section-title">2. 사업장 부가정보</h2>
+        {/* 상단 2열 */}
         <div className="grid grid-cols-2 gap-x-5 gap-y-3">
           <Field label="지원사업 관할기관" placeholder="(재)경기환경에너지진흥원" value={biz.authority} onChange={(v) => set("authority", v)} />
           <FileInput
@@ -181,63 +182,70 @@ const BusinessInfoForm = () => {
             onFileSelect={(file) => updateBusiness({ layoutFile: file })}
           />
           <Field label="착공 예정일" placeholder="2026-04" value={biz.startDate} onChange={(v) => set("startDate", v)} />
-          <div className="space-y-2">
-            {pollutants.map((p, idx) => (
-              <div key={p.id} className="flex items-end gap-2">
-                <div className="flex-1 space-y-1">
-                  <label className="dxg-label">오염물질 종류 {idx + 1}</label>
-                  <input type="text" className="dxg-input" placeholder="종류 입력" value={p.type} onChange={(e) => updatePollutant(p.id, "type", e.target.value)} />
-                </div>
-                <div className="flex-1 space-y-1">
-                  <label className="dxg-label">발생양 {idx + 1}</label>
-                  <input type="text" className="dxg-input" placeholder="발생양 입력" value={p.amount} onChange={(e) => updatePollutant(p.id, "amount", e.target.value)} />
-                </div>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => removePollutant(p.id)} disabled={pollutants.length === 1}>
-                  <Minus className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={addPollutant}>
+          <Field label="준공 예정일" placeholder="2026-12" value={biz.endDate} onChange={(v) => set("endDate", v)} />
+        </div>
+
+        {/* 하단 블록1: 오염물질 종류 및 발생량 */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="dxg-label">오염물질 종류 및 발생량</label>
+            <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={addPollutant}>
               <Plus className="h-3.5 w-3.5 mr-1" />
               오염물질 추가
             </Button>
           </div>
-          <Field label="준공 예정일" placeholder="2026-12" value={biz.endDate} onChange={(v) => set("endDate", v)} />
-
-          {/* 최근 자가측정일 - 리스트형 */}
-          <div className="space-y-2 col-span-2">
-            <label className="dxg-label">최근 자가측정 항목</label>
-            {measurementItems.map((m, idx) => (
-              <div key={m.id} className="flex items-end gap-2">
-                <div className="flex-1 space-y-1">
-                  <label className="dxg-label text-[10px]">오염물질</label>
-                  <input type="text" className="dxg-input" placeholder="먼지" value={m.pollutant} onChange={(e) => updateMeasurementItem(m.id, "pollutant", e.target.value)} />
-                </div>
-                <div className="w-20 space-y-1">
-                  <label className="dxg-label text-[10px]">발생량</label>
-                  <input type="number" className="dxg-input text-center" placeholder="2.0" value={m.amount} onChange={(e) => updateMeasurementItem(m.id, "amount", e.target.value)} />
-                </div>
-                <div className="w-24 space-y-1">
-                  <label className="dxg-label text-[10px]">단위</label>
-                  <select className="dxg-input" value={m.unit} onChange={(e) => updateMeasurementItem(m.id, "unit", e.target.value)}>
-                    <option value="mg/S㎥">mg/S㎥</option>
-                    <option value="ppm">ppm</option>
-                  </select>
-                </div>
-                <div className="w-36 space-y-1">
-                  <label className="dxg-label text-[10px]">날짜</label>
-                  <input type="date" className="dxg-input" value={m.date} onChange={(e) => updateMeasurementItem(m.id, "date", e.target.value)} />
-                </div>
-                <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => removeMeasurementItem(m.id)}>
-                  <Minus className="h-3.5 w-3.5" />
-                </Button>
+          {pollutants.map((p, idx) => (
+            <div key={p.id} className="flex items-end gap-2">
+              <div className="flex-1 space-y-1">
+                <label className="dxg-label text-[10px]">오염물질 종류 {idx + 1}</label>
+                <input type="text" className="dxg-input" placeholder="종류 입력" value={p.type} onChange={(e) => updatePollutant(p.id, "type", e.target.value)} />
               </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={addMeasurementItem}>
+              <div className="flex-1 space-y-1">
+                <label className="dxg-label text-[10px]">발생양 {idx + 1}</label>
+                <input type="text" className="dxg-input" placeholder="발생양 입력" value={p.amount} onChange={(e) => updatePollutant(p.id, "amount", e.target.value)} />
+              </div>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => removePollutant(p.id)} disabled={pollutants.length === 1}>
+                <Minus className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        {/* 하단 블록2: 최근 자가측정 항목 */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="dxg-label">최근 자가측정 항목</label>
+            <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={addMeasurementItem}>
               <Plus className="h-3.5 w-3.5 mr-1" />
               항목 추가
             </Button>
           </div>
+          {measurementItems.map((m) => (
+            <div key={m.id} className="flex items-end gap-2">
+              <div className="flex-1 space-y-1">
+                <label className="dxg-label text-[10px]">오염물질</label>
+                <input type="text" className="dxg-input" placeholder="먼지" value={m.pollutant} onChange={(e) => updateMeasurementItem(m.id, "pollutant", e.target.value)} />
+              </div>
+              <div className="w-20 space-y-1">
+                <label className="dxg-label text-[10px]">발생량</label>
+                <input type="number" className="dxg-input text-center" placeholder="2.0" value={m.amount} onChange={(e) => updateMeasurementItem(m.id, "amount", e.target.value)} />
+              </div>
+              <div className="w-24 space-y-1">
+                <label className="dxg-label text-[10px]">단위</label>
+                <select className="dxg-input" value={m.unit} onChange={(e) => updateMeasurementItem(m.id, "unit", e.target.value)}>
+                  <option value="mg/S㎥">mg/S㎥</option>
+                  <option value="ppm">ppm</option>
+                </select>
+              </div>
+              <div className="w-36 space-y-1">
+                <label className="dxg-label text-[10px]">날짜</label>
+                <input type="date" className="dxg-input" value={m.date} onChange={(e) => updateMeasurementItem(m.id, "date", e.target.value)} />
+              </div>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => removeMeasurementItem(m.id)}>
+                <Minus className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
     </div>
