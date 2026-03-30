@@ -109,9 +109,9 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
     try {
       const res = (await runCalculation(token)) as CalcResponse | null;
-
+      console.log("🔥 res 전체", res);
+      console.log("🔥 res.sensor_rows", res?.sensor_rows);
       console.log("🔥 supportedPreventions", supportedPreventions);
-      console.log("🔥 sensor_rows", res?.sensor_rows);
 
       if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
         const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
@@ -120,7 +120,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
           supportedPreventions.forEach((p, idx) => {
             quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
           });
-
+          console.log("🔥 sensors state", sensors);
           return {
             name: row.ITEM_NAME,
             unitPrice: row.ITEM_UNIT_PRICE || 0,
