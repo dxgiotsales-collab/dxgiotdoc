@@ -249,6 +249,7 @@ export const apiGenerateMergedDoc = async (
         BUSINESS_LOCATION_MAP_FILE: locationFilePath,
       },
     },
+    calc_results: calcResult ?? undefined,
   };
 
   console.log("FULL REQUEST BODY =", requestBody);
