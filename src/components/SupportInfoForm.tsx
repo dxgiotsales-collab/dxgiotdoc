@@ -90,18 +90,19 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setInitialized(true);
   }, []);
 
-  #useEffect(() => {
-    #if (!initialized) return;
+  /*
+  useEffect(() => {
+    if (!initialized) return;
 
-    #updateSupport({
+    updateSupport({
       sensors,
       subsidyRatio,
       selfRatio,
       docStatus,
       docUrls,
-    #});
-  #}, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
-
+    });
+  }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
+  */
   const triggerCalc = useCallback(async () => {
     if (!token) return;
 
