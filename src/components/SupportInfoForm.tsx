@@ -60,6 +60,7 @@ const commaFormat = (value: number | string | undefined | null) => {
 };
 
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
+  alert("SupportInfoForm 진입");
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
 
