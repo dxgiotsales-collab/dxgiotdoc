@@ -150,7 +150,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       setSensors([]);
       return;
     }
-
+    console.log("🔥 triggerCalc 호출 직전", {
     triggerCalc();
 
     return () => {
