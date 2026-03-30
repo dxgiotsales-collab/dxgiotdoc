@@ -33,6 +33,7 @@ export interface BusinessInfo {
   managerPhone: string;
   pollutants: { id: number; type: string; amount: string }[];
   lastMeasureDate: string;
+  measurementItems: { id: number; pollutant: string; amount: string; unit: string; date: string }[];
   startDate: string;
   applyDate: string;
   endDate: string;
