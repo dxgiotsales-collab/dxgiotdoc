@@ -102,54 +102,46 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     });
   }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
 
-  const triggerCalc = useCallback(() => {
+  const triggerCalc = useCallback(async () => {
     if (!token) return;
 
-    if (calcTimerRef.current) {
-      clearTimeout(calcTimerRef.current);
-    }
+    setCalculating(true);
 
-    calcTimerRef.current = setTimeout(async () => {
-      setCalculating(true);
+    try {
+      const res = (await runCalculation(token)) as CalcResponse | null;
 
-      try {
-        const res = (await runCalculation(token)) as CalcResponse | null;
+      console.log("🔥 supportedPreventions", supportedPreventions);
+      console.log("🔥 sensor_rows", res?.sensor_rows);
 
-        console.log("🔥 supportedPreventions", supportedPreventions);
-        console.log("🔥 sensor_rows", res?.sensor_rows);
+      if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
+        const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
+          const quantities: Record<string, number> = {};
 
-        if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
-          const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
-            const quantities: Record<string, number> = {};
-
-            supportedPreventions.forEach((p, idx) => {
-              quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
-            });
-
-            const prevSensor = sensors.find((s) => s.name === row.ITEM_NAME);
-
-            return {
-              name: row.ITEM_NAME,
-              unitPrice: row.ITEM_UNIT_PRICE || 0,
-              quantities,
-              basis: prevSensor?.basis ?? row.basis_text ?? "",
-            };
+          supportedPreventions.forEach((p, idx) => {
+            quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
           });
 
-          setSensors(mappedSensors);
-        } else {
-          setSensors([]);
-        }
+          return {
+            name: row.ITEM_NAME,
+            unitPrice: row.ITEM_UNIT_PRICE || 0,
+            quantities,
+            basis: row.basis_text ?? "",
+          };
+        });
 
-        if (res) {
-          setSubsidyRatio(res.subsidy_ratio ?? 60);
-          setSelfRatio(res.self_ratio ?? 40);
-        }
-      } finally {
-        setCalculating(false);
+        setSensors(mappedSensors);
+      } else {
+        setSensors([]);
       }
-    }, 300);
-  }, [runCalculation, token, supportedPreventions, sensors]);
+
+      if (res) {
+        setSubsidyRatio(res.subsidy_ratio ?? 60);
+        setSelfRatio(res.self_ratio ?? 40);
+      }
+    } finally {
+      setCalculating(false);
+    }
+  }, [runCalculation, token, supportedPreventions]); // 🔥 sensors 제거
 
   useEffect(() => {
     if (!initialized) return;
