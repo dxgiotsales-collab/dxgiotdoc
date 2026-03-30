@@ -158,7 +158,7 @@ export const apiGenerateMergedDoc = async (
   data: unknown,
   token?: string,
   user?: { id: string; name: string; phone: string; role: "admin" | "user" } | null,
-  calcResult?: Record<string, unknown> | null,
+  calcResult?: CalcResponse | null,
 ) => {
   const proj = data as Record<string, unknown> | undefined;
   const biz = (proj?.business ?? {}) as Record<string, unknown>;
