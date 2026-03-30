@@ -105,7 +105,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   */
   const triggerCalc = useCallback(async () => {
     alert("triggerCalc 진입");
-    console.log("🔥 token", token);
+    console.log("🔥 token value =", token);
+    console.log("🔥 token typeof =", typeof token);
     if (!token) return;
 
     setCalculating(true);
