@@ -151,6 +151,9 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       return;
     }
     console.log("🔥 triggerCalc 호출 직전", {
+      initialized,
+      supportedPreventionsLength: supportedPreventions.length,
+    });
     triggerCalc();
 
     return () => {
