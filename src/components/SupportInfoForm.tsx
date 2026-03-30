@@ -60,7 +60,6 @@ const commaFormat = (value: number | string | undefined | null) => {
 };
 
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
-  alert("SupportInfoForm 진입");
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
 
@@ -121,7 +120,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
           supportedPreventions.forEach((p, idx) => {
             quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
           });
-          console.log("🔥 sensors state", sensors);
           return {
             name: row.ITEM_NAME,
             unitPrice: row.ITEM_UNIT_PRICE || 0,
@@ -210,6 +208,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   if (!initialized) return null;
 
+  console.log("🔥 sensors state", sensors);
   return (
     <div className="space-y-6 max-w-full">
       {calculating && <div className="text-xs text-muted-foreground animate-pulse">백엔드 계산 중...</div>}
