@@ -144,16 +144,18 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [runCalculation, token, supportedPreventions]); // 🔥 sensors 제거
 
   useEffect(() => {
+    console.log("🔥 useEffect 진입", {
+      initialized,
+      supportedPreventionsLength: supportedPreventions.length,
+      preventions,
+    });
     if (!initialized) return;
 
     if (supportedPreventions.length === 0) {
       setSensors([]);
       return;
     }
-    console.log("🔥 triggerCalc 호출 직전", {
-      initialized,
-      supportedPreventionsLength: supportedPreventions.length,
-    });
+    console.log("🔥 triggerCalc 호출 직전");
     triggerCalc();
 
     return () => {
