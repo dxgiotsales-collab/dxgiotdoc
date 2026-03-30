@@ -195,6 +195,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const key = type === "certificate" ? "report" : type;
       setDocStatus((prev) => ({ ...prev, [key]: true }));
       setDocUrls((prev) => ({ ...prev, [key]: res.download_url || "" }));
+
+      toast({
+        title: `${type === "daejin" ? "대진테크노파크" : type === "energy" ? "에너지진흥원" : "성적서 PDF"} 문서 생성 완료`,
+        className: "bg-primary text-primary-foreground border-primary",
+      });
     }
   };
 
