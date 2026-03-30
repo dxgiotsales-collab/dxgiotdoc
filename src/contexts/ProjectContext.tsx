@@ -33,6 +33,7 @@ export interface BusinessInfo {
   managerPhone: string;
   pollutants: { id: number; type: string; amount: string }[];
   lastMeasureDate: string;
+  measurementItems: { id: number; pollutant: string; amount: string; unit: string; date: string }[];
   startDate: string;
   applyDate: string;
   endDate: string;
@@ -58,6 +59,7 @@ const defaultBusiness: BusinessInfo = {
   managerPhone: "",
   pollutants: [{ id: 1, type: "", amount: "" }],
   lastMeasureDate: "",
+  measurementItems: [],
   startDate: "",
   applyDate: "",
   endDate: "",

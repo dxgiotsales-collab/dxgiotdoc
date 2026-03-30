@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
+import { toast } from "@/hooks/use-toast";
 
 type EmissionRow = {
   id: number;
@@ -195,6 +197,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const key = type === "certificate" ? "report" : type;
       setDocStatus((prev) => ({ ...prev, [key]: true }));
       setDocUrls((prev) => ({ ...prev, [key]: res.download_url || "" }));
+
+      toast({
+        title: `${type === "daejin" ? "대진테크노파크" : type === "energy" ? "에너지진흥원" : "성적서 PDF"} 문서 생성 완료`,
+        className: "bg-primary text-primary-foreground border-primary",
+      });
     }
   };
 
@@ -339,35 +346,34 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">3. 문서 생성</h2>
-        <div className="flex items-center gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {[
             { key: "daejin" as const, type: "daejin" as const, label: "대진테크노파크" },
             { key: "energy" as const, type: "energy" as const, label: "에너지진흥원" },
             { key: "report" as const, type: "certificate" as const, label: "성적서 PDF" },
           ].map(({ key, type, label }) => (
-            <div key={key} className="flex-1 flex items-center gap-2">
-              <Button variant="outline" className="flex-1 h-9 text-sm" onClick={() => handleGenerate(type)}>
-                {label}
-              </Button>
-
-              <span
-                className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                  docStatus[key] ? "bg-primary/10 text-primary font-medium" : "bg-muted text-muted-foreground"
-                }`}
+            <div key={key} className="flex flex-col gap-2">
+              <Button
+                className="w-full h-10 text-sm bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => handleGenerate(type)}
               >
-                {docStatus[key] ? "생성완료" : "생성대기"}
-              </span>
-
-              {docStatus[key] && docUrls[key] && (
-                <a
-                  href={docUrls[key]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary underline whitespace-nowrap"
-                >
-                  다운로드
-                </a>
-              )}
+                {label} 생성
+              </Button>
+              <Button
+                variant="outline"
+                className={`w-full h-10 text-sm ${
+                  docStatus[key] && docUrls[key]
+                    ? "border-primary text-primary bg-background hover:bg-primary/5"
+                    : "border-muted text-muted-foreground bg-muted cursor-not-allowed"
+                }`}
+                disabled={!docStatus[key] || !docUrls[key]}
+                onClick={() => {
+                  if (docUrls[key]) window.open(docUrls[key], "_blank");
+                }}
+              >
+                <Download className="h-4 w-4 mr-1.5" />
+                다운로드
+              </Button>
             </div>
           ))}
         </div>

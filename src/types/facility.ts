@@ -20,7 +20,7 @@ export interface PreventionFacility {
   supported: boolean;
 }
 
-export const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton"];
+export const unitOptions = ["HP", "㎥", "㎥/분", "KW", "ton", "ton/hr"];
 
 export const preventionTypes = [
   "여과집진시설",
