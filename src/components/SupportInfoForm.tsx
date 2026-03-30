@@ -104,18 +104,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
   */
   const triggerCalc = useCallback(async () => {
-    console.log("🔥 token value =", token);
-    console.log("🔥 token typeof =", typeof token);
     if (!token) return;
 
     setCalculating(true);
 
     try {
-      console.log("🔥 runCalculation 호출 직전", token);
       const res = (await runCalculation(token)) as CalcResponse | null;
-      console.log("🔥 res 전체", res);
-      console.log("🔥 res.sensor_rows", res?.sensor_rows);
-      console.log("🔥 supportedPreventions", supportedPreventions);
 
       if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
         const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
@@ -147,25 +141,14 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [runCalculation, token, supportedPreventions]); // 🔥 sensors 제거
 
   useEffect(() => {
-    console.log("🔥 useEffect 진입", {
-      initialized,
-      supportedPreventionsLength: supportedPreventions.length,
-      preventions,
-    });
     if (!initialized) return;
 
     if (supportedPreventions.length === 0) {
       setSensors([]);
       return;
     }
-    console.log("🔥 triggerCalc 호출 직전");
-    triggerCalc();
 
-    return () => {
-      if (calcTimerRef.current) {
-        clearTimeout(calcTimerRef.current);
-      }
-    };
+    triggerCalc();
   }, [initialized, emissions, preventions, supportedPreventions, triggerCalc]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
@@ -217,7 +200,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   if (!initialized) return null;
 
-  console.log("🔥 sensors state", sensors);
   return (
     <div className="space-y-6 max-w-full">
       {calculating && <div className="text-xs text-muted-foreground animate-pulse">백엔드 계산 중...</div>}
