@@ -339,10 +339,15 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
       try {
         const payload = getPayload();
 
+        // Run calculation first to get install_items, sensor_rows, totals, etc.
+        const calcPayload = getCalculatePayload();
+        const calcResult = await apiCalculate(calcPayload, token);
+        console.log("DOC_GEN calc result for payload merge =", calcResult);
+
         const res =
           type === "daejin" || type === "energy"
-            ? await apiGenerateMergedDoc(type, payload, token, user)
-            : await apiGenerateDoc(type, payload, token, user);
+            ? await apiGenerateMergedDoc(type, payload, token, user, calcResult)
+            : await apiGenerateDoc(type, payload, token, user, calcResult);
 
         if (res.success) {
           const key = type === "certificate" ? "report" : type;
