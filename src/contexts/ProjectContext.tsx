@@ -59,6 +59,7 @@ const defaultBusiness: BusinessInfo = {
   managerPhone: "",
   pollutants: [{ id: 1, type: "", amount: "" }],
   lastMeasureDate: "",
+  measurementItems: [],
   startDate: "",
   applyDate: "",
   endDate: "",
