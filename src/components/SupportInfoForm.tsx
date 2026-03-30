@@ -109,6 +109,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setCalculating(true);
 
     try {
+      console.log("🔥 runCalculation 호출 직전", token);
       const res = (await runCalculation(token)) as CalcResponse | null;
       console.log("🔥 res 전체", res);
       console.log("🔥 res.sensor_rows", res?.sensor_rows);
