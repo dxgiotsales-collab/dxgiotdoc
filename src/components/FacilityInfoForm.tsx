@@ -35,7 +35,7 @@ interface FacilityInfoFormProps {
 
 const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
   const { project, setPhotoInputs } = useProject();
-  const photoFiles = project.photoInputs || {};
+  const photoFiles: Record<string, File | null> = project.photoInputs || {};
   console.log("photoInputs-now", project.photoInputs);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -122,14 +122,14 @@ const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions
   };
 
   const renderAttachRow = (label: string, key: string) => {
-    const value = photoFiles[key];
+    const value: unknown = photoFiles[key];
 
     const isFileObject = value instanceof File;
-    const isNonEmptyString = typeof value === "string" && value.trim() !== "";
+    const isNonEmptyString = typeof value === "string" && (value as string).trim() !== "";
 
     const hasFile = isFileObject || isNonEmptyString;
 
-    const fileName = isFileObject ? value.name : isNonEmptyString ? value.split(/[\\/]/).pop() || value : "";
+    const fileName = isFileObject ? value.name : isNonEmptyString ? (value as string).split(/[\\/]/).pop() || (value as string) : "";
 
     return (
       <div key={key} className="flex items-center justify-between gap-2">

@@ -188,8 +188,43 @@ const BusinessInfoForm = () => {
             value={biz.managerPhone}
             onChange={(v) => set("managerPhone", v)}
           />
+        </div>
+      </div>
 
-          <div />
+      {/* Section 2 */}
+      <div className="flex-1 min-w-0 rounded-lg border border-border bg-card shadow-sm p-6 space-y-4">
+        <h2 className="dxg-section-title">2. 사업장 부가정보</h2>
+        <div className="grid grid-cols-2 gap-x-5 gap-y-3">
+          <Field
+            label="지원사업 관할기관"
+            placeholder="(재)경기환경에너지진흥원"
+            value={biz.authority}
+            onChange={(v) => set("authority", v)}
+          />
+          <FileInput
+            label="사업장 위치도"
+            fileName={biz.locationFile instanceof File ? biz.locationFile.name : biz.locationFile}
+            onFileSelect={(file) => updateBusiness({ locationFile: file })}
+          />
+
+          <Field
+            label="지원사업 신청일자"
+            placeholder="2026-03-01"
+            value={biz.applyDate}
+            onChange={(v) => set("applyDate", v)}
+          />
+          <FileInput
+            label="설치 배치도"
+            fileName={biz.layoutFile instanceof File ? biz.layoutFile.name : biz.layoutFile}
+            onFileSelect={(file) => updateBusiness({ layoutFile: file })}
+          />
+
+          <Field
+            label="착공 예정일"
+            placeholder="2026-04"
+            value={biz.startDate}
+            onChange={(v) => set("startDate", v)}
+          />
           <div className="space-y-2">
             {pollutants.map((p, idx) => (
               <div key={p.id} className="flex items-end gap-2">
@@ -230,51 +265,18 @@ const BusinessInfoForm = () => {
               오염물질 추가
             </Button>
           </div>
-        </div>
-      </div>
 
-      {/* Section 2 */}
-      <div className="flex-1 min-w-0 rounded-lg border border-border bg-card shadow-sm p-6 space-y-4">
-        <h2 className="dxg-section-title">2. 사업장 부가정보</h2>
-        <div className="grid grid-cols-2 gap-x-5 gap-y-3">
+          <Field
+            label="준공 예정일"
+            placeholder="2026-12"
+            value={biz.endDate}
+            onChange={(v) => set("endDate", v)}
+          />
           <Field
             label="최근 자가측정일"
             placeholder="2026-01-15"
             value={biz.lastMeasureDate}
             onChange={(v) => set("lastMeasureDate", v)}
-          />
-          <Field
-            label="착공 예정일"
-            placeholder="2026-04"
-            value={biz.startDate}
-            onChange={(v) => set("startDate", v)}
-          />
-
-          <Field
-            label="지원사업 신청일자"
-            placeholder="2026-03-01"
-            value={biz.applyDate}
-            onChange={(v) => set("applyDate", v)}
-          />
-          <Field label="준공 예정일" placeholder="2026-12" value={biz.endDate} onChange={(v) => set("endDate", v)} />
-
-          <Field
-            label="지원사업 관할기관"
-            placeholder="(재)경기환경에너지진흥원"
-            value={biz.authority}
-            onChange={(v) => set("authority", v)}
-          />
-          <FileInput
-            label="사업장 위치도"
-            fileName={biz.locationFile instanceof File ? biz.locationFile.name : biz.locationFile}
-            onFileSelect={(file) => updateBusiness({ locationFile: file })}
-          />
-
-          <div />
-          <FileInput
-            label="설치 배치도"
-            fileName={biz.layoutFile instanceof File ? biz.layoutFile.name : biz.layoutFile}
-            onFileSelect={(file) => updateBusiness({ layoutFile: file })}
           />
         </div>
       </div>
