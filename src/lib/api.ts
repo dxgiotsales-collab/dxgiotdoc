@@ -141,7 +141,7 @@ export const apiGenerateDoc = (
   data: any,
   token?: string,
   user?: { id: string; name: string; phone: string; role: "admin" | "user" } | null,
-  calcResult?: Record<string, unknown> | null,
+  calcResult?: CalcResponse | null,
 ) =>
   apiFetch<DocGenResponse>(`/api/generate/${type}`, {
     method: "POST",
