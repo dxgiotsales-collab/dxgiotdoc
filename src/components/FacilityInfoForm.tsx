@@ -35,7 +35,7 @@ interface FacilityInfoFormProps {
 
 const FacilityInfoForm = ({ emissions, setEmissions, preventions, setPreventions }: FacilityInfoFormProps) => {
   const { project, setPhotoInputs } = useProject();
-  const photoFiles = project.photoInputs || {};
+  const photoFiles: Record<string, File | null> = project.photoInputs || {};
   console.log("photoInputs-now", project.photoInputs);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
