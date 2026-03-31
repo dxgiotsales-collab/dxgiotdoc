@@ -92,9 +92,10 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setInitialized(true);
   }, []);
 
+  /*
   useEffect(() => {
     if (!initialized) return;
-
+  
     updateSupport({
       sensors,
       subsidyRatio,
@@ -103,6 +104,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       docUrls,
     });
   }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
+  */
 
   const triggerCalc = useCallback(async () => {
     if (!token) return;
