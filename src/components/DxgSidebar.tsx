@@ -18,7 +18,6 @@ const menuItems = [
 
 const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
   const { user, token, logout } = useAuth();
-  const { token } = useAuth();
   const { projectList, loadProjectList, loadProject, saveDraft, saveFinal, saving, resetProject } = useProject();
 
   const [searchQuery, setSearchQuery] = useState("");
