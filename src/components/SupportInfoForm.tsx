@@ -294,7 +294,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                     {p.facilityNo} {p.type}
                   </th>
                 ))}
-                <th className={thClass + " min-w-[300px]"}>측정기기 부착근거</th>
               </tr>
             </thead>
             <tbody>
@@ -318,15 +317,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                         />
                       </td>
                     ))}
-
-                    <td className={tdClass}>
-                      <input
-                        type="text"
-                        className="dxg-input w-full min-w-[280px] text-left"
-                        value={sensor.basis}
-                        onChange={(e) => updateBasis(si, e.target.value)}
-                      />
-                    </td>
                   </tr>
                 );
               })}
