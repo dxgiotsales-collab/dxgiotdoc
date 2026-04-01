@@ -86,6 +86,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   );
   const [docUrls, setDocUrls] = useState(project?.support?.docUrls || { daejin: "", energy: "", report: "" });
 
+  const [sensorBasisMap, setSensorBasisMap] = useState<Record<string, string>>(project?.support?.sensorBasisMap || {});
+
   const supportSensorsRef = useRef<SensorRow[]>(project?.support?.sensors || []);
 
   useEffect(() => {
@@ -156,7 +158,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
               quantities,
-              basis: prevSensor?.basis ?? projectSensor?.basis ?? row.basis_text ?? "",
             };
           });
 
@@ -346,8 +347,24 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                       <input
                         type="text"
                         className="dxg-input w-full min-w-[280px] text-left"
-                        value={sensor.basis}
-                        onChange={(e) => updateBasis(si, e.target.value)}
+                        value={sensorBasisMap[sensor.name] || ""}
+                        onChange={(e) => {
+                          const updated = {
+                            ...sensorBasisMap,
+                            [sensor.name]: e.target.value,
+                          };
+
+                          setSensorBasisMap(updated);
+
+                          updateSupport({
+                            sensors,
+                            sensorBasisMap: updated,
+                            subsidyRatio,
+                            selfRatio,
+                            docStatus,
+                            docUrls,
+                          });
+                        }}
                       />
                     </td>
                   </tr>
