@@ -61,16 +61,6 @@ const commaFormat = (value: number | string | undefined | null) => {
   return num.toLocaleString("ko-KR");
 };
 
-const syncSensorsToSupport = (updatedSensors: SensorRow[]) => {
-  updateSupport({
-    sensors: updatedSensors,
-    subsidyRatio,
-    selfRatio,
-    docStatus,
-    docUrls,
-  });
-};
-
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
@@ -85,14 +75,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     project?.support?.docStatus || { daejin: false, energy: false, report: false },
   );
   const [docUrls, setDocUrls] = useState(project?.support?.docUrls || { daejin: "", energy: "", report: "" });
-
-  const [sensorBasisMap, setSensorBasisMap] = useState<Record<string, string>>(project?.support?.sensorBasisMap || {});
-
-  const supportSensorsRef = useRef<SensorRow[]>(project?.support?.sensors || []);
-
-  useEffect(() => {
-    supportSensorsRef.current = project?.support?.sensors || [];
-  }, [project?.support?.sensors]);
 
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -111,10 +93,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, []);
 
   const updateBasis = (sensorIdx: number, value: string) => {
-    const updated = sensors.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s));
-
-    setSensors(updated);
-    syncSensorsToSupport(updated);
+    setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
   };
 
   const calcKey = useMemo(
@@ -151,14 +130,10 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
             });
 
-            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
-            const projectSensor = supportSensorsRef.current.find((s) => s.name === row.ITEM_NAME);
-
             return {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
               quantities,
-              basis: sensorBasisMap[row.ITEM_NAME] || "",
             };
           });
 
@@ -348,28 +323,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                       <input
                         type="text"
                         className="dxg-input w-full min-w-[280px] text-left"
-                        value={sensorBasisMap[sensor.name] || ""}
-                        onChange={(e) => {
-                          const updated = {
-                            ...sensorBasisMap,
-                            [sensor.name]: e.target.value,
-                          };
-
-                          setSensorBasisMap(updated);
-
-                          const sensorsWithBasis = sensors.map((s) => ({
-                            ...s,
-                            basis: updated[s.name] || "",
-                          }));
-
-                          updateSupport({
-                            sensors: sensorsWithBasis,
-                            subsidyRatio,
-                            selfRatio,
-                            docStatus,
-                            docUrls,
-                          });
-                        }}
+                        value={sensor.basis}
+                        onChange={(e) => updateBasis(si, e.target.value)}
                       />
                     </td>
                   </tr>
