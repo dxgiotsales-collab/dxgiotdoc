@@ -61,6 +61,16 @@ const commaFormat = (value: number | string | undefined | null) => {
   return num.toLocaleString("ko-KR");
 };
 
+const syncSensorsToSupport = (updatedSensors: SensorRow[]) => {
+  updateSupport({
+    sensors: updatedSensors,
+    subsidyRatio,
+    selfRatio,
+    docStatus,
+    docUrls,
+  });
+};
+
 const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const { token } = useAuth();
   const { runCalculation, generateDoc, project, updateSupport } = useProject();
@@ -93,18 +103,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, []);
 
   const updateBasis = (sensorIdx: number, value: string) => {
-    setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
+    const updated = sensors.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s));
+
+    setSensors(updated);
+    syncSensorsToSupport(updated);
   };
 
-  const saveBasisToSupport = () => {
-    updateSupport({
-      sensors,
-      subsidyRatio,
-      selfRatio,
-      docStatus,
-      docUrls,
-    });
-  };
   const calcKey = useMemo(
     () =>
       JSON.stringify({
@@ -176,9 +180,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [initialized, calcKey]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
-    setSensors((prev) =>
-      prev.map((s, i) => (i === sensorIdx ? { ...s, quantities: { ...s.quantities, [facilityNo]: value } } : s)),
+    const updated = sensors.map((s, i) =>
+      i === sensorIdx ? { ...s, quantities: { ...s.quantities, [facilityNo]: value } } : s,
     );
+
+    setSensors(updated);
+    syncSensorsToSupport(updated);
   };
 
   const sensorTotals = useMemo(() => {
@@ -334,7 +341,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                         className="dxg-input w-full min-w-[280px] text-left"
                         value={sensor.basis}
                         onChange={(e) => updateBasis(si, e.target.value)}
-                        onBlur={saveBasisToSupport}
                       />
                     </td>
                   </tr>
