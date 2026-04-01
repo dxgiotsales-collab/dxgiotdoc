@@ -124,13 +124,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             });
 
             const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
-            const projectSensor = (project?.support?.sensors || []).find((s) => s.name === row.ITEM_NAME);
 
             return {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
               quantities,
-              basis: prevSensor?.basis ?? projectSensor?.basis ?? row.basis_text ?? "",
+              basis: prevSensor?.basis ?? row.basis_text ?? "",
             };
           });
 
@@ -147,7 +146,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions, project?.support?.sensors]);
+  }, [runCalculation, token, supportedPreventions]);
 
   useEffect(() => {
     if (!initialized) return;
