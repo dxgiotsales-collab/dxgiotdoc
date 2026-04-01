@@ -158,6 +158,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
               quantities,
+              basis: sensorBasisMap[row.ITEM_NAME] || "",
             };
           });
 
@@ -174,7 +175,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions, project?.support?.sensors]);
+  }, [runCalculation, token, supportedPreventions]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -185,7 +186,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     }
 
     triggerCalc();
-  }, [initialized, calcKey]);
+  }, [initialized, calcKey, triggerCalc]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     const updated = sensors.map((s, i) =>
@@ -356,9 +357,13 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
                           setSensorBasisMap(updated);
 
+                          const sensorsWithBasis = sensors.map((s) => ({
+                            ...s,
+                            basis: updated[s.name] || "",
+                          }));
+
                           updateSupport({
-                            sensors,
-                            sensorBasisMap: updated,
+                            sensors: sensorsWithBasis,
                             subsidyRatio,
                             selfRatio,
                             docStatus,
