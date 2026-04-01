@@ -125,7 +125,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                 if (!selectedProject) return;
                 if (!confirm("삭제하시겠습니까?")) return;
 
-                await fetch(`/api/projects/${selectedProject}`, {
+                await fetch(`/api/projects/${encodeURIComponent(selectedProject)}`, {
                   method: "DELETE",
                   headers: {
                     Authorization: `Bearer ${token}`,
