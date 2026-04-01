@@ -92,10 +92,11 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setInitialized(true);
   }, []);
 
-  /*
-  useEffect(() => {
-    if (!initialized) return;
-  
+  const updateBasis = (sensorIdx: number, value: string) => {
+    setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
+  };
+
+  const saveBasisToSupport = () => {
     updateSupport({
       sensors,
       subsidyRatio,
@@ -103,8 +104,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       docStatus,
       docUrls,
     });
-  }, [sensors, subsidyRatio, selfRatio, docStatus, docUrls, initialized, updateSupport]);
-  */
+  };
 
   const triggerCalc = useCallback(async () => {
     if (!token) return;
@@ -115,21 +115,27 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const res = (await runCalculation(token)) as CalcResponse | null;
 
       if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
-        const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
-          const quantities: Record<string, number> = {};
+        setSensors((prevSensors) => {
+          const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
+            const quantities: Record<string, number> = {};
 
-          supportedPreventions.forEach((p, idx) => {
-            quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
+            supportedPreventions.forEach((p, idx) => {
+              quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
+            });
+
+            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
+            const projectSensor = (project?.support?.sensors || []).find((s) => s.name === row.ITEM_NAME);
+
+            return {
+              name: row.ITEM_NAME,
+              unitPrice: row.ITEM_UNIT_PRICE || 0,
+              quantities,
+              basis: prevSensor?.basis ?? projectSensor?.basis ?? row.basis_text ?? "",
+            };
           });
-          return {
-            name: row.ITEM_NAME,
-            unitPrice: row.ITEM_UNIT_PRICE || 0,
-            quantities,
-            basis: row.basis_text ?? "",
-          };
-        });
 
-        setSensors(mappedSensors);
+          return mappedSensors;
+        });
       } else {
         setSensors([]);
       }
@@ -141,7 +147,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions]); // 🔥 sensors 제거
+  }, [runCalculation, token, supportedPreventions, project?.support?.sensors]);
 
   useEffect(() => {
     if (!initialized) return;
@@ -158,17 +164,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     setSensors((prev) =>
       prev.map((s, i) => (i === sensorIdx ? { ...s, quantities: { ...s.quantities, [facilityNo]: value } } : s)),
     );
-  };
-
-  const updateBasis = (sensorIdx: number, value: string) => {
-    setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
-  };
-
-  const saveBasisToSupport = () => {
-    updateSupport((prevSupport) => ({
-      ...prevSupport,
-      sensors,
-    }));
   };
 
   const sensorTotals = useMemo(() => {
