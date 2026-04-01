@@ -105,49 +105,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       docUrls,
     });
   };
-
-  const triggerCalc = useCallback(async () => {
-    if (!token) return;
-
-    setCalculating(true);
-
-    try {
-      const res = (await runCalculation(token)) as CalcResponse | null;
-
-      if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
-        setSensors((prevSensors) => {
-          const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
-            const quantities: Record<string, number> = {};
-
-            supportedPreventions.forEach((p, idx) => {
-              quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
-            });
-
-            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
-
-            return {
-              name: row.ITEM_NAME,
-              unitPrice: row.ITEM_UNIT_PRICE || 0,
-              quantities,
-              basis: prevSensor?.basis ?? row.basis_text ?? "",
-            };
-          });
-
-          return mappedSensors;
-        });
-      } else {
-        setSensors([]);
-      }
-
-      if (res) {
-        setSubsidyRatio(res.subsidy_ratio ?? 60);
-        setSelfRatio(res.self_ratio ?? 40);
-      }
-    } finally {
-      setCalculating(false);
-    }
-  }, [runCalculation, token, supportedPreventions]);
-
   const calcKey = useMemo(
     () =>
       JSON.stringify({
