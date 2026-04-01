@@ -283,7 +283,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       <div className="rounded-lg border border-border bg-card shadow-sm p-5 space-y-3">
         <h2 className="dxg-section-title">2. 센서 종류 및 수량</h2>
         <div className="overflow-x-auto">
-          <table className="text-sm border-collapse">
+          <table className="w-full text-sm border-collapse">
             <thead>
               <tr>
                 <th className={thClass}>센서명</th>
@@ -335,6 +335,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               </tr>
             </tbody>
           </table>
+          <div className="text-right font-semibold text-foreground mt-2">금액합계: {commaFormat(totalCost)}</div>
         </div>
 
         {supportedPreventions.length === 0 && (
