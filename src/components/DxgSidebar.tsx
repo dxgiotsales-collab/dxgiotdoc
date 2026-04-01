@@ -125,7 +125,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
               onClick={async () => {
                 if (!selectedProject) return;
                 if (!confirm("삭제하시겠습니까?")) return;
-              
+
                 try {
                   const response = await fetch(
                     `https://essentially-unweldable-faustino.ngrok-free.dev/api/projects/${encodeURIComponent(selectedProject)}`,
@@ -134,22 +134,20 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                       headers: {
                         Authorization: `Bearer ${token}`,
                       },
-                    }
+                    },
                   );
-              
+
                   if (!response.ok) {
                     throw new Error("DELETE 실패");
                   }
-              
+
                   toast({
                     title: "삭제 완료",
                     description: "프로젝트가 삭제되었습니다.",
                   });
-              
+
                   setSelectedProject("");
-                  setTimeout(() => {
-                    loadProjectList(token || "");
-                  }, 100);
+                  await loadProjectList(token || "");
                 } catch (e) {
                   toast({
                     title: "삭제 실패",
@@ -158,6 +156,10 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                   });
                 }
               }}
+              disabled={!selectedProject}
+            >
+              삭제
+            </Button>
             <Button size="sm" className="w-full" onClick={handleNew}>
               <FilePlus2 className="mr-1.5 h-3.5 w-3.5" />
               신규
