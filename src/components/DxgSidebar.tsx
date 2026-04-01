@@ -113,9 +113,27 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
               ))}
             </SelectContent>
           </Select>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <Button variant="secondary" size="sm" className="w-full" onClick={handleLoad} disabled={!selectedProject}>
               불러오기
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="w-full"
+              onClick={async () => {
+                if (!selectedProject) return;
+                if (!confirm("삭제하시겠습니까?")) return;
+
+                await fetch(`/api/projects/${selectedProject}`, {
+                  method: "DELETE",
+                });
+
+                window.location.reload();
+              }}
+              disabled={!selectedProject}
+            >
+              삭제
             </Button>
             <Button size="sm" className="w-full" onClick={handleNew}>
               <FilePlus2 className="mr-1.5 h-3.5 w-3.5" />
