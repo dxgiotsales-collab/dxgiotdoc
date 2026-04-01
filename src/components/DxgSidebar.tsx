@@ -127,7 +127,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                 if (!confirm("삭제하시겠습니까?")) return;
               
                 try {
-                  await fetch(
+                  const response = await fetch(
                     `https://essentially-unweldable-faustino.ngrok-free.dev/api/projects/${encodeURIComponent(selectedProject)}`,
                     {
                       method: "DELETE",
@@ -137,13 +137,19 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                     }
                   );
               
+                  if (!response.ok) {
+                    throw new Error("DELETE 실패");
+                  }
+              
                   toast({
                     title: "삭제 완료",
                     description: "프로젝트가 삭제되었습니다.",
                   });
               
                   setSelectedProject("");
-                  await loadProjectList(token || "");
+                  setTimeout(() => {
+                    loadProjectList(token || "");
+                  }, 100);
                 } catch (e) {
                   toast({
                     title: "삭제 실패",
