@@ -167,7 +167,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions]);
+  }, [runCalculation, token, supportedPreventions, project?.support?.sensors]);
 
   useEffect(() => {
     if (!initialized) return;
