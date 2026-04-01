@@ -186,7 +186,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     }
 
     triggerCalc();
-  }, [initialized, calcKey, triggerCalc]);
+  }, [initialized, calcKey]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     const updated = sensors.map((s, i) =>
