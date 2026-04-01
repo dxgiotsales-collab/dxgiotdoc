@@ -148,6 +148,23 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     }
   }, [runCalculation, token, supportedPreventions]);
 
+  const calcKey = useMemo(
+    () =>
+      JSON.stringify({
+        emissions: (emissions || []).map((e) => ({
+          facilityNo: e.facilityNo,
+          supported: e.supported,
+          exempt: e.exempt,
+        })),
+        preventions: (preventions || []).map((p) => ({
+          facilityNo: p.facilityNo,
+          type: p.type,
+          supported: p.supported,
+        })),
+      }),
+    [emissions, preventions],
+  );
+
   useEffect(() => {
     if (!initialized) return;
 
@@ -157,7 +174,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     }
 
     triggerCalc();
-  }, [initialized, emissions, preventions, supportedPreventions, triggerCalc]);
+  }, [initialized, calcKey, triggerCalc]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     setSensors((prev) =>
