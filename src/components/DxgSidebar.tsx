@@ -125,14 +125,18 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
                 if (!selectedProject) return;
                 if (!confirm("삭제하시겠습니까?")) return;
 
-                await fetch(`/api/projects/${encodeURIComponent(selectedProject)}`, {
-                  method: "DELETE",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
+                await fetch(
+                  `https://essentially-unweldable-faustino.ngrok-free.dev/api/projects/${encodeURIComponent(selectedProject)}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
                   },
-                });
+                );
 
-                window.location.reload();
+                setSelectedProject("");
+                loadProjectList(token || "");
               }}
               disabled={!selectedProject}
             >
