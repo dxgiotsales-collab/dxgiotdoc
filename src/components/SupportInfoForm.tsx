@@ -143,6 +143,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
             });
 
+            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
             const projectSensor = (project?.support?.sensors || []).find((s) => s.name === row.ITEM_NAME);
 
             return {
