@@ -122,17 +122,6 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     [emissions, preventions],
   );
 
-  useEffect(() => {
-    if (!initialized) return;
-
-    if (supportedPreventions.length === 0) {
-      setSensors([]);
-      return;
-    }
-
-    triggerCalc();
-  }, [initialized, calcKey, triggerCalc]);
-
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
     setSensors((prev) =>
       prev.map((s, i) => (i === sensorIdx ? { ...s, quantities: { ...s.quantities, [facilityNo]: value } } : s)),
