@@ -161,17 +161,14 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   };
 
   const updateBasis = (sensorIdx: number, value: string) => {
-    setSensors((prev) => {
-      const updated = prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s));
+    const updated = sensors.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s));
 
-      // ✅ 여기 추가
-      updateSupport((prevSupport) => ({
-        ...prevSupport,
-        sensors: updated,
-      }));
+    setSensors(updated);
 
-      return updated;
-    });
+    updateSupport((prevSupport) => ({
+      ...prevSupport,
+      sensors: updated,
+    }));
   };
 
   const sensorTotals = useMemo(() => {
