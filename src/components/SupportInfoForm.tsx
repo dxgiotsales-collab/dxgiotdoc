@@ -161,13 +161,13 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   };
 
   const updateBasis = (sensorIdx: number, value: string) => {
-    const updated = sensors.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s));
+    setSensors((prev) => prev.map((s, i) => (i === sensorIdx ? { ...s, basis: value } : s)));
+  };
 
-    setSensors(updated);
-
+  const saveBasisToSupport = () => {
     updateSupport((prevSupport) => ({
       ...prevSupport,
-      sensors: updated,
+      sensors,
     }));
   };
 
@@ -324,6 +324,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                         className="dxg-input w-full min-w-[280px] text-left"
                         value={sensor.basis}
                         onChange={(e) => updateBasis(si, e.target.value)}
+                        onBlur={saveBasisToSupport}
                       />
                     </td>
                   </tr>
