@@ -86,6 +86,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   );
   const [docUrls, setDocUrls] = useState(project?.support?.docUrls || { daejin: "", energy: "", report: "" });
 
+  const supportSensorsRef = useRef<SensorRow[]>(project?.support?.sensors || []);
+
+  useEffect(() => {
+    supportSensorsRef.current = project?.support?.sensors || [];
+  }, [project?.support?.sensors]);
+
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const supportedPreventions = useMemo(() => {
@@ -144,7 +150,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             });
 
             const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
-            const projectSensor = (project?.support?.sensors || []).find((s) => s.name === row.ITEM_NAME);
+            const projectSensor = supportSensorsRef.current.find((s) => s.name === row.ITEM_NAME);
 
             return {
               name: row.ITEM_NAME,
@@ -167,7 +173,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions, project?.support?.sensors]);
+  }, [runCalculation, token, supportedPreventions]);
 
   useEffect(() => {
     if (!initialized) return;
