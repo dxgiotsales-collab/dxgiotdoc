@@ -332,7 +332,9 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                     {sensors.reduce((sum, s) => sum + (s.quantities[p.facilityNo] || 0), 0)}
                   </td>
                 ))}
-                <td className={tdClass + " font-semibold text-foreground"}>금액합계: {commaFormat(totalCost)}</td>
+                <td colSpan={1} className={tdClass + " font-semibold text-foreground text-right"}>
+                  금액합계: {commaFormat(totalCost)}
+                </td>
               </tr>
             </tbody>
           </table>
