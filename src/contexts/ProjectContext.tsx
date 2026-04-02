@@ -199,17 +199,30 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const getPayload = () => project;
 
   const getSavePayload = (saveStatus: "draft" | "final") => {
-    const date = project.business?.applicationDate || "";
-    const year = date ? date.slice(2, 4) : "00";
+    const applyDate = project.business?.applyDate || "";
+    const year = applyDate ? applyDate.slice(2, 4) : "00";
 
     const name = project.business?.name || "프로젝트";
 
     const address = project.business?.address || "";
-    const districtMatch = address.match(/([가-힣]+구)/);
-    const district = districtMatch ? districtMatch[1] : "미정";
+
+    let region = "미정";
+    if (address.includes("서울")) {
+      const districtMatch = address.match(/([가-힣]+구)/);
+      region = districtMatch ? `서울_${districtMatch[1]}` : "서울_미정";
+    } else {
+      const cityMatch = address.match(/([가-힣]+시)/);
+      const districtMatch = address.match(/([가-힣]+구)/);
+
+      if (cityMatch && districtMatch) {
+        region = `${cityMatch[1]}_${districtMatch[1]}`;
+      } else if (districtMatch) {
+        region = districtMatch[1];
+      }
+    }
 
     return {
-      project_key: `${year}_${name}_${district}`,
+      project_key: `${year}_${name}_${region}`,
       save_status: saveStatus,
       data: project,
     };
