@@ -166,10 +166,24 @@ const BusinessInfoForm = () => {
             placeholder="주소를 입력하세요"
             value={biz.address}
             onChange={(v) => {
-              const districtMatch = v.match(/([가-힣]+구)/);
-              const district = districtMatch ? districtMatch[1] : "";
+              let location = "";
+
+              if (v.includes("서울")) {
+                const districtMatch = v.match(/([가-힣]+구)/);
+                location = districtMatch ? `서울 ${districtMatch[1]}` : "서울";
+              } else {
+                const cityMatch = v.match(/([가-힣]+시)/);
+                const districtMatch = v.match(/([가-힣]+구)/);
+
+                if (cityMatch && districtMatch) {
+                  location = `${cityMatch[1]} ${districtMatch[1]}`;
+                } else if (districtMatch) {
+                  location = districtMatch[1];
+                }
+              }
+
               set("address", v);
-              set("location", district);
+              set("location", location);
             }}
           />
           <Field
