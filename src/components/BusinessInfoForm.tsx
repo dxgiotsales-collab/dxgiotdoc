@@ -168,18 +168,20 @@ const BusinessInfoForm = () => {
             onChange={(v) => {
               let location = "";
 
-              if (v.includes("서울")) {
-                const districtMatch = v.match(/([가-힣]+구)/);
-                location = districtMatch ? `서울 ${districtMatch[1]}` : "서울";
-              } else {
-                const cityMatch = v.match(/([가-힣]+시)/);
-                const districtMatch = v.match(/([가-힣]+구)/);
+              const provinceMatch = v.match(/([가-힣]+도)/);
+              const cityMatch = v.match(/([가-힣]+시)/);
+              const districtMatch = v.match(/([가-힣]+구)/);
 
-                if (cityMatch && districtMatch) {
-                  location = `${cityMatch[1]} ${districtMatch[1]}`;
-                } else if (districtMatch) {
-                  location = districtMatch[1];
-                }
+              if (provinceMatch && cityMatch) {
+                const province = provinceMatch[1].replace("도", "");
+                location = `${province} ${cityMatch[1]}`;
+              } else if (cityMatch && districtMatch) {
+                const city = cityMatch[1].replace("광역시", "").replace("특별시", "").replace("시", "");
+                location = `${city} ${districtMatch[1]}`;
+              } else if (cityMatch) {
+                location = cityMatch[1].replace("광역시", "").replace("특별시", "");
+              } else if (districtMatch) {
+                location = districtMatch[1];
               }
 
               set("address", v);
