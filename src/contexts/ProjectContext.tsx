@@ -198,11 +198,22 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
 
   const getPayload = () => project;
 
-  const getSavePayload = (saveStatus: "draft" | "final") => ({
-    project_key: project.projectKey || `${project.business.name || "프로젝트"}_${project.business.location || "미정"}`,
-    save_status: saveStatus,
-    data: project,
-  });
+  const getSavePayload = (saveStatus: "draft" | "final") => {
+    const date = project.business?.applicationDate || "";
+    const year = date ? date.slice(2, 4) : "00";
+
+    const name = project.business?.name || "프로젝트";
+
+    const address = project.business?.address || "";
+    const districtMatch = address.match(/([가-힣]+구)/);
+    const district = districtMatch ? districtMatch[1] : "미정";
+
+    return {
+      project_key: `${year}_${name}_${district}`,
+      save_status: saveStatus,
+      data: project,
+    };
+  };
 
   const loadProjectList = useCallback(async (token: string) => {
     try {
