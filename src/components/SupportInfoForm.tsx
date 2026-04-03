@@ -139,6 +139,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
               quantities: isFacilityChanged ? quantities : { ...quantities, ...(prevSensor?.quantities || {}) },
+              basis: prevSensor?.basis || row.basis_text || "",
             };
           });
 
