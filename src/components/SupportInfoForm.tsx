@@ -78,6 +78,9 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCalcKeyRef = useRef("");
+  const syncSensorsToSupport = (updated: SensorRow[]) => {
+    updateSupport({ sensors: updated });
+  };
 
   const supportedPreventions = useMemo(() => {
     return (preventions || [])
@@ -178,7 +181,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     );
 
     setSensors(updated);
-    syncSensorsToSupport(updated);
+    syncSensorsToSupport(updated); // 🔥 이거 추가
   };
 
   const sensorTotals = useMemo(() => {
