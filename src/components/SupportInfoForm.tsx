@@ -131,6 +131,10 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
         setSensors((prevSensors) => {
           const isFacilityChanged = lastCalcKeyRef.current !== calcKey;
 
+          if (isFacilityChanged) {
+            manualOverridesRef.current = {};
+          }
+
           const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
             const quantities: Record<string, number> = {};
 
@@ -139,11 +143,12 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
             });
 
             const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
+            const overrides = manualOverridesRef.current[row.ITEM_NAME] || {};
 
             return {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
-              quantities: isFacilityChanged ? quantities : { ...quantities, ...(prevSensor?.quantities || {}) },
+              quantities: isFacilityChanged ? quantities : { ...quantities, ...overrides },
               basis: prevSensor?.basis || row.basis_text || "",
             };
           });
