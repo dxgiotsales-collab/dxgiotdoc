@@ -82,6 +82,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     updateSupport({ sensors: updated });
   };
 
+  const manualOverridesRef = useRef<Record<string, Record<string, number>>>({});
+
   const supportedPreventions = useMemo(() => {
     return (preventions || [])
       .filter((p) => p.supported)
@@ -176,12 +178,21 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   }, [initialized, calcKey]);
 
   const updateQty = (sensorIdx: number, facilityNo: string, value: number) => {
+    const sensorName = sensors[sensorIdx].name;
+
+    // 1) override 기록
+    if (!manualOverridesRef.current[sensorName]) {
+      manualOverridesRef.current[sensorName] = {};
+    }
+    manualOverridesRef.current[sensorName][facilityNo] = value;
+
+    // 2) 로컬 state 반영
     const updated = sensors.map((s, i) =>
       i === sensorIdx ? { ...s, quantities: { ...s.quantities, [facilityNo]: value } } : s,
     );
 
     setSensors(updated);
-    syncSensorsToSupport(updated); // 🔥 이거 추가
+    syncSensorsToSupport(updated); // 기존 코드 유지
   };
 
   const sensorTotals = useMemo(() => {
