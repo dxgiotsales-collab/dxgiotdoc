@@ -77,6 +77,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
   const [docUrls, setDocUrls] = useState(project?.support?.docUrls || { daejin: "", energy: "", report: "" });
 
   const calcTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastCalcKeyRef = useRef("");
 
   const supportedPreventions = useMemo(() => {
     return (preventions || [])
@@ -123,6 +124,8 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
 
       if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
         setSensors((prevSensors) => {
+          const isFacilityChanged = lastCalcKeyRef.current !== calcKey;
+
           const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
             const quantities: Record<string, number> = {};
 
@@ -130,17 +133,22 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
             });
 
+            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
+
             return {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
-              quantities,
+              quantities: isFacilityChanged ? quantities : { ...quantities, ...(prevSensor?.quantities || {}) },
             };
           });
 
           return mappedSensors;
         });
+
+        lastCalcKeyRef.current = calcKey;
       } else {
         setSensors([]);
+        lastCalcKeyRef.current = calcKey;
       }
 
       if (res) {
@@ -150,7 +158,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions]);
+  }, [runCalculation, token, supportedPreventions, calcKey]);
 
   useEffect(() => {
     if (!initialized) return;
