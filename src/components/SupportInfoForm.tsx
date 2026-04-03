@@ -122,13 +122,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
       const res = (await runCalculation(token)) as CalcResponse | null;
 
       if (res?.sensor_rows && Array.isArray(res.sensor_rows)) {
-        setSensors((prevSensors) => {
-          const isFacilityChanged = lastCalcKeyRef.current !== calcKey;
-
-          if (isFacilityChanged) {
-            manualOverridesRef.current = {};
-          }
-
+        setSensors(() => {
           const mappedSensors: SensorRow[] = res.sensor_rows.map((row) => {
             const quantities: Record<string, number> = {};
 
@@ -136,24 +130,18 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
               quantities[p.facilityNo] = row.prevention_qtys?.[idx] ?? 0;
             });
 
-            const prevSensor = prevSensors.find((s) => s.name === row.ITEM_NAME);
-            const overrides = manualOverridesRef.current[row.ITEM_NAME] || {};
-
             return {
               name: row.ITEM_NAME,
               unitPrice: row.ITEM_UNIT_PRICE || 0,
-              quantities: isFacilityChanged ? quantities : { ...quantities, ...overrides },
-              basis: prevSensor?.basis || row.basis_text || "",
+              quantities,
+              basis: row.basis_text || "",
             };
           });
 
           return mappedSensors;
         });
-
-        lastCalcKeyRef.current = calcKey;
       } else {
         setSensors([]);
-        lastCalcKeyRef.current = calcKey;
       }
 
       if (res) {
@@ -163,7 +151,7 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
     } finally {
       setCalculating(false);
     }
-  }, [runCalculation, token, supportedPreventions, calcKey]);
+  }, [runCalculation, token, supportedPreventions]);
 
   useEffect(() => {
     if (!initialized) return;
