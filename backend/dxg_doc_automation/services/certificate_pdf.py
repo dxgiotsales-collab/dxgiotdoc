@@ -1,39 +1,43 @@
 from pathlib import Path
 from PyPDF2 import PdfMerger
+from config.settings import settings
 
 
-CERT_RULES = {
-    "전류계": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\@ IoT 계약(예정)사업장\IoT 센서 시험성적서_240620"),
-        "filename": "@ [CT계] AI_XA-250_250610.pdf",
-        "prefixes": [
-            "@ [CT계] AI_XA-250_250610",
-            "[CT계] AI_XA-250_250610",
-            "AI_XA-250_250610",
-            "CT계",
-        ],
-    },
-    "온도계": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\@ IoT 계약(예정)사업장\IoT 센서 시험성적서_240620"),
-        "filename": "@ [온도계_일반용] XTT-100-001_20251111.pdf",
-    },
-    "차압계": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\@ IoT 계약(예정)사업장\IoT 센서 시험성적서_240620"),
-        "filename": "@ [차압계_일반용] XTP-WP-001_20250610.pdf",
-    },
-    "ph계": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\@ IoT 계약(예정)사업장\IoT 센서 시험성적서_240620"),
-        "filename": "@ [PH계_일반용] KEC-1000_20250728-복사.PDF",
-    },
-    "gateway": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\@ IoT 계약(예정)사업장\IoT 센서 시험성적서_240620"),
-        "filename": "@ [XGATE] 방수 성적서(IP66)_20250207.pdf",
-    },
-    "vpn": {
-        "dir": Path(r"Z:\환경영업팀\! IOT !\1_0. 기본자료\3. VPN 관련정보\LG VPN 인증서"),
-        "filename": "00. CC인증서_AXGATE_V2_1_SP3.pdf",
-    },
-}
+if settings.CERT_BASE_PATH:
+    CERT_RULES = {
+        "전류계": {
+            "dir": Path(settings.CERT_BASE_PATH),
+            "filename": "@ [CT계] AI_XA-250_250610.pdf",
+            "prefixes": [
+                "@ [CT계] AI_XA-250_250610",
+                "[CT계] AI_XA-250_250610",
+                "AI_XA-250_250610",
+                "CT계",
+            ],
+        },
+        "온도계": {
+            "dir": Path(settings.CERT_BASE_PATH),
+            "filename": "@ [온도계_일반용] XTT-100-001_20251111.pdf",
+        },
+        "차압계": {
+            "dir": Path(settings.CERT_BASE_PATH),
+            "filename": "@ [차압계_일반용] XTP-WP-001_20250610.pdf",
+        },
+        "ph계": {
+            "dir": Path(settings.CERT_BASE_PATH),
+            "filename": "@ [PH계_일반용] KEC-1000_20250728-복사.PDF",
+        },
+        "gateway": {
+            "dir": Path(settings.CERT_BASE_PATH),
+            "filename": "@ [XGATE] 방수 성적서(IP66)_20250207.pdf",
+        },
+        "vpn": {
+            "dir": Path(settings.CERT_VPN_PATH),
+            "filename": "00. CC인증서_AXGATE_V2_1_SP3.pdf",
+        },
+    }
+else:
+    CERT_RULES = {}
 
 
 PREVENTION_CERTIFICATE_RULES = {
