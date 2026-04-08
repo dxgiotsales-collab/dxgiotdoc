@@ -3,7 +3,7 @@ import DxgSidebar from "@/components/DxgSidebar";
 import BusinessInfoForm from "@/components/BusinessInfoForm";
 import FacilityInfoForm from "@/components/FacilityInfoForm";
 import SupportInfoForm from "@/components/SupportInfoForm";
-import SensorCertForm from "@/components/SensorCertForm";
+import SensorCertForm, { type SensorRecord } from "@/components/SensorCertForm";
 import { useProject } from "@/contexts/ProjectContext";
 
 const tabs = [
@@ -15,6 +15,7 @@ const tabs = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("business");
+  const [sensorCertRecords, setSensorCertRecords] = useState<SensorRecord[]>([]);
   const { project, setEmissions, setPreventions } = useProject();
 
   const handleMenuChange = (menu: string) => {
@@ -51,7 +52,12 @@ const Index = () => {
         </header>
 
         <div className="p-8">
-          {activeTab === "sensor-cert" && <SensorCertForm />}
+          {activeTab === "sensor-cert" && (
+            <SensorCertForm
+              records={sensorCertRecords}
+              setRecords={setSensorCertRecords}
+            />
+          )}
           {activeTab === "business" && <BusinessInfoForm />}
           {activeTab === "facility" && (
             <FacilityInfoForm
