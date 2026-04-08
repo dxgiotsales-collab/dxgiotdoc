@@ -1,4 +1,4 @@
-import { Search, Building2, Settings2, FileText, LogOut, FilePlus2 } from "lucide-react";
+import { Search, Building2, Settings2, FileText, LogOut, FilePlus2, ClipboardList } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
