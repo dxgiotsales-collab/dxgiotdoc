@@ -1,0 +1,386 @@
+폴더 PATH의 목록입니다.
+볼륨 일련 번호는 22DB-A344입니다.
+C:.
+│  app.py
+│  document_names.py
+│  filelist.txt
+│  list.txt
+│  structure.txt
+│  
+├─api
+│  │  main.py
+│  │  
+│  └─__pycache__
+│          main.cpython-314.pyc
+│          
+├─app_data
+│  ├─generated
+│  │      (주)대달산업_미정_certificate.json
+│  │      (주)대달산업_미정_daejin.docx
+│  │      (주)대달산업_미정_daejin.json
+│  │      (주)대달산업_미정_energy.json
+│  │      
+│  ├─projects
+│  │      (주)대달산업_미정.json
+│  │      26_거래금속_경기.json
+│  │      26_거래금속_경기.xlsx
+│  │      test_company_미정.json
+│  │      YY_덕호야우야농_지역.json
+│  │      YY_덕호야우야농_지역.xlsx
+│  │      YY_사업장명_지역.json
+│  │      YY_사업장명_지역.xlsx
+│  │      에이피아이테스트_미정.json
+│  │      테스스사업장_미정.json
+│  │      테스트1.json
+│  │      테스트사업장_미정.json
+│  │      테스트용_미정.json
+│  │      테스트트트트_미정.json
+│  │      토스트저리가_미정.json
+│  │      프로젝트_미정.json
+│  │      
+│  ├─recent_inputs
+│  └─uploads
+│      │  금강아이오티_60A_정상작동.jpg
+│      │  금강아이오티_60A_정상작동_fixed.jpg
+│      │  방1 여과 및 흡착에 의한 시설_fixed.png
+│      │  배치도_fixed.png
+│      │  배치도_fixed_fixed.png
+│      │  위치도_fixed.png
+│      │  위치도_fixed_fixed.png
+│      │  
+│      ├─26_거래금속_경기
+│      │  ├─business
+│      │  │      배치도_fixed.png
+│      │  │      위치도_fixed.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  배출 제어판넬 내부.png
+│      │          │  온도계 설치 위치.png
+│      │          │  
+│      │          └─emission_1
+│      │                  배출1.png
+│      │                  
+│      ├─26_과자야놀자_인천
+│      │  ├─business
+│      │  │      배치도_fixed.png
+│      │  │      위치도_fixed.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  배출 제어판넬 내부.png
+│      │          │  배출 제어판넬 외함.png
+│      │          │  배출2.png
+│      │          │  송풍 제어판넬 내부.png
+│      │          │  송풍 제어판넬 외함.png
+│      │          │  온도계 설치 위치.png
+│      │          │  차압계 in.png
+│      │          │  차압계 out.png
+│      │          │  
+│      │          ├─emission_1
+│      │          │      배출1.png
+│      │          │      
+│      │          └─emission_2
+│      │                  배출2.png
+│      │                  
+│      ├─26_제이오토카케어센터_인천
+│      │  ├─business
+│      │  │      배치도.png
+│      │  │      배치도_fixed.png
+│      │  │      위치도.png
+│      │  │      위치도_fixed.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │              게이트웨이 설치 위치.jpg
+│      │              배출-방지(동시동작) 전원.jpg
+│      │              배출-방지(동시동작) 차단기.jpg
+│      │              온도계 및 차압계 in 설치 위치.jpg
+│      │              차압계 out 설치 위치.jpg
+│      │              
+│      ├─26_테스트 사업장_강원
+│      │  ├─business
+│      │  │      배치도_fixed.png
+│      │  │      위치도_fixed.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  송풍 제어판넬 내부.png
+│      │          │  송풍 제어판넬 외함.png
+│      │          │  온도계 설치 위치.png
+│      │          │  차압계 in.png
+│      │          │  차압계 out.png
+│      │          │  
+│      │          ├─emission_1
+│      │          │      배출 제어판넬 내부.png
+│      │          │      배출 제어판넬 외함.png
+│      │          │      배출1.png
+│      │          │      
+│      │          └─emission_2
+│      │                  배출 제어판넬 내부.png
+│      │                  배출 제어판넬 외함.png
+│      │                  배출2.png
+│      │                  
+│      ├─26_테스트_인천
+│      │  ├─business
+│      │  │      배치도_fixed.png
+│      │  │      위치도_fixed.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  송풍 제어판넬 내부.png
+│      │          │  송풍 제어판넬 외함.png
+│      │          │  온도계 설치 위치.png
+│      │          │  차압계 in.png
+│      │          │  차압계 out.png
+│      │          │  
+│      │          ├─emission_1
+│      │          │      배출 제어판넬 내부.png
+│      │          │      배출 제어판넬 외함.png
+│      │          │      배출1.png
+│      │          │      
+│      │          └─emission_2
+│      │                  배출 제어판넬 내부.png
+│      │                  배출 제어판넬 외함.png
+│      │                  배출2.png
+│      │                  
+│      ├─26_테스트사업장_강남구 역삼동 123번지
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  송풍 제어판넬 내부.png
+│      │          │  송풍 제어판넬 외함.png
+│      │          │  온도계 설치 위치.png
+│      │          │  차압계 in.png
+│      │          │  차압계 out.png
+│      │          │  
+│      │          ├─emission_1
+│      │          │      배출 제어판넬 내부.png
+│      │          │      배출 제어판넬 외함.png
+│      │          │      배출1.png
+│      │          │      
+│      │          └─emission_2
+│      │                  배출2.png
+│      │                  
+│      ├─YY_사업장명_지역
+│      │  ├─business
+│      │  │      방1 여과 및 흡착에 의한 시설.png
+│      │  │      
+│      │  └─photos
+│      │      └─prevention_1
+│      │          │  방1 여과 및 흡착에 의한 시설.png
+│      │          │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│      │          │  배출 제어판넬 내부.png
+│      │          │  배출 제어판넬 외함.png
+│      │          │  배출1.png
+│      │          │  송풍 제어판넬 내부.png
+│      │          │  송풍 제어판넬 외함.png
+│      │          │  온도계 설치 위치.png
+│      │          │  차압계 in.png
+│      │          │  차압계 out.png
+│      │          │  
+│      │          ├─emission_1
+│      │          │      배출1.png
+│      │          │      
+│      │          └─emission_2
+│      │                  배출1.png
+│      │                  
+│      └─YY_어묵이좋아_부산
+│          ├─business
+│          │      배치도_fixed.png
+│          │      위치도_fixed.png
+│          │      
+│          └─photos
+│              └─prevention_1
+│                  │  방1 여과 및 흡착에 의한 시설.png
+│                  │  방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│                  │  송풍 제어판넬 내부.png
+│                  │  송풍 제어판넬 외함.png
+│                  │  온도계 설치 위치.png
+│                  │  차압계 in.png
+│                  │  차압계 out.png
+│                  │  
+│                  └─emission_1
+│                          배출 제어판넬 내부.png
+│                          배출 제어판넬 외함.png
+│                          배출1.png
+│                          
+├─config
+│  │  merge_orders.py
+│  │  
+│  ├─__init__.py
+│  └─__pycache__
+│          document_router.cpython-314.pyc
+│          merge_orders.cpython-314.pyc
+│          test_doc_10024.cpython-314.pyc
+│          
+├─core
+│  │  auth.py
+│  │  calculator.py
+│  │  project_store.py
+│  │  
+│  └─__pycache__
+│          auth.cpython-314.pyc
+│          calculator.cpython-314.pyc
+│          project_store.cpython-314.pyc
+│          
+├─data
+├─definitions
+│      260312.xlsx
+│      
+├─engines
+│  │  base_engine.py
+│  │  block_engine.py
+│  │  doc_10010_a_engine.py
+│  │  doc_10010_b_engine.py
+│  │  doc_10010_engine.py
+│  │  doc_10020_engine.py
+│  │  doc_10021_engine.py
+│  │  doc_10024_engine.py
+│  │  doc_10040_engine.py
+│  │  doc_10110_a_engine.py
+│  │  doc_10110_b_engine.py
+│  │  doc_10160_engine.py
+│  │  image_engine.py
+│  │  token_engine.py
+│  │  
+│  ├─__init__.py
+│  └─__pycache__
+│          base_engine.cpython-314.pyc
+│          block_engine.cpython-314.pyc
+│          doc_10010_a_engine.cpython-314.pyc
+│          doc_10010_b_engine.cpython-314.pyc
+│          doc_10010_engine.cpython-314.pyc
+│          doc_10020_engine.cpython-314.pyc
+│          doc_10021_engine.cpython-314.pyc
+│          doc_10024_engine.cpython-314.pyc
+│          doc_10040_engine.cpython-314.pyc
+│          doc_10110_a_engine.cpython-314.pyc
+│          doc_10110_b_engine.cpython-314.pyc
+│          doc_10160_engine.cpython-314.pyc
+│          engine_a_token.cpython-314.pyc
+│          engine_b_table.cpython-314.pyc
+│          engine_c_image.cpython-314.pyc
+│          image_engine.cpython-314.pyc
+│          token_engine.cpython-314.pyc
+│          
+├─outputs
+│  │  2026_거래금속_경기_연천군_001.docx
+│  │  2026_거래금속_경기_연천군_004_성적서.pdf
+│  │  2026_거래금속_경기_연천군_dt_001.docx
+│  │  2026_과자야놀자_인천_연수구_001.docx
+│  │  2026_과자야놀자_인천_연수구_dt_001.docx
+│  │  2026_사업장_지역_001.docx
+│  │  2026_사업장_지역_004_성적서.pdf
+│  │  2026_사업장_지역_dt_001.docx
+│  │  
+│  ├─0313
+│  │      DOC_10010_A_output.docx
+│  │      DOC_10010_B_output.docx
+│  │      DOC_10020_output.docx
+│  │      DOC_10021_output.docx
+│  │      DOC_10022_output.docx
+│  │      DOC_10024_output.docx
+│  │      DOC_10040_output.docx
+│  │      DOC_10050_output.docx
+│  │      DOC_10090_output.docx
+│  │      DOC_10100_output.docx
+│  │      DOC_10110_A_output.docx
+│  │      DOC_10110_B_output.docx
+│  │      DOC_10120_output.docx
+│  │      DOC_10130_output.docx
+│  │      DOC_10160_output.docx
+│  │      
+│  └─0316
+├─routers
+│  │  document_router.py
+│  │  
+│  └─__pycache__
+│          document_router.cpython-314.pyc
+│          
+├─sample_data
+│  │  배치도_fixed.png
+│  │  위치도_fixed.png
+│  │  
+│  ├─prevention_1
+│  │      방1 여과 및 흡착에 의한 시설.png
+│  │      방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│  │      배출 제어판넬 내부.png
+│  │      배출 제어판넬 외함.png
+│  │      배출1.png
+│  │      배출2.png
+│  │      송풍 제어판넬 내부.png
+│  │      송풍 제어판넬 외함.png
+│  │      온도계 설치 위치.png
+│  │      차압계 in.png
+│  │      차압계 out.png
+│  │      
+│  └─prevention_2
+│          방1 여과 및 흡착에 의한 시설.png
+│          방1 여과 및 흡착에 의한 시설_gw설치위치.png
+│          배출 제어판넬 내부.png
+│          배출 제어판넬 외함.png
+│          배출1.png
+│          송풍 제어판넬 내부.png
+│          송풍 제어판넬 외함.png
+│          온도계 설치 위치.png
+│          차압계 in.png
+│          차압계 out.png
+│          
+├─schemas
+│  │  data_schema.py
+│  │  normalizer.py
+│  │  
+│  └─__pycache__
+│          data_schema.cpython-314.pyc
+│          normalizer.cpython-314.pyc
+│          
+├─services
+│  │  certificate_pdf.py
+│  │  doc_generator.py
+│  │  doc_merger.py
+│  │  
+│  └─__pycache__
+│          certificate_pdf.cpython-314.pyc
+│          doc_generator.cpython-314.pyc
+│          doc_merger.cpython-314.pyc
+│          image_inserter.cpython-314.pyc
+│          table_writer.cpython-314.pyc
+│          token_replacer.cpython-314.pyc
+│          
+├─templates
+│      DOC_10010_A.docx
+│      DOC_10010_B.docx
+│      DOC_10020.docx
+│      DOC_10021.docx
+│      DOC_10022.docx
+│      DOC_10023_fixed.docx
+│      DOC_10024.docx
+│      DOC_10026_fixed.docx
+│      DOC_10040.docx
+│      DOC_10050.docx
+│      DOC_10090.docx
+│      DOC_10100.docx
+│      DOC_10110_A.docx
+│      DOC_10110_B.docx
+│      DOC_10120.docx
+│      DOC_10130.docx
+│      DOC_10160.docx
+│      
+├─tests
+│      test_doc_10024.py
+│      
+├─ui
+└─__pycache__
+        app.cpython-314.pyc
+        document_names.cpython-314.pyc
+        

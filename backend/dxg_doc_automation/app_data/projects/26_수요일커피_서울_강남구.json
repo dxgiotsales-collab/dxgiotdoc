@@ -1,0 +1,107 @@
+{
+  "project_key": "26_수요일커피_서울_강남구",
+  "save_status": "final",
+  "saved_at": "2026-04-08 09:26:09",
+  "data": {
+    "projectKey": "26_수요일커피_서울_강남구",
+    "business": {
+      "name": "수요일커피",
+      "phone": "02-123-4456",
+      "bizNo": "123-45-67899",
+      "fax": "02-123-4457",
+      "address": "서울특별시 강남구 태릉로19",
+      "email": "wencoffee@hanmail.net",
+      "location": "서울 강남구",
+      "ceo": "김원두",
+      "industry": "원두제조업",
+      "ceoBirth": "1984-10-11",
+      "grade": "5종",
+      "managerName": "박필터",
+      "mainProduct": "커피원두",
+      "managerPhone": "010-7788-6632",
+      "pollutants": [
+        {
+          "id": 1,
+          "type": "먼지",
+          "amount": "0.021"
+        }
+      ],
+      "lastMeasureDate": "",
+      "measurementItems": [
+        {
+          "id": 1775607518979,
+          "pollutant": "먼지",
+          "amount": "2.0",
+          "unit": "mg/S㎥",
+          "date": "2009-02-05"
+        }
+      ],
+      "startDate": "2026-06",
+      "applyDate": "2026-04-08",
+      "endDate": "2026-12",
+      "authority": "강남구청",
+      "locationFile": "",
+      "layoutFile": ""
+    },
+    "emissions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "배1",
+        "name": "분쇄시설",
+        "capacity": "20",
+        "unit": "HP",
+        "supported": true,
+        "exempt": true
+      },
+      {
+        "id": 1775607701046,
+        "outletNo": 2,
+        "facilityNo": "배2",
+        "name": "병행시설",
+        "capacity": "150",
+        "unit": "ton/hr",
+        "supported": true,
+        "exempt": false
+      }
+    ],
+    "preventions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "방1",
+        "type": "여과집진시설",
+        "capacity": "100",
+        "unit": "㎥/분",
+        "installDate": "2008-08-04",
+        "supported": true
+      },
+      {
+        "id": 1775607701663,
+        "outletNo": 2,
+        "facilityNo": "방2",
+        "type": "원심력 집진시설",
+        "capacity": "150",
+        "unit": "ton/hr",
+        "installDate": "2012-06-15",
+        "supported": true
+      }
+    ],
+    "support": {
+      "subsidyRatio": 60,
+      "selfRatio": 40,
+      "sensors": [],
+      "docStatus": {
+        "daejin": false,
+        "energy": false,
+        "report": false
+      },
+      "docUrls": {
+        "daejin": "",
+        "energy": "",
+        "report": ""
+      }
+    },
+    "photoInputs": {}
+  }
+}

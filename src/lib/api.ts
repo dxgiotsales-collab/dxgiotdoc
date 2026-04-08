@@ -1,4 +1,5 @@
-const API_BASE = "https://essentially-unweldable-faustino.ngrok-free.dev";
+// const API_BASE = "https://essentially-unweldable-faustino.ngrok-free.dev";
+const API_BASE = "https://doc.dxg.kr";
 
 interface ApiOptions {
   method?: string;
@@ -10,8 +11,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
   const { method = "GET", body, token } = options;
 
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
+    "Content-Type": "application/json"
   };
 
   if (token) {

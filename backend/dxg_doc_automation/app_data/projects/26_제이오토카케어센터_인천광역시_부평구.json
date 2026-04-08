@@ -1,0 +1,127 @@
+{
+  "project_key": "26_제이오토카케어센터_인천광역시_부평구",
+  "save_status": "final",
+  "saved_at": "2026-04-03 16:35:49",
+  "data": {
+    "projectKey": "",
+    "business": {
+      "name": "제이오토카케어센터",
+      "phone": "032-821-2002",
+      "bizNo": "899-14-01648",
+      "fax": "032-818-2552",
+      "address": "인천광역시 부평구 백범로 573(십정동)",
+      "email": "",
+      "location": "인천 부평구",
+      "ceo": "진영훈",
+      "industry": "자동차종합정비업(952111)",
+      "ceoBirth": "",
+      "grade": "",
+      "managerName": "진영훈",
+      "mainProduct": "자동차 종합 수리",
+      "managerPhone": "010-7742-8759",
+      "pollutants": [
+        {
+          "id": 1,
+          "type": "먼지",
+          "amount": "0.036"
+        },
+        {
+          "id": 1775201215371,
+          "type": "먼지,THC",
+          "amount": "0.621"
+        }
+      ],
+      "lastMeasureDate": "",
+      "measurementItems": [
+        {
+          "id": 1775201224422,
+          "pollutant": "먼지",
+          "amount": "5.8",
+          "unit": "mg/S㎥",
+          "date": "2025-10-14"
+        },
+        {
+          "id": 1775201308704,
+          "pollutant": "THC",
+          "amount": "110",
+          "unit": "ppm",
+          "date": "2025-10-14"
+        }
+      ],
+      "startDate": "2026-06",
+      "applyDate": "2026-04-03",
+      "endDate": "2026-12",
+      "authority": "인천광역시 부평구청",
+      "locationFile": {},
+      "layoutFile": {}
+    },
+    "emissions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "배1",
+        "name": "분리시설",
+        "capacity": "88.2",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": true
+      },
+      {
+        "id": 1775201343849,
+        "outletNo": 2,
+        "facilityNo": "배2",
+        "name": "도장 및 건조시설",
+        "capacity": "87.91",
+        "unit": "㎥",
+        "supported": false,
+        "exempt": false
+      }
+    ],
+    "preventions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "방1",
+        "type": "여과집진시설",
+        "capacity": "400",
+        "unit": "㎥/분",
+        "installDate": "2017-11-30",
+        "supported": true
+      },
+      {
+        "id": 1775201344978,
+        "outletNo": 2,
+        "facilityNo": "방2",
+        "type": "여과 및 흡착에 의한 시설",
+        "capacity": "400",
+        "unit": "㎥/분",
+        "installDate": "2022-11-23",
+        "supported": false
+      }
+    ],
+    "support": {
+      "subsidyRatio": 60,
+      "selfRatio": 40,
+      "sensors": [],
+      "docStatus": {
+        "daejin": false,
+        "energy": false,
+        "report": false
+      },
+      "docUrls": {
+        "daejin": "",
+        "energy": "",
+        "report": ""
+      }
+    },
+    "photoInputs": {
+      "outlet-1_prev-방1_common_0": {},
+      "outlet-1_prev-방1_common_1": {},
+      "outlet-1_prev-방1_common_2": {},
+      "outlet-1_prev-방1_common_3": {},
+      "outlet-1_prev-방1_detail_0": {},
+      "outlet-1_prev-방1_detail_1": {},
+      "outlet-1_prev-방1_detail_2": {}
+    }
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "doc_type": "certificate",
+  "project_key": "(주)대달산업_미정",
+  "data": {
+    "projectKey": "(주)대달산업_미정",
+    "business": {
+      "name": "(주)대달산업",
+      "phone": "",
+      "bizNo": "112-12-13456",
+      "fax": "",
+      "address": "",
+      "email": "",
+      "location": "",
+      "ceo": "",
+      "industry": "",
+      "ceoBirth": "",
+      "grade": "",
+      "managerName": "",
+      "mainProduct": "",
+      "managerPhone": "",
+      "pollutants": [
+        {
+          "id": 1,
+          "type": "",
+          "amount": ""
+        }
+      ],
+      "lastMeasureDate": "",
+      "startDate": "",
+      "applyDate": "",
+      "endDate": "",
+      "authority": "",
+      "locationFile": "",
+      "layoutFile": ""
+    },
+    "emissions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "배1",
+        "name": "도장시설",
+        "capacity": "20",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1774252294537,
+        "outletNo": 1,
+        "facilityNo": "배2",
+        "name": "분리시설",
+        "capacity": "20",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": true
+      }
+    ],
+    "preventions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "방1",
+        "type": "여과 및 흡착에 의한 시설",
+        "capacity": "150",
+        "unit": "㎥/분",
+        "installDate": "",
+        "supported": true
+      }
+    ],
+    "support": {
+      "subsidyRatio": 60,
+      "selfRatio": 40,
+      "sensors": [
+        {
+          "name": "전류계(세정/전기시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "차압계(압력계)",
+          "unitPrice": 400000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "온도계",
+          "unitPrice": 500000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "ph계",
+          "unitPrice": 1000000,
+          "quantities": {
+            "방1": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "전류계(배출시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "전류계(방지시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "IoT게이트웨이",
+          "unitPrice": 1600000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "IoT게이트웨이(복수형)",
+          "unitPrice": 2080000,
+          "quantities": {
+            "방1": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "VPN",
+          "unitPrice": 400000,
+          "quantities": {
+            "방1": 1
+          },
+          "basis": ""
+        }
+      ],
+      "docStatus": {
+        "daejin": true,
+        "energy": true,
+        "report": true
+      },
+      "docUrls": {
+        "daejin": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/(주)대달산업_미정_daejin.json",
+        "energy": "/api/download/(주)대달산업_미정_energy.json",
+        "report": "/api/download/(주)대달산업_미정_certificate.json"
+      }
+    }
+  }
+}

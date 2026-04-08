@@ -364,8 +364,67 @@ const SupportInfoForm = ({ emissions, preventions }: Props) => {
                     : "border-muted text-muted-foreground bg-muted cursor-not-allowed"
                 }`}
                 disabled={!docStatus[key] || !docUrls[key]}
-                onClick={() => {
-                  if (docUrls[key]) window.open(docUrls[key], "_blank");
+                onClick={async () => {
+                  console.log('다운로드 버튼 클릭:', {
+                    key,
+                    docStatus: docStatus[key],
+                    docUrl: docUrls[key],
+                  });
+                  
+                  if (docUrls[key]) {
+                    try {
+                      console.log('다운로드 시작:', docUrls[key]);
+                      
+                      // fetch로 직접 받기 (리다이렉트 문제 해결)
+                      const response = await fetch(docUrls[key], {
+                        method: 'GET',
+                        credentials: 'include',
+                      });
+
+                      if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                      }
+
+                      // Content-Disposition 헤더에서 파일명 추출
+                      const contentDisposition = response.headers.get('content-disposition');
+                      let filename = 'downloaded-file.docx';
+                      
+                      if (contentDisposition) {
+                        const match = contentDisposition.match(/filename\*=UTF-8''(.+?)(?:;|$)/);
+                        if (match && match[1]) {
+                          filename = decodeURIComponent(match[1]);
+                        } else {
+                          const match2 = contentDisposition.match(/filename="?(.+?)"?(?:;|$)/);
+                          if (match2) filename = match2[1];
+                        }
+                      }
+
+                      // blob으로 변환
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = filename;
+                      link.style.display = 'none';
+                      document.body.appendChild(link);
+                      link.click();
+                      
+                      // 정리
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(link);
+                      
+                      console.log('다운로드 완료:', filename);
+                    } catch (error) {
+                      console.error('다운로드 실패:', error);
+                      toast({
+                        title: "다운로드 실패",
+                        description: `파일 다운로드에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`,
+                        variant: "destructive",
+                      });
+                    }
+                  } else {
+                    console.log('오류: docUrl이 비어있거나 undefined입니다.');
+                  }
                 }}
               >
                 <Download className="h-4 w-4 mr-1.5" />

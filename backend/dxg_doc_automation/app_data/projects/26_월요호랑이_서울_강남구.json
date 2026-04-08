@@ -1,0 +1,245 @@
+{
+  "project_key": "26_월요호랑이_서울_강남구",
+  "save_status": "final",
+  "saved_at": "2026-04-02 14:07:04",
+  "data": {
+    "projectKey": "26_월요호랑이_서울_강남구",
+    "business": {
+      "name": "월요호랑이",
+      "phone": "02-564-0330",
+      "bizNo": "413-26-03300",
+      "fax": "02-561-0331",
+      "address": "서울특별시 강남구 역삼대로120",
+      "email": "montiger@hanmail.net",
+      "location": "서울 강남구",
+      "ceo": "김원범",
+      "industry": "목재가공업",
+      "ceoBirth": "1981-02-06",
+      "grade": "5종",
+      "managerName": "유석재",
+      "mainProduct": "목재가공품",
+      "managerPhone": "010-1234-5678",
+      "pollutants": [
+        {
+          "id": 1,
+          "type": "먼지",
+          "amount": "0.015"
+        },
+        {
+          "id": 1774930461191,
+          "type": "먼지, THC",
+          "amount": "0.211"
+        }
+      ],
+      "lastMeasureDate": "",
+      "measurementItems": [
+        {
+          "id": 1774854956588,
+          "pollutant": "먼지",
+          "amount": "0.5",
+          "unit": "mg/S㎥",
+          "date": "2025-07-16"
+        },
+        {
+          "id": 1774854995502,
+          "pollutant": "먼지",
+          "amount": "182",
+          "unit": "mg/S㎥",
+          "date": "2025-07-16"
+        }
+      ],
+      "startDate": "2026-06",
+      "applyDate": "2026-03-30",
+      "endDate": "2026-12",
+      "authority": "강남구청",
+      "locationFile": "",
+      "layoutFile": ""
+    },
+    "emissions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "배1",
+        "name": "탈사시설",
+        "capacity": "50",
+        "unit": "HP",
+        "supported": false,
+        "exempt": false
+      },
+      {
+        "id": 1774855078071,
+        "outletNo": 2,
+        "facilityNo": "배4",
+        "name": "도장시설",
+        "capacity": "20",
+        "unit": "ton/hr",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1774855091967,
+        "outletNo": 2,
+        "facilityNo": "배5",
+        "name": "건조시설",
+        "capacity": "75",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      }
+    ],
+    "preventions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "방1",
+        "type": "여과집진시설",
+        "capacity": "100",
+        "unit": "㎥/분",
+        "installDate": "2012-10-12",
+        "supported": false
+      },
+      {
+        "id": 1774855140197,
+        "outletNo": 2,
+        "facilityNo": "방3",
+        "type": "흡수에 의한 시설",
+        "capacity": "50",
+        "unit": "㎥/분",
+        "installDate": "2020-05-30",
+        "supported": true
+      }
+    ],
+    "support": {
+      "subsidyRatio": 60,
+      "selfRatio": 40,
+      "sensors": [
+        {
+          "name": "전류계(세정/전기시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 0,
+            "방2": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "차압계(압력계)",
+          "unitPrice": 400000,
+          "quantities": {
+            "방1": 1,
+            "방2": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "온도계",
+          "unitPrice": 500000,
+          "quantities": {
+            "방1": 1,
+            "방2": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "ph계",
+          "unitPrice": 1000000,
+          "quantities": {
+            "방1": 0,
+            "방2": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "전류계(배출시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 1,
+            "방2": 2
+          },
+          "basis": "배출전류계 측정 필요."
+        },
+        {
+          "name": "전류계(방지시설)",
+          "unitPrice": 300000,
+          "quantities": {
+            "방1": 1,
+            "방2": 1
+          },
+          "basis": ""
+        },
+        {
+          "name": "IoT게이트웨이",
+          "unitPrice": 1600000,
+          "quantities": {
+            "방1": 0,
+            "방2": 0
+          },
+          "basis": ""
+        },
+        {
+          "name": "IoT게이트웨이(복수형)",
+          "unitPrice": 2080000,
+          "quantities": {
+            "방1": 1,
+            "방2": 0
+          },
+          "basis": "굴뚝이 3개라서 게이트웨이 복수형이 필요함."
+        },
+        {
+          "name": "VPN",
+          "unitPrice": 400000,
+          "quantities": {
+            "방1": 1,
+            "방2": 0
+          },
+          "basis": ""
+        }
+      ],
+      "docStatus": {
+        "daejin": true,
+        "energy": true,
+        "report": false
+      },
+      "docUrls": {
+        "daejin": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/2026__지역_DT.docx",
+        "energy": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/2026_월요호랑이_서울특별시_강남구_EN.docx",
+        "report": ""
+      },
+      "sensorBasisMap": {
+        "IoT게이트웨이(복수형)": "굴뚝이 3개라서 게이트웨이 복수형이 필요함."
+      }
+    },
+    "photoInputs": {
+      "outlet-1_prev-방1_common_0": {},
+      "outlet-1_prev-방1_common_1": {},
+      "outlet-1_prev-방1_common_2": {},
+      "outlet-1_prev-방1_common_3": {},
+      "outlet-1_prev-방1_detail_0": {},
+      "outlet-1_prev-방1_detail_1": {},
+      "outlet-1_prev-방1_detail_2": {},
+      "outlet-2_prev-방2_common_0": {},
+      "outlet-2_prev-방2_common_1": {},
+      "outlet-2_prev-방2_common_2": {},
+      "outlet-2_prev-방2_common_3": {},
+      "outlet-3_prev-방3_common_0": {},
+      "outlet-3_prev-방3_common_1": {},
+      "outlet-3_prev-방3_common_2": {},
+      "outlet-3_prev-방3_common_3": {},
+      "outlet-3_prev-방3_detail_0": {},
+      "outlet-3_prev-방3_detail_1": {},
+      "outlet-3_prev-방3_detail_2": {},
+      "EMISSION_1_OVERVIEW": {},
+      "EMISSION_1_CTRL_OUT": {},
+      "EMISSION_1_CTRL_IN": {},
+      "EMISSION_2_OVERVIEW": {},
+      "EMISSION_2_CTRL_OUT": {},
+      "EMISSION_2_CTRL_IN": {},
+      "EMISSION_3_OVERVIEW": {},
+      "EMISSION_3_CTRL_OUT": {},
+      "EMISSION_3_CTRL_IN": {},
+      "EMISSION_4_OVERVIEW": {},
+      "EMISSION_4_CTRL_OUT": {},
+      "EMISSION_4_CTRL_IN": {}
+    }
+  }
+}

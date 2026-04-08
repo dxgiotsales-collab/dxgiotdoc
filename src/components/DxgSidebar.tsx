@@ -128,7 +128,7 @@ const DxgSidebar = ({ activeMenu, onMenuChange }: DxgSidebarProps) => {
 
                 try {
                   const response = await fetch(
-                    `https://essentially-unweldable-faustino.ngrok-free.dev/api/projects/${encodeURIComponent(selectedProject)}`,
+                    `https://doc.dxg.kr/api/projects/${encodeURIComponent(selectedProject)}`,
                     {
                       method: "DELETE",
                       headers: {

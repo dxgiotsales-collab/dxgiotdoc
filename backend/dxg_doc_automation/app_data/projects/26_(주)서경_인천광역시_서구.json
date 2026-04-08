@@ -1,0 +1,176 @@
+{
+  "project_key": "26_(주)서경_인천광역시_서구",
+  "save_status": "draft",
+  "saved_at": "2026-04-02 15:32:52",
+  "data": {
+    "projectKey": "",
+    "business": {
+      "name": "(주)서경",
+      "phone": "032-574-3547",
+      "bizNo": "137-81-37074",
+      "fax": "",
+      "address": "인천광역시 서구 원창로89번길 48",
+      "email": "jjani927@hanmail.net",
+      "location": "인천 서구",
+      "ceo": "이은혁",
+      "industry": "지정폐기물처리업",
+      "ceoBirth": "2001-05-25",
+      "grade": "5종",
+      "managerName": "라철웅",
+      "mainProduct": "폐기물처리",
+      "managerPhone": "010-6525-7466",
+      "pollutants": [
+        {
+          "id": 1,
+          "type": "먼지",
+          "amount": "1.192"
+        }
+      ],
+      "lastMeasureDate": "",
+      "measurementItems": [
+        {
+          "id": 1775110821309,
+          "pollutant": "",
+          "amount": "0.7",
+          "unit": "mg/S㎥",
+          "date": "2026-03-01"
+        }
+      ],
+      "startDate": "2026-06",
+      "applyDate": "2026-04-02",
+      "endDate": "2026-12",
+      "authority": "(재)경기환경에너지진흥원",
+      "locationFile": {},
+      "layoutFile": {}
+    },
+    "emissions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "배1",
+        "name": "저장시설(폐산)",
+        "capacity": "11",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110876603,
+        "outletNo": 1,
+        "facilityNo": "배2",
+        "name": "저장시설(폐산)",
+        "capacity": "48",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110877245,
+        "outletNo": 1,
+        "facilityNo": "배3",
+        "name": "저장시설(폐산)",
+        "capacity": "30",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110878272,
+        "outletNo": 1,
+        "facilityNo": "배4",
+        "name": "저장시설(폐산)",
+        "capacity": "25",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110879024,
+        "outletNo": 1,
+        "facilityNo": "배5",
+        "name": "저장시설(폐산)",
+        "capacity": "20",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110879619,
+        "outletNo": 1,
+        "facilityNo": "배6",
+        "name": "저장시설(폐산)",
+        "capacity": "10",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      },
+      {
+        "id": 1775110880104,
+        "outletNo": 1,
+        "facilityNo": "배7",
+        "name": "저장시설(제품)",
+        "capacity": "15",
+        "unit": "㎥",
+        "supported": true,
+        "exempt": false
+      }
+    ],
+    "preventions": [
+      {
+        "id": 1,
+        "outletNo": 1,
+        "facilityNo": "방1",
+        "type": "흡수에 의한 시설",
+        "capacity": "357",
+        "unit": "㎥/분",
+        "installDate": "2026-04-02",
+        "supported": true
+      }
+    ],
+    "support": {
+      "subsidyRatio": 60,
+      "selfRatio": 40,
+      "sensors": [],
+      "docStatus": {
+        "daejin": true,
+        "energy": true,
+        "report": true
+      },
+      "docUrls": {
+        "daejin": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/2026_(주)서경_인천광역시_서구_DT.docx",
+        "energy": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/2026_(주)서경_인천광역시_서구_EN.docx",
+        "report": "https://essentially-unweldable-faustino.ngrok-free.dev/api/download/untitled_project_004_성적서.pdf"
+      }
+    },
+    "photoInputs": {
+      "EMISSION_1_OVERVIEW": {},
+      "EMISSION_2_OVERVIEW": {},
+      "EMISSION_3_OVERVIEW": {},
+      "EMISSION_4_OVERVIEW": {},
+      "EMISSION_5_OVERVIEW": {},
+      "EMISSION_6_OVERVIEW": {},
+      "EMISSION_7_OVERVIEW": {},
+      "EMISSION_1_CTRL_OUT": {},
+      "EMISSION_2_CTRL_OUT": {},
+      "EMISSION_3_CTRL_OUT": {},
+      "EMISSION_4_CTRL_OUT": {},
+      "EMISSION_5_CTRL_OUT": {},
+      "EMISSION_6_CTRL_OUT": {},
+      "EMISSION_7_CTRL_OUT": {},
+      "EMISSION_1_CTRL_IN": {},
+      "EMISSION_2_CTRL_IN": {},
+      "EMISSION_3_CTRL_IN": {},
+      "EMISSION_4_CTRL_IN": {},
+      "EMISSION_5_CTRL_IN": {},
+      "EMISSION_6_CTRL_IN": {},
+      "EMISSION_7_CTRL_IN": {},
+      "outlet-1_prev-방1_common_0": {},
+      "outlet-1_prev-방1_common_1": {},
+      "outlet-1_prev-방1_common_2": {},
+      "outlet-1_prev-방1_common_3": {},
+      "outlet-1_prev-방1_detail_0": {},
+      "outlet-1_prev-방1_detail_1": {},
+      "outlet-1_prev-방1_detail_2": {}
+    }
+  }
+}
