@@ -1,4 +1,4 @@
-import { Search, Building2, Settings2, FileText, LogOut, FilePlus2 } from "lucide-react";
+import { Search, Building2, Settings2, FileText, LogOut, FilePlus2, ClipboardList } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProject } from "@/contexts/ProjectContext";
@@ -12,6 +12,7 @@ interface DxgSidebarProps {
 }
 
 const menuItems = [
+  { id: "sensor-cert", label: "센서 성적서 관리", icon: ClipboardList },
   { id: "business", label: "사업장 정보", icon: Building2 },
   { id: "facility", label: "시설 정보", icon: Settings2 },
   { id: "support", label: "지원사업 신청 정보", icon: FileText },

@@ -3,9 +3,11 @@ import DxgSidebar from "@/components/DxgSidebar";
 import BusinessInfoForm from "@/components/BusinessInfoForm";
 import FacilityInfoForm from "@/components/FacilityInfoForm";
 import SupportInfoForm from "@/components/SupportInfoForm";
+import SensorCertForm from "@/components/SensorCertForm";
 import { useProject } from "@/contexts/ProjectContext";
 
 const tabs = [
+  { id: "sensor-cert", label: "센서 성적서 관리" },
   { id: "business", label: "사업장 정보" },
   { id: "facility", label: "시설 정보" },
   { id: "support", label: "지원사업 신청 정보" },
@@ -49,6 +51,7 @@ const Index = () => {
         </header>
 
         <div className="p-8">
+          {activeTab === "sensor-cert" && <SensorCertForm />}
           {activeTab === "business" && <BusinessInfoForm />}
           {activeTab === "facility" && (
             <FacilityInfoForm
