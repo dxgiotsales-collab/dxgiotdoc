@@ -52,7 +52,12 @@ const Index = () => {
         </header>
 
         <div className="p-8">
-          {activeTab === "sensor-cert" && <SensorCertForm />}
+          {activeTab === "sensor-cert" && (
+            <SensorCertForm
+              records={sensorCertRecords}
+              setRecords={setSensorCertRecords}
+            />
+          )}
           {activeTab === "business" && <BusinessInfoForm />}
           {activeTab === "facility" && (
             <FacilityInfoForm
