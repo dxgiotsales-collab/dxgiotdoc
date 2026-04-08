@@ -51,6 +51,7 @@ const Index = () => {
         </header>
 
         <div className="p-8">
+          {activeTab === "sensor-cert" && <SensorCertForm />}
           {activeTab === "business" && <BusinessInfoForm />}
           {activeTab === "facility" && (
             <FacilityInfoForm
