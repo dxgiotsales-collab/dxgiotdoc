@@ -40,6 +40,12 @@ const tdClass = "px-3 py-2 border-b border-border text-sm text-foreground";
 const SensorCertForm = ({ records, setRecords }: SensorCertFormProps) => {
   const { token } = useAuth();
 
+  const [sensorType, setSensorType] = useState("");
+  const [modelName, setModelName] = useState("");
+  const [spec, setSpec] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;

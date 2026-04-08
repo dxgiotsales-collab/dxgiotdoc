@@ -15,6 +15,7 @@ const tabs = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("business");
+  const [sensorCertRecords, setSensorCertRecords] = useState<SensorRecord[]>([]);
   const { project, setEmissions, setPreventions } = useProject();
 
   const handleMenuChange = (menu: string) => {
