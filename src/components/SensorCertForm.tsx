@@ -20,7 +20,7 @@ const SENSOR_TYPES = [
   "vpn",
 ] as const;
 
-type SensorRecord = {
+export type SensorRecord = {
   id: number;
   sensorType: string;
   modelName: string;
@@ -28,19 +28,17 @@ type SensorRecord = {
   fileName: string;
 };
 
+type SensorCertFormProps = {
+  records: SensorRecord[];
+  setRecords: React.Dispatch<React.SetStateAction<SensorRecord[]>>;
+};
+
 const thClass =
   "px-3 py-2 text-xs font-medium text-muted-foreground text-left bg-muted/50 border-b border-border whitespace-nowrap";
 const tdClass = "px-3 py-2 border-b border-border text-sm text-foreground";
 
-const SensorCertForm = () => {
+const SensorCertForm = ({ records, setRecords }: SensorCertFormProps) => {
   const { token } = useAuth();
-
-  const [sensorType, setSensorType] = useState("");
-  const [modelName, setModelName] = useState("");
-  const [spec, setSpec] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [records, setRecords] = useState<SensorRecord[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];

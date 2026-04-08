@@ -3,7 +3,7 @@ import DxgSidebar from "@/components/DxgSidebar";
 import BusinessInfoForm from "@/components/BusinessInfoForm";
 import FacilityInfoForm from "@/components/FacilityInfoForm";
 import SupportInfoForm from "@/components/SupportInfoForm";
-import SensorCertForm from "@/components/SensorCertForm";
+import SensorCertForm, { type SensorRecord } from "@/components/SensorCertForm";
 import { useProject } from "@/contexts/ProjectContext";
 
 const tabs = [
