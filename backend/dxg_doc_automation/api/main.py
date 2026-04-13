@@ -28,9 +28,11 @@ from services.doc_generator import generate_documents, generate_merged_document
 from config.merge_orders import DAEJIN_ORDER, ENERGY_ORDER
 from config.settings import settings
 
-from fastapi import UploadFile, File
+from fastapi import UploadFile, File, Form
 import shutil
 import os
+
+from services.certificate_pdf import CERTIFICATES_DIR, save_cert_rules, CERT_RULES, add_certificate, remove_certificate, get_certificates_list
 
 
 # -------------------------
@@ -1302,5 +1304,63 @@ def generate_merged(data: dict, request: Request):
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/certificates/upload")
+async def upload_certificate(sensor_type: str = Form(...), model: str = Form(...), spec: str = Form(...), file: UploadFile = File(...)):
+    try:
+        filename = f"{sensor_type}_{model}_{spec}.pdf"
+        file_path = CERTIFICATES_DIR / filename
+        
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        
+        add_certificate(sensor_type, model, spec, filename, file_path)
+        
+        return {"message": f"{sensor_type} ({model}/{spec}) certificate uploaded successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/certificates/list")
+async def get_certificates():
+    try:
+        certificates = get_certificates_list()
+        return {"certificates": certificates}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/certificates/delete")
+async def delete_certificate(sensor_type: str = Form(...), model: str = Form(...), spec: str = Form(...)):
+    try:
+        success = remove_certificate(sensor_type, model, spec)
+        if success:
+            return {"message": f"{sensor_type} ({model}/{spec}) certificate deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Certificate not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/certificates")
+async def get_certificates():
+    try:
+        certificates = {}
+        for sensor_type, rule in CERT_RULES.items():
+            file_path = rule["dir"] / rule["filename"]
+            if file_path.exists():
+                certificates[sensor_type] = {
+                    "filename": rule["filename"],
+                    "exists": True
+                }
+            else:
+                certificates[sensor_type] = {
+                    "filename": None,
+                    "exists": False
+                }
+        return certificates
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

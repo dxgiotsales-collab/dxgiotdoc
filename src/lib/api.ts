@@ -1,5 +1,32 @@
-// const API_BASE = "https://essentially-unweldable-faustino.ngrok-free.dev";
-const API_BASE = "https://doc.dxg.kr";
+// 동적 API_BASE 결정
+// lovable 클라우드 환경: ngrok URL 사용
+// prod/ngrok: 환경변수 또는 고정값 사용
+let API_BASE: string;
+
+if (typeof window !== 'undefined') {
+  const hostname = window.location.hostname;
+
+  // lovable 클라우드 환경에서 실행 중인 경우
+  if (hostname.includes('lovable') || hostname.includes('preview.lovable')) {
+    // ngrok URL로 백엔드 접근
+    API_BASE = 'https://essentially-unweldable-faustino.ngrok-free.dev';
+  }
+  // 프로덕션 환경
+  else if (hostname === 'doc.dxg.kr' || hostname === 'www.dxg.kr') {
+    API_BASE = 'https://doc.dxg.kr';
+  }
+  // 기타 환경 (localhost 등)
+  else {
+    // localhost의 경우 백엔드 포트로 요청
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      API_BASE = `http://${hostname}:8000`;
+    } else {
+      API_BASE = `https://${hostname}`;
+    }
+  }
+} else {
+  API_BASE = 'https://essentially-unweldable-faustino.ngrok-free.dev'; // SSR 환경의 기본값
+}
 
 interface ApiOptions {
   method?: string;

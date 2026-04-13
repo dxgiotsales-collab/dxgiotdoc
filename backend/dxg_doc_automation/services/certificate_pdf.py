@@ -1,43 +1,174 @@
 from pathlib import Path
 from PyPDF2 import PdfMerger
 from config.settings import settings
+import json
 
 
-if settings.CERT_BASE_PATH:
-    CERT_RULES = {
-        "전류계": {
-            "dir": Path(settings.CERT_BASE_PATH),
-            "filename": "@ [CT계] AI_XA-250_250610.pdf",
-            "prefixes": [
-                "@ [CT계] AI_XA-250_250610",
-                "[CT계] AI_XA-250_250610",
-                "AI_XA-250_250610",
-                "CT계",
-            ],
-        },
-        "온도계": {
-            "dir": Path(settings.CERT_BASE_PATH),
-            "filename": "@ [온도계_일반용] XTT-100-001_20251111.pdf",
-        },
-        "차압계": {
-            "dir": Path(settings.CERT_BASE_PATH),
-            "filename": "@ [차압계_일반용] XTP-WP-001_20250610.pdf",
-        },
-        "ph계": {
-            "dir": Path(settings.CERT_BASE_PATH),
-            "filename": "@ [PH계_일반용] KEC-1000_20250728-복사.PDF",
-        },
-        "gateway": {
-            "dir": Path(settings.CERT_BASE_PATH),
-            "filename": "@ [XGATE] 방수 성적서(IP66)_20250207.pdf",
-        },
-        "vpn": {
-            "dir": Path(settings.CERT_VPN_PATH),
-            "filename": "00. CC인증서_AXGATE_V2_1_SP3.pdf",
-        },
-    }
+CERTIFICATES_DIR = Path("app_data/certificates")
+CERTIFICATES_FILE = CERTIFICATES_DIR / "rules.json"
+CERTIFICATES_DIR.mkdir(parents=True, exist_ok=True)
+
+# Load CERT_RULES from file if exists, otherwise use defaults
+if CERTIFICATES_FILE.exists():
+    with open(CERTIFICATES_FILE, 'r', encoding='utf-8') as f:
+        loaded_rules = json.load(f)
+    
+    # 기존 파일의 규칙을 유지하되, 기본 규칙과 병합
+    CERT_RULES = loaded_rules.copy()
+    
+    # 기본 규칙이 없는 경우에만 추가
+    if settings.ENV in ["ngrok", "local"] and settings.CERT_BASE_PATH:
+        default_rules = {
+            "전류계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [CT계] AI_XA-250_250610.pdf",
+                "prefixes": ["@ [CT계] AI_XA-250", "[CT계] AI_XA-250", "AI_XA-250", "CT계"],
+            },
+            "온도계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [온도계_일반용] XTT-100-001_20251111.pdf",
+                "prefixes": ["@ [온도계_일반용] XTT-100", "[온도계_일반용] XTT-100", "XTT-100", "온도계"],
+            },
+            "차압계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [차압계] DPI_250723.PDF",
+                "prefixes": ["@ [차압계] DPI", "[차압계] DPI", "DPI", "차압계"],
+            },
+            "ph계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [PH계_일반용] KEC-1000_20250728-복사.PDF",
+                "prefixes": ["@ [PH계_일반용] KEC-1000", "[PH계_일반용] KEC-1000", "KEC-1000", "PH계", "ph계"],
+            },
+            "gateway": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [XGATE] 방수 성적서(IP66)_20250207.pdf",
+                "prefixes": ["@ [XGATE] 방수", "[XGATE] 방수", "XGATE", "gateway"],
+            },
+            "vpn": {
+                "dir": Path(settings.CERT_VPN_PATH) if settings.CERT_VPN_PATH else Path(settings.CERT_BASE_PATH),
+                "filename": "00. CC인증서_AXGATE_V2_1_SP3.pdf",
+                "prefixes": ["00. CC인증서_AXGATE", "CC인증서_AXGATE", "AXGATE_V2", "vpn"],
+            },
+        }
+        
+        # 기본 규칙 중 없는 것만 추가
+        for sensor_type, rule in default_rules.items():
+            if sensor_type not in CERT_RULES:
+                CERT_RULES[sensor_type] = rule
+    elif settings.ENV == "prod":
+        # 프로덕션 환경에서는 data 폴더에서 찾음
+        default_rules = {
+            "전류계": {"dir": Path("data"), "filename": "전류계.pdf", "prefixes": ["전류계"]},
+            "온도계": {"dir": Path("data"), "filename": "온도계.pdf", "prefixes": ["온도계"]},
+            "차압계": {"dir": Path("data"), "filename": "차압계.pdf", "prefixes": ["차압계"]},
+            "ph계": {"dir": Path("data"), "filename": "ph계.pdf", "prefixes": ["ph계", "PH계"]},
+            "gateway": {"dir": Path("data"), "filename": "gateway.pdf", "prefixes": ["gateway", "XGATE"]},
+            "vpn": {"dir": Path("data"), "filename": "vpn.pdf", "prefixes": ["vpn", "VPN"]},
+        }
+        
+        # 기본 규칙 중 없는 것만 추가
+        for sensor_type, rule in default_rules.items():
+            if sensor_type not in CERT_RULES:
+                CERT_RULES[sensor_type] = rule
 else:
-    CERT_RULES = {}
+    # 파일이 없는 경우 기본 규칙 생성
+    if settings.ENV in ["ngrok", "local"] and settings.CERT_BASE_PATH:
+        CERT_RULES = {
+            "전류계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [CT계] AI_XA-250_250610.pdf",
+                "prefixes": ["@ [CT계] AI_XA-250", "[CT계] AI_XA-250", "AI_XA-250", "CT계"],
+            },
+            "온도계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [온도계_일반용] XTT-100-001_20251111.pdf",
+                "prefixes": ["@ [온도계_일반용] XTT-100", "[온도계_일반용] XTT-100", "XTT-100", "온도계"],
+            },
+            "차압계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [차압계] DPI_250723.PDF",
+                "prefixes": ["@ [차압계] DPI", "[차압계] DPI", "DPI", "차압계"],
+            },
+            "ph계": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [PH계_일반용] KEC-1000_20250728-복사.PDF",
+                "prefixes": ["@ [PH계_일반용] KEC-1000", "[PH계_일반용] KEC-1000", "KEC-1000", "PH계", "ph계"],
+            },
+            "gateway": {
+                "dir": Path(settings.CERT_BASE_PATH),
+                "filename": "@ [XGATE] 방수 성적서(IP66)_20250207.pdf",
+                "prefixes": ["@ [XGATE] 방수", "[XGATE] 방수", "XGATE", "gateway"],
+            },
+            "vpn": {
+                "dir": Path(settings.CERT_VPN_PATH) if settings.CERT_VPN_PATH else Path(settings.CERT_BASE_PATH),
+                "filename": "00. CC인증서_AXGATE_V2_1_SP3.pdf",
+                "prefixes": ["00. CC인증서_AXGATE", "CC인증서_AXGATE", "AXGATE_V2", "vpn"],
+            },
+        }
+    elif settings.ENV == "prod":
+        CERT_RULES = {
+            "전류계": {"dir": Path("data"), "filename": "전류계.pdf", "prefixes": ["전류계"]},
+            "온도계": {"dir": Path("data"), "filename": "온도계.pdf", "prefixes": ["온도계"]},
+            "차압계": {"dir": Path("data"), "filename": "차압계.pdf", "prefixes": ["차압계"]},
+            "ph계": {"dir": Path("data"), "filename": "ph계.pdf", "prefixes": ["ph계", "PH계"]},
+            "gateway": {"dir": Path("data"), "filename": "gateway.pdf", "prefixes": ["gateway", "XGATE"]},
+            "vpn": {"dir": Path("data"), "filename": "vpn.pdf", "prefixes": ["vpn", "VPN"]},
+        }
+    else:
+        CERT_RULES = {}
+
+
+def save_cert_rules():
+    with open(CERTIFICATES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(CERT_RULES, f, ensure_ascii=False, indent=2)
+
+
+def get_cert_key(sensor_type, model, spec):
+    """Generate unique key for certificate rules"""
+    return f"{sensor_type}_{model}_{spec}"
+
+
+def add_certificate(sensor_type, model, spec, filename, file_path):
+    """Add or update certificate rule"""
+    key = get_cert_key(sensor_type, model, spec)
+    
+    # Remove old file if exists
+    if key in CERT_RULES:
+        old_file = CERTIFICATES_DIR / CERT_RULES[key]["filename"]
+        if old_file.exists():
+            old_file.unlink()
+    
+    CERT_RULES[key] = {
+        "sensor_type": sensor_type,
+        "model": model,
+        "spec": spec,
+        "dir": str(CERTIFICATES_DIR),
+        "filename": filename,
+        "prefixes": []  # Can be extended later
+    }
+    save_cert_rules()
+
+
+def remove_certificate(sensor_type, model, spec):
+    """Remove certificate rule and file"""
+    key = get_cert_key(sensor_type, model, spec)
+    
+    if key in CERT_RULES:
+        # Remove file
+        file_path = CERTIFICATES_DIR / CERT_RULES[key]["filename"]
+        if file_path.exists():
+            file_path.unlink()
+        
+        # Remove from rules
+        del CERT_RULES[key]
+        save_cert_rules()
+        return True
+    return False
+
+
+def get_certificates_list():
+    """Get list of all registered certificates"""
+    return list(CERT_RULES.values())
 
 
 PREVENTION_CERTIFICATE_RULES = {
@@ -150,9 +281,9 @@ def detect_required_certificates(project_data: dict):
             if "ph" in name.lower():
                 sensors.add("ph계")
 
-    # gateway와 vpn은 선택사항 (Windows 공유폴더 접근 불가)
-    # sensors.add("gateway")
-    # sensors.add("vpn")
+    # gateway와 vpn 추가
+    sensors.add("gateway")
+    sensors.add("vpn")
 
     return sensors
 
@@ -161,7 +292,7 @@ def generate_certificate_pdf(project_data: dict, output_path: Path):
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     sensors = detect_required_certificates(project_data)
-    ordered_keys = ["전류계", "온도계", "차압계", "ph계"]  # gateway, vpn은 선택사항
+    ordered_keys = ["전류계", "온도계", "차압계", "ph계", "gateway", "vpn"]
 
     found_files = []
     missing_files = []
