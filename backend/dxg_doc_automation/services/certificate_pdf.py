@@ -58,12 +58,20 @@ if CERTIFICATES_FILE.exists():
     elif settings.ENV == "prod":
         # 프로덕션 환경에서는 data 폴더에서 찾음
         default_rules = {
-            "전류계": {"dir": Path("data"), "filename": "전류계.pdf", "prefixes": ["전류계"]},
+            "전류계": {
+                "dir": Path("data"), 
+                "filename": "@ [CT계] AI_XA-250_250610.pdf",  # 알려주신 실제 파일명
+                "prefixes": ["@ [CT계]", "AI_XA-250", "전류계", "CT계"] # 더 구체적인 접두어 추가
+            },
             "온도계": {"dir": Path("data"), "filename": "온도계.pdf", "prefixes": ["온도계"]},
             "차압계": {"dir": Path("data"), "filename": "차압계.pdf", "prefixes": ["차압계"]},
             "ph계": {"dir": Path("data"), "filename": "ph계.pdf", "prefixes": ["ph계", "PH계"]},
             "gateway": {"dir": Path("data"), "filename": "gateway.pdf", "prefixes": ["gateway", "XGATE"]},
-            "vpn": {"dir": Path("data"), "filename": "vpn.pdf", "prefixes": ["vpn", "VPN"]},
+            "vpn": {
+                "dir": Path("data"), 
+                "filename": "CC인증서_AXGATE_V2_1_SP3.pdf", # 실제 파일명으로 수정
+                "prefixes": ["CC인증서", "AXGATE", "vpn", "VPN"] # 찾기 쉬운 키워드 추가
+            },
         }
         
         # 기본 규칙 중 없는 것만 추가
@@ -107,12 +115,20 @@ else:
         }
     elif settings.ENV == "prod":
         CERT_RULES = {
-            "전류계": {"dir": Path("data"), "filename": "전류계.pdf", "prefixes": ["전류계"]},
+            "전류계": {
+            "dir": Path("data"), 
+            "filename": "@ [CT계] AI_XA-250_250610.pdf",  # 알려주신 실제 파일명
+            "prefixes": ["@ [CT계]", "AI_XA-250", "전류계", "CT계"] # 더 구체적인 접두어 추가
+        },
             "온도계": {"dir": Path("data"), "filename": "온도계.pdf", "prefixes": ["온도계"]},
             "차압계": {"dir": Path("data"), "filename": "차압계.pdf", "prefixes": ["차압계"]},
             "ph계": {"dir": Path("data"), "filename": "ph계.pdf", "prefixes": ["ph계", "PH계"]},
             "gateway": {"dir": Path("data"), "filename": "gateway.pdf", "prefixes": ["gateway", "XGATE"]},
-            "vpn": {"dir": Path("data"), "filename": "vpn.pdf", "prefixes": ["vpn", "VPN"]},
+            "vpn": {
+                "dir": Path("data"), 
+                "filename": "CC인증서_AXGATE_V2_1_SP3.pdf", # 실제 파일명으로 수정
+                "prefixes": ["CC인증서", "AXGATE", "vpn", "VPN"] # 찾기 쉬운 키워드 추가
+            },
         }
     else:
         CERT_RULES = {}
@@ -218,38 +234,32 @@ def _is_supported(row: dict) -> bool:
 
 
 def _find_pdf(rule: dict) -> Path | None:
-    folder = rule["dir"]
-    filename = rule.get("filename", "")
+    # 1. 경로를 Path 객체로 변환
+    folder = Path(rule.get("dir", "data"))
+    filename = str(rule.get("filename", ""))
     prefixes = rule.get("prefixes", [])
 
     if not folder.exists():
         return None
 
+    # 2. 폴더 내 모든 PDF 파일 목록을 'Path 객체'로 가져오기
     pdf_files = [p for p in folder.iterdir() if p.is_file() and p.suffix.lower() == ".pdf"]
 
-    # 1순위: exact filename
+    # 3. 1순위: 정확한 파일명 매칭
     if filename:
-        exact_path = folder / filename
+        exact_path = folder / filename # Path / str 은 허용됨
         if exact_path.exists():
             return exact_path
 
-        target_lower = filename.lower()
-        for path in pdf_files:
-            if path.name.lower() == target_lower:
-                return path
-
-    # 2순위: startswith
+    # 4. 2순위 & 3순위: 접두어(Prefix) 매칭 (여기서 에러가 많이 남)
     for prefix in prefixes:
-        for path in pdf_files:
-            if path.name.startswith(prefix):
-                return path
-
-    # 3순위: contains
-    for prefix in prefixes:
-        prefix_lower = prefix.lower()
-        for path in pdf_files:
-            if prefix_lower in path.name.lower():
-                return path
+        prefix_str = str(prefix) # 확실하게 문자열 변환
+        for pdf_path in pdf_files:
+            # pdf_path.name은 문자열이므로 문자열끼리 비교하게 함
+            pdf_name = str(pdf_path.name) 
+            
+            if pdf_name.startswith(prefix_str) or prefix_str.lower() in pdf_name.lower():
+                return pdf_path
 
     return None
 
@@ -289,33 +299,42 @@ def detect_required_certificates(project_data: dict):
 
 
 def generate_certificate_pdf(project_data: dict, output_path: Path):
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
     sensors = detect_required_certificates(project_data)
     ordered_keys = ["전류계", "온도계", "차압계", "ph계", "gateway", "vpn"]
 
     found_files = []
     missing_files = []
-
     merger = PdfMerger()
 
     try:
+        # --- 1. 파일 수집 단계 (반복문) ---
         for sensor in ordered_keys:
             if sensor not in sensors:
                 continue
 
-            pdf_path = _find_pdf(CERT_RULES[sensor])
-            if pdf_path:
-                merger.append(str(pdf_path))
-                found_files.append(str(pdf_path))
+            rule = CERT_RULES.get(sensor)
+            if not rule:
+                continue
+
+            # 중요: _find_pdf 호출 결과를 루프 안에서만 사용
+            current_pdf_path = _find_pdf(rule) 
+            
+            if current_pdf_path:
+                merger.append(str(current_pdf_path))
+                found_files.append(str(current_pdf_path))
             else:
                 missing_files.append(sensor)
 
-        if missing_files:
-            raise FileNotFoundError(f"누락된 성적서: {', '.join(missing_files)}")
+        # --- 2. 병합 및 저장 단계 (반복문 밖) ---
+        # pdf_path 대신 found_files 리스트가 비어있지 않은지 확인
+        if found_files:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(str(output_path), "wb") as fileobj:
+                merger.write(fileobj)
 
-        merger.write(str(output_path))
-
+    except Exception as e:
+        raise e
     finally:
         merger.close()
 
@@ -323,5 +342,4 @@ def generate_certificate_pdf(project_data: dict, output_path: Path):
         "output_path": output_path,
         "found_files": found_files,
         "missing_files": missing_files,
-        "required_sensors": sorted(list(sensors)),
     }
